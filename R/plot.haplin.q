@@ -1,0 +1,99 @@
+plot.haplin <- function(x, reference, separate.plots = F, filename, filetype = "png", use.dd,...)
+{
+#
+.n.sel.haplo <- sum(x$selected.haplotypes)
+.maternal <- x$result$maternal
+.info <- x$info
+if(missing(use.dd)) use.dd <- 1:.n.sel.haplo
+#
+#
+## USE APPROPRIATE REFERENCE
+if(missing(reference)) reference.method <- x$reference.method
+else if (is.numeric(reference)){
+	cat("\nWARNING: REFERENCE CATEGORY CAN ONLY BE SET IN FIRST RUN OF HAPLIN!\nFOR summary AND plot METHODS ONLY REFERENCE METHOD CAN BE CHOSEN, NOT CATEGORY\n\n")
+	reference.method <- x$reference.method
+	}
+else reference.method <- reference
+#
+## CHECK THAT ONLY REFCAT IS USED WHEN ONLY TWO HAPLOTYPES/ALLELES	
+	if(.n.sel.haplo == 2 & reference.method != "ref.cat"){
+		cat("\nNOTE: ONLY SINGLE REFERENCE CATEGORY METHOD ALLOWED FOR TWO HAPLOTYPES/ALLELES!\n (reference has been set to", x$result$ref.cat, ")\n")
+		reference.method <- "ref.cat"
+		}
+#
+## PRODUCE JPEG OR PNG, IF REQUESTED
+.prod.file <- !missing(filename)
+
+
+if(!.prod.file){
+	## RETAIN OLD PARAMETERS
+	.oldpar <- par(no.readonly = T)
+	on.exit(par(.oldpar))
+	#
+	if(!.maternal){
+		invisible(plot.tri.glm(x$result, type = 1, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+	}
+	if(.maternal & !separate.plots){
+		par(mfrow = c(2,1), oma = c(2,0,0,0))
+		.par <- par(no.readonly = T)
+		invisible(plot.tri.glm(x$result, type = 3, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+		par(mar = .par$mar)
+		invisible(plot.tri.glm(x$result, type = 4, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+	}
+	if(.maternal & separate.plots){
+		invisible(plot.tri.glm(x$result, type = 1, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+		invisible(plot.tri.glm(x$result, type = 2, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+	}
+}# END !.prod.file
+
+
+if(.prod.file){
+	.jpeg.size <- c(440, 460)
+	if(.n.sel.haplo > 4) .jpeg.size <- .jpeg.size + (.n.sel.haplo - 4) * c(30,0)
+	#
+	if(!.maternal){
+		if(filetype == "png"){
+			png(filename = filename, width = .jpeg.size[1], height = .jpeg.size[2], pointsize = 9)
+		}
+		if(filetype == "jpeg"){
+			jpeg(filename = filename, width = .jpeg.size[1], height = .jpeg.size[2], pointsize = 9, quality = 100)
+		}
+		invisible(plot.tri.glm(x$result, type = 1, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+		dev.off()
+	}
+	if(.maternal & !separate.plots){
+		if(filetype == "png"){
+			png(filename = filename, width = .jpeg.size[1], height = .jpeg.size[2], pointsize = 9)
+		}
+		if(filetype == "jpeg"){
+			jpeg(filename = filename, width = .jpeg.size[1], height = .jpeg.size[2], pointsize = 9, quality = 100)
+		}
+		par(mfrow = c(2,1), oma = c(2,0,0,0))
+		.par <- par(no.readonly = T)
+		invisible(plot.tri.glm(x$result, type = 3, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+		par(mar = .par$mar)
+		invisible(plot.tri.glm(x$result, type = 4, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+		dev.off()
+	}
+	if(.maternal & separate.plots){
+		if(filetype == "png"){
+			png(filename = paste("1", filename, sep = ""), width = .jpeg.size[1], height = .jpeg.size[2], pointsize = 9)
+		}
+		if(filetype == "jpeg"){
+			jpeg(filename = paste("1", filename, sep = ""), width = .jpeg.size[1], height = .jpeg.size[2], pointsize = 9, quality = 100)
+		}
+		invisible(plot.tri.glm(x$result, type = 1, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+		dev.off()
+		if(filetype == "png"){
+			png(filename = paste("2", filename, sep = ""), width = .jpeg.size[1], height = .jpeg.size[2], pointsize = 9)
+		}
+		if(filetype == "jpeg"){
+			jpeg(filename = paste("2", filename, sep = ""), width = .jpeg.size[1], height = .jpeg.size[2], pointsize = 9, quality = 100)
+		}
+		invisible(plot.tri.glm(x$result, type = 2, design = x$design, reference.method = reference.method, selected.haplotypes = x$selected.haplotypes, use.dd = use.dd, info = .info, ...))
+		dev.off()	
+	}
+}# END .prod.file
+
+
+}
