@@ -13,12 +13,13 @@ if(!is.matrix(x)) {
 	dimnames(.resmat) <- list(NULL, names(x))
 }
 else .resmat <- x #
+.xchrom <- info$model$xchrom
 #
 #cat("dette....\n")
 #if(missing(info)) .resp <- NULL
 #else .resp <- info$haplos$response
 #
-if(design == "cc" | design == "cc.triad") .resmat <- .resmat[,-1] ## IN CASE-CONTROL DESIGN, REMOVE COLUMN FOR CASE LEVEL
+if(design == "cc" | design == "cc.triad" | .xchrom) .resmat <- .resmat[,-1] ## IN CASE-CONTROL DESIGN, REMOVE COLUMN FOR CASE LEVEL (OR sex, IN THE CASE OF xchrom)
 #
 ## FILL IN ZEROS FOR NON-ESTIMATED EFFECTS
 .resmat <- f.fill.effects(resmat = .resmat, info = info)

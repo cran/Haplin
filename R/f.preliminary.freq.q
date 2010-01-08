@@ -20,15 +20,22 @@ f.preliminary.freq.new <- function(data, info){
 design <- info$model$design
 max.EM.iter <- info$control$max.EM.iter
 verbose <- info$control$verbose
+.xchrom <- info$model$xchrom
 #
 ## CREATE A .freq VECTOR WITH UNIFORM DISTRIBUTION WITHIN FAMILIES:
 	.freq <- 1/f.groupsum(X = rep(1, length(data$ind)), INDICES = data$ind)
 #
 #
-if(design == "triad" | design == "cc.triad"){
+if((design == "triad" | design == "cc.triad") & !.xchrom){
 ## LIST ALL HAPLOTYPES IN SINGLE VECTOR:
 	.all <- c(data$m1, data$m2, data$f1, data$f2)
 	.ncols <- 4
+#
+}
+if((design == "triad" | design == "cc.triad") & .xchrom){
+## LIST ALL HAPLOTYPES IN SINGLE VECTOR:
+	.all <- c(data$m1, data$m2, data$f1)
+	.ncols <- 3
 #
 }
 #
@@ -39,8 +46,7 @@ if(design == "cc"){
 #
 }
 .all.freq <- rep(.freq, .ncols)
-
-
+#
 ## JUST FOR SAFETY'S SAKE:
 if(is.factor(.all) | is.character(.all)) stop("Problem with data type in f.preliminary.freq...")
 ### if((design != "triad") & (design != "cc")) stop()
@@ -50,13 +56,13 @@ if(is.factor(.all) | is.character(.all)) stop("Problem with data type in f.preli
 #
 if(verbose) cat("\nRunning EM for preliminary estimates of haplotype frequencies...  ")
 #
-	i <- 0
-	.oldtable <- 0
-	.epsilon <- 1e-5 # SHOULD BE SUFFICIENT FOR MAX OF CHANGE IN REL. FREQUENCIES
-	.alleles <- info$haplos$alleles
-	.haplotypes <- 1:(prod(sapply(.alleles, length)))
-	.aux.haplotypes <- seq(along = .haplotypes)
-	.aux.freq <- rep(0, length.out = length(.haplotypes))
+i <- 0
+.oldtable <- 0
+.epsilon <- 1e-5 # SHOULD BE SUFFICIENT FOR MAX OF CHANGE IN REL. FREQUENCIES
+.alleles <- info$haplos$alleles
+.haplotypes <- 1:(prod(sapply(.alleles, length)))
+.aux.haplotypes <- seq(along = .haplotypes)
+.aux.freq <- rep(0, length.out = length(.haplotypes))
 #
 #
 ## LOOP OVER EM:
@@ -78,10 +84,14 @@ if(verbose) cat("\nRunning EM for preliminary estimates of haplotype frequencies
 #		PREDICT FROM MULTIPLICATIVE MODEL:
 		.pred <- matrix(.table[.all], ncol = .ncols)
 		#
-		if(design == "triad" | design == "cc.triad"){
+		if((design == "triad" | design == "cc.triad") & !.xchrom){
 			.pred <- .pred[,1] * .pred[,2] * .pred[,3] * .pred[,4] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
 		}
+		if((design == "triad" | design == "cc.triad") & .xchrom){
+			.pred <- .pred[,1] * .pred[,2] * .pred[,3] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
+		}
 		if(design == "cc"){
+			if(.xchrom) stop ("Not implemented!")
 			.pred <- .pred[,1] * .pred[,2] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
 		}
 #
@@ -93,12 +103,12 @@ if(verbose) cat("\nRunning EM for preliminary estimates of haplotype frequencies
 } # END repeat
 #
 #
-	.freq.ut <- .tmpfreq
-	attr(.freq.ut, "prelim.haplotype.freq") <- .table
+.freq.ut <- .tmpfreq
+attr(.freq.ut, "prelim.haplotype.freq") <- .table
 #
-	if(abs(sum(.freq.ut) - .ntri) > 0.001 * .ntri) stop("Potential problem in preliminary EM frequencies!")	# JUST CHECKING THAT "MASS" DOES NOT DISAPPEAR
+if(abs(sum(.freq.ut) - .ntri) > 0.001 * .ntri) stop("Potential problem in preliminary EM frequencies!")	# JUST CHECKING THAT "MASS" DOES NOT DISAPPEAR
 #
 if(verbose) cat("Done\n")
 #
-	return(invisible(.freq.ut))
+return(invisible(.freq.ut))
 }

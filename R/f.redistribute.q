@@ -1,22 +1,35 @@
-f.redistribute <- function(pred, data, design){
+f.redistribute <- function(pred, data, design, xchrom){
 ##
 ## REDISTRIBUTE OBSERVED FREQUENCIES ACCORDING TO PREDICTED
 ##
 #
 ##
 ## MATCH PREDICTED FREQUENCIES TO data:
-	.n.haplo <- sum(attr(data, "selected.haplotypes"))
+.n.haplo <- sum(attr(data, "selected.haplotypes"))
 
-if(design == "triad"){
-	.pos <- f.pos.in.grid(A = rep(.n.haplo, 4), comb = as.matrix(data[,c("m1", "m2", "f1", "f2")]))
+if(F){# ERSTATTET AV f.pos.match
+	if((design == "triad") & !xchrom){
+		.pos <- f.pos.in.grid(A = rep(.n.haplo, 4), comb = as.matrix(data[,c("m1", "m2", "f1", "f2")]))
+	}
+	if((design == "triad") & xchrom){
+		###stop("vet ikke helt her....")
+		.pos <- f.pos.in.grid(A = c(rep(.n.haplo, 3), 2), comb = as.matrix(data[,c("m1", "m2", "f2", "sex")]))
+		#.pos <- f.pos.in.grid(A = rep(.n.haplo, 4), comb = as.matrix(data[,c("m1", "m2", "f1", "f2")]))
+	}
+	if(design == "cc"){
+		if(xchrom)stop("Not implemented!")
+		.pos <- f.pos.in.grid(A = c(rep(.n.haplo, 2), 2), comb = as.matrix(data[,c("c1", "c2", "cc")]))
+	}
+	if(design == "cc.triad"){
+		if(xchrom)stop("Not implemented!")
+		.pos <- f.pos.in.grid(A = c(rep(.n.haplo, 4), 2), comb = as.matrix(data[,c("m1", "m2", "f1", "f2", "cc")]))
+	}
+
+	.pos.test <- f.pos.match(data = data, design = design, xchrom = xchrom, n.sel.haplos = .n.haplo)
+	if(!all.equal(.pos, .pos.test)) stop()
 }
-if(design == "cc"){
-	.pos <- f.pos.in.grid(A = c(rep(.n.haplo, 2), 2), comb = as.matrix(data[,c("c1", "c2", "cc")]))
-}
-if(design == "cc.triad"){
-	.pos <- f.pos.in.grid(A = c(rep(.n.haplo, 4), 2), comb = as.matrix(data[,c("m1", "m2", "f1", "f2", "cc")]))
-}
-	.pred <- pred[.pos]
+.pos <- f.pos.match(data = data, design = design, xchrom = xchrom, n.sel.haplos = .n.haplo)
+.pred <- pred[.pos]
 	
 	
 	
@@ -24,17 +37,6 @@ if(design == "cc.triad"){
 ####
 ###	MERK: cat("dette kunne vaert gjort en gang for alle...\n")
 ###
-
-
-
-
-if(F){# BARE EN TEST, IKKE NODVENDIG:
-	.dim1 <- round(length(pred)^(1/4))
-	f.vis(.vekt <- .dim1^(0:3))	
-	f.vis(.pos.old <- (data$m1 - 1) + (data$m2 - 1)*.vekt[2] + (data$f1 - 1)*.vekt[3] + (data$f2 - 1)*.vekt[4] + 1)
-	if(any(.pos != .pos.old)) stop()
-##	cat("bare til test!\n")
-}
 
 
 

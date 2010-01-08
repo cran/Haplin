@@ -9,6 +9,7 @@ f.repl.thin <- function(data, selection, design){
 ## RENORMALIZES FREQUENCIES TO SUM TO ONE WITHIN EACH TRIAD AFTER REMOVING
 ## FAMILIES THAT ARE COMPLETELY INCOMPATIBLE WITH SELECTED HAPLOTYPES
 #
+# (TROR DENNE FUNGERER UAVHENGIG AV xchrom)
 #
 ## FIND AND SELECT ROWS THAT ONLY CONTAIN SELECTED HAPLOTYPES:
 	.ind <- which(selection)
@@ -16,6 +17,7 @@ f.repl.thin <- function(data, selection, design){
 		.ind.full <- is.element(data$m1, .ind) & is.element(data$m2, .ind) & is.element(data$f1, .ind) & is.element(data$f2, .ind) #
 	}
 	if(design == "cc"){
+		#if(.xchrom) stop("Not implemented!")
 		.ind.full <- is.element(data$c1, .ind) & is.element(data$c2, .ind) #
 	}
 	.data.sel <- data[.ind.full,]

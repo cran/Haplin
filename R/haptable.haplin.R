@@ -46,6 +46,7 @@ if(.diff < 0) .tab <- as.data.frame(lapply(.tab, function(x) c(x, rep(NA, -.diff
 .tab <- data.frame(.ntri.mat, .alls, .tab)
 
 names(.tab)[names(.tab) == "haplofreq.est."] <- "haplofreq"
+rownames(.tab) <- NULL
 return(.tab)
 
 write.table(.tab, file = "test.dat", sep = "\t", quote = F, row.names = F) 

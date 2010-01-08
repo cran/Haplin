@@ -28,16 +28,16 @@ Additional covariates can be included in the input file. If so, they should be p
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
 Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
-\author{Håkon K. Gjessing\cr
+\author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
 \email{hakon.gjessing@fhi.no}}
 
-\section{Warning}{pedToHaplin has not been extensively tested, so you should always check the output before using it.}
+\section{Warning}{\code{pedToHaplin} has not been extensively tested, so you should always check the output before using it.}
 
 \note{
-	Further information is found on the web page
+	Further information is found on the web page.
 }
 \seealso{\code{\link{haplin}}}
 \examples{

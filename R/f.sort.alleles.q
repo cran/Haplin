@@ -4,32 +4,37 @@ f.sort.alleles.new <- function(data, xchrom = F, sex)
 ##
 if(xchrom & missing(sex)) stop("Sex variable must be specified for X-chromosome analyses!\n")
 ## PREPARATIONS:
-	.alleles <- attr(data, "alleles")
-	.nalleles <- sapply(.alleles, length)
-	.nmarkers <- dim(data)[2]/6
+.alleles <- attr(data, "alleles")
+.nalleles <- sapply(.alleles, length)
+.nmarkers <- dim(data)[2]/6
 #
 #
 ## SET IN "CANONICAL" ORDERING, WITH SMALLEST FIRST:
 #
-	for(i in seq(1, .nmarkers * 6, 2)){
-		.tmpcol1 <- pmin(data[,i], data[,i+1])
-		.tmpcol2 <- pmax(data[,i], data[,i+1])
-		data[,i] <- .tmpcol1	
-		data[,i+1] <- .tmpcol2		
-	}
+for(i in seq(1, .nmarkers * 6, 2)){
+	.tmpcol1 <- pmin(data[,i], data[,i+1])
+	.tmpcol2 <- pmax(data[,i], data[,i+1])
+	data[,i] <- .tmpcol1	
+	data[,i+1] <- .tmpcol2		
+}
 
 ## AGGREGATE DATA WITH A FREQUENCY COUNT:
-	if(!xchrom) .tmpd <- data
-	if(xchrom) .tmpd <- cbind(data, sex = sex)
+if(!xchrom) .tmpd <- data
+if(xchrom) .tmpd <- cbind(data, sex = sex)
+#
+.data.agg <- f.aggregate(.tmpd)
+#
+if(xchrom){# STORE SEX VARIABLE SEPARATELY
+	.sex <- .data.agg$sex
+	.data.agg$sex <- NULL
 	#
-	.data.agg <- f.aggregate(.tmpd)
-	#
-	if(xchrom){# STORE SEX VARIABLE SEPARATELY
-		.sex <- .data.agg$sex
-		.data.agg$sex <- NULL
-	}
-	.lines <- attr(.data.agg, "orig.lines")
-	.nlines.unique <- dim(.data.agg)[1]
+	if(any(is.na(.sex))) stop(paste(sum(is.na(.sex)), " missing values found in sex variable! Must be removed from file before analysis.\n", sep = ""))
+	.tmp <- sort(unique(.sex))
+	if(!identical(.tmp, c(1,2))) stop(paste("The sex variable is coded ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2 (females).", sep = "")) #
+	#if(verbose) cat("\nNote: The following sex variable coding has been assumed: males = 1, females = 2")
+}
+.lines <- attr(.data.agg, "orig.lines")
+.nlines.unique <- dim(.data.agg)[1]
 #
 #
 ## RESHAPE AND PERMUTE COLUMNS (ALL POSSIBLE PERMUTATIONS) WITHIN MOTHER, FATHER 
@@ -37,21 +42,21 @@ if(xchrom & missing(sex)) stop("Sex variable must be specified for X-chromosome 
 ## IN 6 COLUMNS (ROW)SORTED BY MARKER AND BY PERMUTATION WITHIN MARKER, 8 ROWS PR.
 ## TRIAD PR MARKER.
 #
-	.data.long <- as.matrix(.data.agg[,1:(6 * .nmarkers)])
-	.data.long <- t(matrix(as.numeric(t(.data.long)), nrow = 6)) # STACK DATA LINE BY LINE
-	.swap <- c(c(1,2,3,4,5,6), c(2,1,3,4,5,6), c(1,2,4,3,5,6), c(2,1,4,3,5,6), c(1,2,3,4,6,5), c(2,1,3,4,6,5), c(1,2,4,3,6,5), c(2,1,4,3,6,5))
-	.data.long <- .data.long[,.swap]
-	.data.long <- t(matrix(as.numeric(t(.data.long)), nrow = 6))
-	dimnames(.data.long) <- list(NULL, c("m1", "m2", "f1", "f2", "c1", "c2"))
+.data.long <- as.matrix(.data.agg[,1:(6 * .nmarkers)])
+.data.long <- t(matrix(as.numeric(t(.data.long)), nrow = 6)) # STACK DATA LINE BY LINE
+.swap <- c(c(1,2,3,4,5,6), c(2,1,3,4,5,6), c(1,2,4,3,5,6), c(2,1,4,3,5,6), c(1,2,3,4,6,5), c(2,1,3,4,6,5), c(1,2,4,3,6,5), c(2,1,4,3,6,5))
+.data.long <- .data.long[,.swap]
+.data.long <- t(matrix(as.numeric(t(.data.long)), nrow = 6))
+dimnames(.data.long) <- list(NULL, c("m1", "m2", "f1", "f2", "c1", "c2"))
 #
 ## ADD A VECTOR ind.unique.line WHICH COUNTS LINE NUMBER AMONG THE UNIQUE LINES
 ## (DOES NOT REFER TO THE ORIGINAL LINE NUMBERS), AND A VECTOR ind.unique.line.marker
 ## WHICH IS A UNIQUE TAG FOR EACH UNIQUE LINE/MARKER COMBINATION:
-	if(!xchrom) .data.long <- cbind(.data.long, ind.unique.line = rep(1:.nlines.unique, each = 8*.nmarkers), ind.marker = rep(1:.nmarkers, rep(8, .nmarkers))) 
-	if(xchrom) .data.long <- cbind(.data.long, sex = rep(.sex, each = 8 * .nmarkers), ind.unique.line = rep(1:.nlines.unique, each = 8*.nmarkers), ind.marker = rep(1:.nmarkers, rep(8, .nmarkers))) 
-	#
-	.ind.unique.line.marker <- f.pos.in.grid(A = c(.nmarkers, .nlines.unique), comb = .data.long[,c("ind.marker", "ind.unique.line")])	
-	.data.long <- cbind(.data.long, ind.unique.line.marker = .ind.unique.line.marker)
+if(!xchrom) .data.long <- cbind(.data.long, ind.unique.line = rep(1:.nlines.unique, each = 8*.nmarkers), ind.marker = rep(1:.nmarkers, rep(8, .nmarkers))) 
+if(xchrom) .data.long <- cbind(.data.long, sex = rep(.sex, each = 8 * .nmarkers), ind.unique.line = rep(1:.nlines.unique, each = 8*.nmarkers), ind.marker = rep(1:.nmarkers, rep(8, .nmarkers))) 
+#
+.ind.unique.line.marker <- f.pos.in.grid(A = c(.nmarkers, .nlines.unique), comb = .data.long[,c("ind.marker", "ind.unique.line")])	
+.data.long <- cbind(.data.long, ind.unique.line.marker = .ind.unique.line.marker)
 #
 ## IDENTIFY MENDELIANLY CONSISTENT COMBINATIONS:
 #
@@ -64,22 +69,26 @@ if(!xchrom){
 	.valid <- .valid2 & .valid4
 }
 if(xchrom){
+	## CHECK FATHER HAVE TWO EQUAL ALLELES
 	.ia3 <- is.na(.data.long[,3])
 	.ia4 <- is.na(.data.long[,4])
 	.valid.f <- (.data.long[,3] == .data.long[,4]) # FATHER'S ALLELES EQUAL
 	.valid.f[.ia3 & .ia4] <- T # IF BOTH ARE MISSING THE COMBINATION IS VALID
 	.valid.f[is.na(.valid.f)] <- F # ELSE IT IS NOT
 	#
+	## CHECK THAT BOYS HAVE TWO EQUAL ALLELES
 	.ia5 <- is.na(.data.long[,5])
 	.ia6 <- is.na(.data.long[,6])
 	.girl <- (.data.long[,"sex"] == 2)
 	.valid.c <- (.girl | (.ia5 & .ia6) | (.data.long[,5] == .data.long[,6])) # IF A BOY, ALLELES SHOULD BE EQUAL OR BOTH MISSING
 	.valid.c[is.na(.valid.c)] <- F # ELSE IT IS NOT VALID
 	#
+	## CHECK THAT SECOND ALLELE OF MOTHER IS INHERITED
 	.valid2 <- (.data.long[,2] == .data.long[,5]) # SECOND IN MOTHER EQUALS FIRST IN CHILD
 	.valid2[is.na(.valid2)] <- T # IF ONE OR BOTH ARE MISSING THE COMBINATION IS VALID
 	#
-	.valid4 <- ((.data.long[,"sex"] == 1) | .data.long[,4] == .data.long[,6]) # IF A GIRL, SECOND IN FATHER EQUALS SECOND IN CHILD
+	## CHECK THAT SECOND ALLELE OF FATHER IS INHERITED BY DAUGHTERS
+	.valid4 <- (!.girl | .data.long[,4] == .data.long[,6]) # IF A GIRL, SECOND IN FATHER EQUALS SECOND IN CHILD
 	.valid4[is.na(.valid4)] <- T # IF ONE OR BOTH ARE MISSING THE COMBINATION IS VALID
 	#
 	.valid <- .valid2 & .valid4 & .valid.f & .valid.c
@@ -112,18 +121,15 @@ if(xchrom){
 	.data.long[.ia4 & .girl, 3] <- .data.long[.ia4 & .girl, 6]
 	.data.long[.ia4 & .girl, 4] <- .data.long[.ia4 & .girl, 6]
 }
-
-###	.data.long[,2] <- ifelse(!is.na(.data.long[,2]), .data.long[,2], .data.long[,5])
-###	.data.long[,4] <- ifelse(!is.na(.data.long[,4]), .data.long[,4], .data.long[,6])
 #
-	.data.long <- .data.long[,-c(5,6)]
+.data.long <- .data.long[,-c(5,6)]
 #
 ## REMOVE DUPLICATE ROWS:
 #
-	.tag.allcol <- f.create.tag(.data.long)
-	.ind.unique.allcol <- !duplicated(.tag.allcol)
-
-	.data.long <- .data.long[.ind.unique.allcol,]
+.tag.allcol <- f.create.tag(.data.long)
+.ind.unique.allcol <- !duplicated(.tag.allcol)
+#
+.data.long <- .data.long[.ind.unique.allcol,]
 #
 #
 ## EXPAND ALL NAs WITH SEQUENCE OF ALL POSSIBLE ALLELES FOR THE CORRESPONDING MARKER:

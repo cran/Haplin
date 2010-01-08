@@ -1,4 +1,4 @@
-"f.EM.missing" <- function(data, maternal, ref.cat, design = "triad", response = "free", max.EM.iter, x = F, verbose = T, suppressEmWarnings = F)
+"f.EM.missing" <- function(data, maternal, ref.cat, design = "triad", xchrom, response = "free", max.EM.iter, x = F, verbose = T, suppressEmWarnings = F)
 {
 ## PERFORMS THE ESSENTIALS OF THE EM-ALGORITHM, INCLUDING HANDLING AMBIGUOUS HAPLOTYPES
 ## AND MISSING GENOTYPE DATA
@@ -15,13 +15,18 @@
 #### PREPARE: ############################
 	.n.haplo <- sum(attr(data, "selected.haplotypes"))
 ###	.tmpfreq <- rep(1, length(.agg.freq))
-if(design == "triad"){
+if((design == "triad") & !xchrom){
 	.tmpfreq <- rep(1, .n.haplo^4) # ALL POSSIBLE GENOTYPES FOR TRIAD
 }
+if((design == "triad") & xchrom){
+	.tmpfreq <- rep(1, 2 * .n.haplo^3) # ALL POSSIBLE GENOTYPES FOR TRIAD, BOTH MALES AND FEMALES
+}
 if(design == "cc"){
+	if(xchrom)stop("Not implemented!")
 	.tmpfreq <- rep(1, 2 * .n.haplo^2) # ALL POSSIBLE GENOTYPES FOR BOTH CASES AND CONTROLS
 }
 if(design == "cc.triad"){
+	if(xchrom)stop("Not implemented!")
 	.tmpfreq <- rep(1, 2 * .n.haplo^4) # ALL POSSIBLE GENOTYPES FOR TRIAD, BOTH CASES AND CONTROLS
 }
 
@@ -43,7 +48,7 @@ repeat{
 # M-STEP:
 	f.vis(sum(.tmpfreq), vis = F)
 
-	.res <- f.tri.glm(.tmpfreq, maternal = maternal, ref.cat = ref.cat, response = response, design = design)	#
+	.res <- f.tri.glm(.tmpfreq, maternal = maternal, ref.cat = ref.cat, response = response, design = design, xchrom = xchrom)	#
 
 	.deviance[[i]] <- .res$result$deviance	# THIS IS TWICE THE MINUS LOG-LIKELIHOOD OF THE GLM
 	.coef.new <- .res$result$coefficients
@@ -86,7 +91,7 @@ repeat{
 		i <- i + 1
 		.coef.old <- .coef.new
 		.pred <- .res$pred	#
-		.tmpfreq <- f.redistribute(pred = .pred, data = data, design = design)
+		.tmpfreq <- f.redistribute(pred = .pred, data = data, design = design, xchrom = xchrom)
 		
 
 ###		.predsum <- f.groupsum(X = .pred, INDICES = .amb)	#
@@ -107,7 +112,7 @@ next
 #
 if(x){
 	## ADD DESIGN MATRIX IN LAST STEP, IF REQUESTED:
-	.res <- f.tri.glm(.tmpfreq, maternal = maternal, ref.cat = ref.cat, response = response, design = design, x = x)#
+	.res <- f.tri.glm(.tmpfreq, maternal = maternal, ref.cat = ref.cat, response = response, design = design, xchrom = xchrom, x = x)#
 } # WARNING: REQUIRES .tmpfreq TO BE UNCHANGED AFTER LAST COMPUTATION OF .res!
 #
 attr(.res, "iter.used") <- i
