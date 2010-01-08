@@ -1,49 +1,47 @@
 f.check.pars <- function(mcall, defaults){
 ##
 ## SET DEFAULTS AND CHECK THE LOGIC OF THE INPUT PARAMETERS TO HAPLIN
+## NOTE: DOES NOT CHECK FOR SUPERFLUOUS ARGUMENTS
 ##
-#
-## SET DEFAULT VALUES
-#.filespecs <- list(markers = "ALL", n.vars = 0, sep = " ", allele.sep = ";", na.strings = "NA")
-#.model <- list(design = "triad", use.missing = F, xchrom = F, maternal = F)
-#.variables <- list(ccvar = NULL, covar = NULL, sex = NULL)
-#.haplos <- list(reference = "reciprocal", response = "free", threshold = 0.01, max.haplos = NULL, haplo.file = NULL)
-#.control <- list(resampling = F, max.EM.iter = 50, data.out = F, verbose = T, printout = T)
-#
-## CHECK THAT ALL SPECIFIED VARIABLE NAMES ARE VALID
-#if(any(!(names(info$filespecs) %in% names(.filespecs))))stop("Invalid name(s) in filespecs input")
-#if(any(!(names(info$model) %in% names(.model))))stop("Invalid name(s) in model input")
-#if(any(!(names(info$variables) %in% names(.variables))))stop("Invalid name(s) in variables input")
-#if(any(!(names(info$haplos) %in% names(.haplos))))stop("Invalid name(s) in haplos input")
-#if(any(!(names(info$control) %in% names(.control))))stop("Invalid name(s) in control input")
 #
 ## REPLACE DEFAULTS WITH SPECIFIED PARAMETERS
 params <- defaults
 params[names(mcall)] <- mcall
-#.filespecs[names(info$filespecs)] <- info$filespecs
-#.model[names(info$model)] <- info$model
-#.variables[names(info$variables)] <- info$variables
-#.haplos[names(info$haplos)] <- info$haplos
-#.control[names(info$control)] <- info$control
 #
 ## COLLECT IN LIST
 #.info <- list(filename = info$filename, filespecs = .filespecs, model = .model, variables = .variables, haplos = .haplos, control = .control)
 .info <- list(filename = 
 	params[["filename"]], 
 	filespecs = params[c("markers", "n.vars", "sep", "allele.sep", "na.strings")], 
-	model = params[c("design", "use.missing", "xchrom", "maternal", "scoretest")], 
+	model = params[c("design", "use.missing", "xchrom", "maternal", "test.maternal", "scoretest")], 
 	variables = params[c("ccvar", "covar", "sex")],
 	haplos = params[c("reference", "response", "threshold", "max.haplos", "haplo.file")],
 	control = params[c("resampling", "max.EM.iter", "data.out", "verbose", "printout")]
 	)
+class(.info) <- "info"
 #
 ## DEFINE SPECIFIC VARIABLES
 .ccvar <- .info$variables$ccvar
 .n.vars <- .info$filespecs$n.vars
+.xchrom <- .info$model$xchrom
 #
-## CHECK DESIGNS
-.designs <- c("triad", "cc.triad", "cc")
-if(!(.info$model$design %in% .designs)) stop(paste("model$design must be one of", .designs))
+## BASIC RECURSIVE CHECK FOR CORRECT ARGUMENT VALUES. 
+## NOTE: DOES NOT CHECK NULL VALUES
+.allowed <- .info
+.allowed$model$scoretest <- c("yes", "no", "only")
+.allowed$model$design <-  c("triad", "cc.triad", "cc")
+.allowed$haplos$response <-  c("mult", "free")
+.allowed$control$data.out <-  c("no", "prelim", "null", "full")
+#
+for(i in seq(along = .info)[-1]){# NO CHECK FOR filename
+	for(j in seq(along = .info[[i]])){
+		if(length(.info[[c(i,j)]]) == 1){# EXCLUDES NULL VALUES AND VECTOR VALUES (LIKE markers)
+			if(!is.element(.info[[c(i,j)]], .allowed[[c(i,j)]])){
+				stop(paste("The argument ", names(.info[[i]])[j], " has an invalid value. \nIt should be one of: \n", paste(.allowed[[c(i, j)]], collapse = ", "), sep = ""))
+			}
+		}
+	}
+}
 #
 ## TEST FOR CC VARIABLE SPECIFICATION
 .ccdesign <- .info$model$design %in% c("cc.triad", "cc")
@@ -55,16 +53,46 @@ if(.ccdesign){
 	if(!is.null(.ccvar))stop('Parameter "ccvar" should only be specified when using design "cc.triad" or "cc"!')
 }
 #
+## MAKE SURE sex COLUMN IS SPECIFIED IF ON THE xchrom
+if(!is.logical(.xchrom))stop('Argument "xchrom" must be a logical (either "TRUE" or "FALSE")')
+if(.xchrom & (.info$filespecs$n.vars == 0)) stop('Argument "n.vars" must be at least 1 to allow for a sex variable when "xchrom = TRUE"')
+if(.xchrom & !is.numeric(.info$variables$sex)) stop('Argument "sex" should be a numeric value (the column number of the sex variable) when "xchrom = TRUE"')
+if(.xchrom & .ccdesign) stop('The designs "cc" and "cc.triad" are not (yet) implemented for x-chromosomes')
+if(.xchrom & .info$model$maternal) stop('"xchrom = TRUE" cannot currently be used with "maternal = TRUE"')
+#
 ## MAKE SURE DATA'S NOT DUMPED WHEN scoretest = "only"
-if(.info$model$scoretest == "only" & .info$control$data.out) warning('data.out = TRUE overrides scoretest = "only"')
+if(.info$model$scoretest == "only" & (.info$control$data.out != "no")){
+	warning('If data.out is set, it overrides scoretest = "only"')
+	.info$control$scoretest <- "yes" ## KAN GJERNE SETTES TIL "no", FOR DEN BRUKES JO IKKE LIKEVEL (PR. IDAG)
+}
+#
+## CHECK VALUES FOR MARKERS
+if(!is.numeric(.info$filespecs$markers) & !identical(.info$filespecs$markers, "ALL")) stop('"markers" argument must be either "ALL" (default) or an integer value.') 
+#
+##
+if(.info$model$scoretest == "only"){
+	.info$model$scoretest <- "yes"
+	warning('scoretest = "only" not really implemented, using "yes" instead')
+}
 #
 ## ONLY USE response = "mult" FOR cc (FOR NOW), AND NO MATERNAL EFFECTS
-if((.info$model$design == "cc") & (.info$haplos$response != "mult")) stop('Can only use response = "mult" with design = "cc" (for now...)')
+if((.info$model$design == "cc") & (.info$haplos$response != "mult")){
+	warning('Can only use response = "mult" with design = "cc" (for now...). Has been changed.')
+	.info$haplos$response <- "mult"
+}
 if((.info$model$design == "cc") & (.info$model$maternal)) stop('Cannot use maternal = TRUE with design = "cc"')
 #
 ## CHECK THAT response IS RESTRICTED
 #if((.info$haplos$response != "free") & .info$model$maternal) stop('response != "free" not implemented for maternal effects')
-if((.info$haplos$response != "free") & is.element(.info$haplos$reference, c("reciprocal", "population"))) stop('response != "free" must be used with reference category')
+
+if((.info$haplos$response == "mult") & is.element(.info$haplos$reference, c("reciprocal", "population"))){
+	warning('response = "free" must be used with reference category (numeric or "ref.cat"). Currently changed to reference = "ref.cat"')
+	.info$haplos$reference <- "ref.cat"
+}
+#
+## IF test.maternal IS TRUE, MAKE SURE maternal IS ALSO TRUE
+if(.info$model$test.maternal) .info$model$maternal <- TRUE
+
 
 ## TEST OM covar, ccvar etc ER MINDRE ENN ELLER LIK n.vars, om de er heltall etc.
 

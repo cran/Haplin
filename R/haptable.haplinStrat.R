@@ -1,12 +1,7 @@
 haptable.haplinStrat <- function(object){
 
-.tab <- lapply(object, haptable)
+.ut <- f.haptable.list(object)
 
-for(i in seq(along = .tab)){
-	.tab[[i]] <- cbind(stratum = names(.tab)[i], .tab[[i]])
-}
-
-
-return(.tab)
+return(.ut)
 
 }

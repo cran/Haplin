@@ -30,7 +30,7 @@ cat("\nTriads remaining for analysis:", .ntri.seq[4], "\n")
 cat("\nNOTE: In the following, the most frequent allele\n is printed as upper-case, all others are lower-case\n")
 
 for (i in seq(along = .alleles)){
-	cat("\nMarker ", i, ":\n", sep = "")
+	cat("\nMarker ", names(.alleles)[i], ":\n", sep = "")
 	#
 	## PREPARE NUMBERS FOR PRINTING
 	.all <- .alleles[[i]]
@@ -79,9 +79,9 @@ cat("\nSummary of likelihood ratio test for difference between \nnull model (no 
 #
 if(.info$model$scoretest == "yes"){
 	## INCLUDE SCORE TEST
-	.ut <- matrix("", ncol = 2, nrow = 7, dimnames = list(rep("", 7), rep("", 2)))
-	.ut[,1] <- format(c("Loglike null model:", "Loglike full model:", "df:", "Overall p-value:", "Score chi-squared value:", "Score df:", "Score p-value:"))
-	.ut[,2] <- format(c(x$loglike, x$score[c("chisquared", "df", "pval")]), scientific = F, digits = .dig.overall, nsmall = .dig.overall)
+	.ut <- matrix("", ncol = 2, nrow = 8, dimnames = list(rep("", 8), rep("", 2)))
+	.ut[,1] <- format(c("Loglike null model:", "Loglike full model:", "df:", "Overall p-value:", "------------", "Score chi-squared value:", "Score df:", "Score p-value:"))
+	.ut[,2] <- format(c(x$loglike, "", x$score[c("chisquared", "df", "pval")]), scientific = F, digits = .dig.overall, nsmall = .dig.overall)
 }else if(.info$model$scoretest == "no"){
 	## WITHOUT SCORE TEST
 	.ut <- matrix("", ncol = 2, nrow = 4, dimnames = list(rep("", 4), rep("", 2)))

@@ -1,5 +1,4 @@
 export(haplin, pedToHaplin)
-#export(haplin, print.haplin, plot.haplin, summary.haplin, print.summary.haplin, summary.tri.glm, print.summary.tri.glm, f.triad.to.transmit, f.transmit.to.triad, haptable, f.LD, f.read.data, f.prep.data.new, f.create.tag, f.HWE.design, f.sort.alleles.new, f.preliminary.freq.new, f.repl.thin, f.EM.missing, f.tri.glm, f.pos.in.grid, f.groupsum)
 S3method(plot, haplin)
 S3method(print, haplin)
 S3method(summary, haplin)

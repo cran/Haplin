@@ -17,7 +17,7 @@ Provides detailed information about estimation results from a haplin object.
 %\details{}
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
 Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
-\author{Håkon K. Gjessing\cr
+\author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
