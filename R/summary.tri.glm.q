@@ -26,6 +26,11 @@ function(object, reference.method, conf.int = T, n.sim = 10000, level = 0.95, de
 
 
 
+#### KAN VEL SIKKERT FJERNE DENNE SENERE:
+
+.test <- coef.tri.glm(object)
+if(!all.equal(.test$coef, .coef) | !all.equal(.test$cov, .cov)) warning("No problem, really...")
+
 
 ###
 ###

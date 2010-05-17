@@ -1,6 +1,7 @@
 f.pos.match <- function(data, design, xchrom, n.sel.haplos){
-
-
+##
+## FOR data, COMPUTES THE POSITION OF EACH LINE IN A COMPLETE
+## GRID AS USED IN THE GLM
 #
 ##
 ## PREPARE:

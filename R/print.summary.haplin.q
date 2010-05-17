@@ -12,8 +12,8 @@ print.summary.haplin <- function(x, digits = NULL, ...){
 .info <- x$info
 .alleles <- x$alleles
 .ntri.seq <- x$ntri.seq
-	
-	cat("----Data summary:----\n")
+#	
+cat("----Data summary:----\n")
 #
 ## ACCOUNTING FOR LOST DATA
 .summ.tri.tab <- matrix("", ncol = 3, nrow = 4, dimnames = list(rep("", 4), rep("", 3)))
@@ -52,47 +52,51 @@ for (i in seq(along = .alleles)){
 #
 cat("--------\n")
 #
-	.haplo <- x$selected.haplotypes
+.haplo <- x$selected.haplotypes
 #
 #
-	cat("Haplotypes removed because of low frequencies:\n")
-	if (length(.haplo[!.haplo]) == 0) cat("None\n")
-	else cat(names(.haplo)[!.haplo], "\n")
-	cat("\n")
+cat("Haplotypes removed because of low frequencies:\n")
+if (length(.haplo[!.haplo]) == 0) cat("None\n")
+else cat(names(.haplo)[!.haplo], "\n")
+cat("\n")
 #
 #
-	cat("Haplotypes used in the analysis, with coding:\n")
-	.tmp <- seq(along = .haplo[.haplo])
-	names(.tmp) <- names(.haplo[.haplo])
-	print(.tmp, ...)
-	cat("\n")
+cat("Haplotypes used in the analysis, with coding:\n")
+.tmp <- seq(along = .haplo[.haplo])
+names(.tmp) <- names(.haplo[.haplo])
+print(.tmp, ...)
+cat("\n")
 #
 #
 #
 ## PRINT ESTIMATED PARAMETERS ETC.
-	cat("----Estimation results:----\n")
-	print(x$summary.tri.glm, digits = .dig, haplos = names(.haplo)[.haplo], ...)
-	
-#
-## PRINT LIKELIHOOD RATIO TEST RESULT
-cat("\nSummary of likelihood ratio test for difference between \nnull model (no effects) and full model:\n")
-#
-if(.info$model$scoretest == "yes"){
-	## INCLUDE SCORE TEST
-	.ut <- matrix("", ncol = 2, nrow = 8, dimnames = list(rep("", 8), rep("", 2)))
-	.ut[,1] <- format(c("Loglike null model:", "Loglike full model:", "df:", "Overall p-value:", "------------", "Score chi-squared value:", "Score df:", "Score p-value:"))
-	.ut[,2] <- format(c(x$loglike, "", x$score[c("chisquared", "df", "pval")]), scientific = F, digits = .dig.overall, nsmall = .dig.overall)
-}else if(.info$model$scoretest == "no"){
-	## WITHOUT SCORE TEST
-	.ut <- matrix("", ncol = 2, nrow = 4, dimnames = list(rep("", 4), rep("", 2)))
-	.ut[,1] <- format(c("Loglike null model:", "Loglike full model:", "df:", "Overall p-value:"))
-	.ut[,2] <- format(x$loglike, scientific = F, digits = .dig.overall, nsmall = .dig.overall)
+cat("----Estimation results:----\n")
+if(.info$model$scoretest == "only"){
+	cat('NOTE: full estimation results not computed when scoretest == "only"\n\n')
+}else{
+	print(x$summary.tri.glm, digits = .dig, haplos = names(.haplo)[.haplo], ...)	
 }
 #
-print((.ut), quote = F)
-#
+## PRINT LIKELIHOOD RATIO AND/OR SCORE TEST RESULT
+cat("\nOverall test for difference between null model (no effects) and full model:\n")
+if(.info$model$scoretest %in% c("yes", "no")){
+	## PRINT RESULT FROM LIKELIHOOD RATIO TEST
+	cat("------------\nLIKELIHOOD RATIO TEST:")
+	.ut <- matrix("", ncol = 2, nrow = 4, dimnames = list(rep("", 4), rep("", 2)))
+	.ut[,1] <- format(c("Loglike null model:", "Loglike full model:", "df:", "Likelihood ratio p-value:"))
+	.ut[,2] <- format(x$loglike, scientific = F, digits = .dig.overall, nsmall = .dig.overall)
+	print((.ut), quote = F)
+}
+if(.info$model$scoretest %in% c("yes", "only")){
+	## PRINT RESULT FROM SCORE TEST
+	cat("------------\nSCORE TEST:")
+	.ut <- matrix("", ncol = 2, nrow = 3, dimnames = list(rep("", 3), rep("", 2)))
+	.ut[,1] <- format(c("Score chi-squared value:", "Score df:", "Score p-value:"))
+	.ut[,2] <- format(c(x$score[c("chisquared", "df", "pval")]), scientific = F, digits = .dig.overall, nsmall = .dig.overall)
+	print((.ut), quote = F)
+}
 cat("\n(NOTE: The test may be sensitive to rare haplotypes)\n")
 #
 ##
-invisible(x)
+return(invisible(x))
 }

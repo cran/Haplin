@@ -3,34 +3,29 @@
 ## PERFORMS THE ESSENTIALS OF THE EM-ALGORITHM, INCLUDING HANDLING AMBIGUOUS HAPLOTYPES
 ## AND MISSING GENOTYPE DATA
 #
-
-
-#### WARNINGS: ##############################
-# MERK DENNE!!
-## FOR GLM: abs(new.deviance-old.deviance)/(old.deviance + epsilon) < epsilon
-## HVOR epsilon = 0.0001
-	f.vis("Sjekk kriteriene!", vis = F)
-
 #
 #### PREPARE: ############################
-	.n.haplo <- sum(attr(data, "selected.haplotypes"))
-###	.tmpfreq <- rep(1, length(.agg.freq))
+.n.haplo <- sum(attr(data, "selected.haplotypes")) # BURDE HENTES FRA info?
+#
 if((design == "triad") & !xchrom){
-	.tmpfreq <- rep(1, .n.haplo^4) # ALL POSSIBLE GENOTYPES FOR TRIAD
+	.l <- .n.haplo^4 # ALL POSSIBLE GENOTYPES FOR TRIAD
 }
 if((design == "triad") & xchrom){
-	.tmpfreq <- rep(1, 2 * .n.haplo^3) # ALL POSSIBLE GENOTYPES FOR TRIAD, BOTH MALES AND FEMALES
+	.l <- 2 * .n.haplo^3 # ALL POSSIBLE GENOTYPES FOR TRIAD, BOTH MALES AND FEMALES
 }
 if(design == "cc"){
-	if(xchrom)stop("Not implemented!")
-	.tmpfreq <- rep(1, 2 * .n.haplo^2) # ALL POSSIBLE GENOTYPES FOR BOTH CASES AND CONTROLS
+	if(xchrom) stop("Not implemented!")
+	.l <- 2 * .n.haplo^2 # ALL POSSIBLE GENOTYPES FOR BOTH CASES AND CONTROLS
 }
 if(design == "cc.triad"){
-	if(xchrom)stop("Not implemented!")
-	.tmpfreq <- rep(1, 2 * .n.haplo^4) # ALL POSSIBLE GENOTYPES FOR TRIAD, BOTH CASES AND CONTROLS
+	if(xchrom) stop("Not implemented!")
+	.l <- 2 * .n.haplo^4 # ALL POSSIBLE GENOTYPES FOR TRIAD, BOTH CASES AND CONTROLS
 }
-
-
+#
+.tmpfreq <- rep(1, .l)
+#
+## SAKER SOM HAR MED AGGREGERTE DATA AA GJORE
+###	.tmpfreq <- rep(1, length(.agg.freq))
 ###	.agg.freq <- agg.data$freq	#
 ###	.amb <- data$amb
 ###	.freqsum <- f.groupsum(X = .freq, INDICES = .amb)
@@ -39,17 +34,20 @@ if(design == "cc.triad"){
 ###	.tmpfreq <- .freqsum/.denominator	#
 ##	.tmpfreq <- .freq
 #
+#
 #### INITIALIZE EM LOOP: ##################
 .deviance <- numeric(max.EM.iter)	#
 i <- 1	#
 .EM.conv <- F
 #### EM LOOP: ###########################
 repeat{
-# M-STEP:
+	# M-STEP:
 	f.vis(sum(.tmpfreq), vis = F)
-
+	#
+	## ACTUAL ESTIMATION
 	.res <- f.tri.glm(.tmpfreq, maternal = maternal, ref.cat = ref.cat, response = response, design = design, xchrom = xchrom)	#
-
+	#
+	## PARAMETERS NEEDED TO CHECK CONVERGENCE
 	.deviance[[i]] <- .res$result$deviance	# THIS IS TWICE THE MINUS LOG-LIKELIHOOD OF THE GLM
 	.coef.new <- .res$result$coefficients
 	#
@@ -77,7 +75,7 @@ repeat{
 		if(.crit.deviance & .crit.coef){
 			.EM.conv <- T
 			break
-			}
+		}
 	}# END if(i > 1)
 	#
 	## BREAK OFF, WITH WARNING, IF max.EM.iter IS EXCEEDED:
@@ -85,21 +83,15 @@ repeat{
 		if(!suppressEmWarnings) warning("Maximum number of EM iterations reached!\n Convergence not yet obtained. Setting max.EM.iter higher may help.")
 		break
 	}
-#
-## UPDATING VALUES, E-STEP:  
-##
-		i <- i + 1
-		.coef.old <- .coef.new
-		.pred <- .res$pred	#
-		.tmpfreq <- f.redistribute(pred = .pred, data = data, design = design, xchrom = xchrom)
-		
-
-###		.predsum <- f.groupsum(X = .pred, INDICES = .amb)	#
-##  .tmpfreq <- .pred/.predsum * .freqsum
-###		.tmpfreq <- ifelse(.predsum > 0, .pred/.predsum * .freqsum, 0)
-
-#
-## CHECK CONSISTENCY OF NEW VALUES:
+	#
+	## UPDATING VALUES, E-STEP:  
+	##
+	i <- i + 1
+	.coef.old <- .coef.new
+	.pred <- .res$pred	#
+	.tmpfreq <- f.redistribute(pred = .pred, data = data, design = design, xchrom = xchrom)
+	#
+	## CHECK CONSISTENCY OF NEW VALUES:
 		if(any(is.na(.pred))) {
 			warning("Missing in predicted values.... There may be a problem with the EM algorithm!")
 			.tmpfreq[is.na(.tmpfreq)] <- 1e-005	# FORSIKTIG HER!!!
@@ -117,6 +109,6 @@ if(x){
 #
 attr(.res, "iter.used") <- i
 attr(.res, "EM.conv") <- .EM.conv
-#tull <<- .res
+#
 return(.res)
 }

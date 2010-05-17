@@ -73,6 +73,9 @@ cat("\nFrequency distribution of selected stratification variable:\n")
 .tmp <- table(.strata)
 names(dimnames(.tmp)) <- NULL
 print(.tmp)
+if(any(.strata == "NA")) stop("Missing values found in stratification variable.\n\ \ Should be removed from file before running haplinStrat.")
+### MERK, MERK: I f.read.data BLIR MISSING KONVERTERT TIL NA OG DERETTER "NA". BURDE KANSKJE BARE VAERT NA?
+#
 .strata.list <- sort(unique(.strata))
 
 .ut.list <- vector(length(.strata.list) + 1, mode = "list")
@@ -127,12 +130,13 @@ for(i in seq(along = .strata.list)){
 	#	.parstmp$filespecs$markers <- "ALL"
 	#	.ut.list[[as.character(.strata.list[i])]] <- try(do.call("haplin", .parstmp)) # FUNKER, MEN kan RISIKERE AT NOEN BRUKER NAVNET "all" I FAKTOR
 		}
-		.parstmp$filename <- .tmpfilename
-		.parstmp$verbose <- F
-		.parstmp$printout <- F
-		.parstmp$haplo.file <- .tmphaplofile
-		.parstmp$reference <- .ut.list[["all"]]$info$haplos$ref.cat
-		.parstmp$allele.sep <- "\t"
+	.parstmp$filename <- .tmpfilename
+	.parstmp$verbose <- F
+	.parstmp$printout <- F
+	.parstmp$haplo.file <- .tmphaplofile
+	.parstmp$reference <- .ut.list[["all"]]$info$haplos$ref.cat
+	.parstmp$allele.sep <- "\t"
+	.parstmp$sep <- "\t"
 
 	.ut.list[[i + 1]] <- try(do.call("haplin", .parstmp))
 #	.ut.list[[i]] <- do.call("haplin", .parstmp)

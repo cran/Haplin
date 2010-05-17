@@ -11,18 +11,22 @@ pedToHaplin <-
                                         # (mapfile-ARGUMENT NOT IMPLEMENTED)
                                         #
   ##
-  cat("#### CONVERTING FILE TO HAPLIN FORMAT ####\n")
-  cat("\nNote: First 6 columns should always be:\nfamily id, individual id, father's id, mother's id, sex and casetype\n") 
-
-                                        #
-  ## READING DATA
-  cat("\nReading data...")
-  if(!missing(sep)){
-    .indata <- read.table(file = indata, sep = sep, as.is = T, na.strings = na.strings, colClasses = "character")
-  }else{# TAKE ADVANTAGE OF read.table'S INTERPRETATION
-    .indata <- read.table(file = indata, as.is = T, na.strings = na.strings, colClasses = "character")
-  }
-  cat("Done")
+#
+## INFO TO USER
+cat("#### CONVERTING PED FILE TO HAPLIN FORMAT ####\n")
+cat("\nNote: First 6 columns should always be:\nfamily id, individual id, father's id, mother's id, sex and casetype\nThere should be no column names in input file.\n") 
+#
+if(missing(indata)) stop('File name argument "indata" must be specified!')
+if(missing(outdata)) stop('File name argument "outdata" must be specified!')
+#
+## READ DATA
+cat("\nReading data...")
+if(!missing(sep)){
+	.indata <- read.table(file = indata, sep = sep, as.is = T, na.strings = na.strings, colClasses = "character")
+}else{# TAKE ADVANTAGE OF read.table'S INTERPRETATION OF WHITE SPACE, ETC.
+	.indata <- read.table(file = indata, as.is = T, na.strings = na.strings, colClasses = "character")
+}
+cat("Done")
                                         #
   ##
   .nlines <- dim(.indata)[1]
@@ -73,9 +77,12 @@ pedToHaplin <-
   ## CREATE A VARIABLE THAT UNIQUELY IDENTIFIES INDIVIDUALS
   .tagit <- "-xXx-" # I BET THAT ONE'S UNIQUE!
   .tag <- paste(.vardata$family, .vardata$id, sep = .tagit)
-  if(any(duplicated(.tag))) stop("Individual id appears several times within one family!")
-                                        # KUNNE GI BEDRE FEILMELDING HER!
-                                        #
+  .dupl <- duplicated(.tag)
+  if(any(.dupl)) {
+	cat("\n")
+	.mess <- paste("Individual id appears several times within one family!\nFor instance, family ", .vardata$family[.dupl][1], " contains more than one of individual ", .vardata$id[.dupl][1], ".", sep = "")	
+	stop(.mess)
+  }
   ## CREATE THE SAME FOR MOTHERS AND FATHERS
   .mother.tag <- paste(.vardata$family, .vardata$mother, sep = .tagit)
   .father.tag <- paste(.vardata$family, .vardata$father, sep = .tagit)

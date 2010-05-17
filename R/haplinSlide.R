@@ -5,12 +5,22 @@ haplinSlide <- function(filename,
 #reference = "reciprocal", response = "free", threshold = 0.01, max.haplos = NULL, haplo.file = NULL,
 #resampling = FALSE, max.EM.iter = 50, data.out = FALSE, verbose = TRUE, printout = TRUE,
 markers = "ALL",
-winlength = 1, ...)
+winlength = 1, printout = FALSE, verbose = FALSE, ...)
 {
 #
 .mcall <- lapply(match.call()[-1], function(x) eval.parent(x, 3))
 #.defaults <- formals()
+#
+## STANDARD haplin DEFAULTS
 .defaults <- formals(haplin)
+#
+## SPECIFIC DEFAULTS FOR haplinSlide
+.defaults.slide <- formals()
+#
+## OVERRIDE STANDARD haplin DEFAULTS
+.defaults[names(.defaults.slide)] <- .defaults.slide
+#
+##
 .info <- f.check.pars(.mcall, .defaults)
 #
 ## READ DATA
@@ -29,17 +39,38 @@ cat("remember: SNPs must be in correct order!\n")
 .slides <- f.windows(markers = .markers, winlength = winlength)
 .names <- f.create.tag(.slides, sep = "-")
 
-.args <- .mcall ## HMMM, FANGER VEL IKKE OPP EVENT. ENDRINGER I .info
+.args <- f.args.from.info(.info)
+###.args <- .mcall ## HMMM, FANGER VEL IKKE OPP EVENT. ENDRINGER I .info
+###.args$winlength <- NULL # TO PROTECT haplin PROPER FROM CHOKING
 
-.args$winlength <- NULL # TO AVOID haplin PROPER CHOKING
 
 .nres <- dim(.slides)[1]
 .res.list <- vector(.nres, mode = "list")
 names(.res.list) <- .names
 
+cat("\n")
 for(i in seq(length.out = .nres)){
+	## RUN HAPLIN ON EACH WINDOW
+	cat("-----------------------\n")
+	cat("Running Haplin on Window '", .names[i], "'...:\n", sep = "")
 	.args$markers <- .slides[i,]
-	.res.list[[i]] <- do.call("haplin", .args)
+	.res.list[[i]] <- try(do.call("haplin", .args), silent = T)
+	if(class(.res.list[[i]]) == "try-error") cat("RUN FAILED\n")
+	else cat("...done\n")
+}
+#
+## CHECK FOR HAPLIN FAILURES
+.errs <- (sapply(.res.list, class) == "try-error")
+if(any(.errs)){
+	## COLLECT ERROR MESSAGES, CHANGE OUTPUT TO NA WITH ERR. MESS. AS ATTRIBUTES
+	.mess <- .res.list[.errs]
+	.err.res <- lapply(.mess, function(x) {
+		.tmpres <- NA
+		attributes(x) <- NULL # REMOVE "try-error"
+		attr(.tmpres, "error.message") <- x
+		return(.tmpres)
+	})
+	.res.list[.errs] <- .err.res
 }
 
 class(.res.list) <- "haplinSlide"

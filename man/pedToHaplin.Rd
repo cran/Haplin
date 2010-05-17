@@ -19,9 +19,11 @@ colnames.out = F)
 	\item{colnames.out}{Provided just for the purpose of checking data. If TRUE, adds colnames to the \code{outdata} file to make it more readable. NOTE: Haplin does currently not use colnames, so this should be set to FALSE when producing the file to run on.}
 }
 \details{
-  Important: The first 6 columns should always be family id, individual id, father's id, mother's id, sex and casetype, in that order, then followed by the genetic data columns. If the genetic data columns are separated into two individual alleles, one should use the option \code{merge = TRUE} to merge them in the output file. If they are already in single columns, for instance as CT or C;T, \code{merge} should be set to \code{FALSE} (default).
+  Important: The first 6 columns should always be family id, individual id, father's id, mother's id, sex and casetype, in that order, then followed by the genetic data columns. If the genetic data columns are separated into two individual alleles, one should use the option \code{merge = TRUE} to merge them in the output file. If they are already joined in single columns, for instance as CT or C;T, \code{merge} should be set to \code{FALSE} (default).
 
 Additional covariates can be included in the input file. If so, they should be placed after the 6 leading columns but before the genetic data. In this case, one should make sure the genetic data columns are already merged, and that \code{merge = FALSE}. (The \code{merge = TRUE} option when covariates are present will hopefully be implemented at some point...)
+
+Note that the output file usually has three columns before (to the left of) the columns containing genetic data. These columns are family id, sex, and casetype. When running haplin on the output file one should specify the argument 'n.vars = 3' in haplin. If the data are from the x chromosome the haplin arguments should also include 'sex = 2' and 'xchrom = T'. Similarly, if the casetype variable is a case-control indicator one should use the argument 'ccvar = 3'. If the intention is to only run haplin on the cases the case triads should be saved separately in a new file prior to running haplin on it.
 }
 \value{
 	The \code{outdata} file is written to disk. \code{pedToHaplin} returns (invisibly) the converted data file.
@@ -34,7 +36,7 @@ Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
 \email{hakon.gjessing@fhi.no}}
 
-\section{Warning}{\code{pedToHaplin} has not been extensively tested, so you should always check the output before using it.}
+\section{Warning}{Data files come in many shapes and formats, so you should always check the output from \code{pedToHaplin} before using it.}
 
 \note{
 	Further information is found on the web page.
