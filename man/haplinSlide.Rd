@@ -1,0 +1,65 @@
+\name{haplinSlide}
+\alias{haplinSlide}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{Fitting a sliding window of log-linear models to case-parent triad and/or case-control data}
+\description{
+ Produces a list, each element of which is an object of class \code{haplin}, which is the result of fitting the log-linear models to the data one "window" at a time. 
+}
+\usage{
+haplinSlide(filename, markers = "ALL", winlength = 1, printout, 
+verbose, ...)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+	\item{filename}{A character string giving the name and path of the ASCII data file to be read.}
+	\item{markers}{Default is "ALL", which means haplinSlide uses all available markers in the data set in the analysis. Alternatively, the relevant markers can be specified by, for instance, \code{markers = c(1, 3:10)}, which would use the 10 first markers except marker 2. \code{haplinSlide} will then run haplin on a series of windows selected from the supplied \code{markers}. The \code{winlength} argument decides the length of the windows. See details.
+}
+	\item{winlength}{Length of the sliding, overlapping windows to be run along the markers. See details.}
+	\item{printout}{Default is FALSE. If TRUE, provides a full summary of each \code{haplin} result during the run of \code{haplinSlide}.}
+	\item{verbose}{Same as for \code{haplin}, but defaults to FALSE to reduce output size.}
+	\item{...}{Remaining arguments to be used by \code{\link{haplin}} in each run.}
+}
+\details{
+	\code{haplinSlide} runs \code{haplin} on a series of overlapping windows of the chosen markers. Except for the \code{markers} and \code{winlength} arguments, all arguments are used exactly as in \code{haplin} itself. For instance, if \code{markers = c(1, 3, 4, 5, 7, 8)} and \code{winlength = 4}, \code{haplinSlide} will run \code{haplin} on first the markers \code{c(1, 3, 4, 5)}, then on \code{c(3, 4, 5, 7)} and finally on \code{c(4, 5, 7, 8)}. The results are returned in a list. The elements are named "1-3-4-5" etc., and can be extracted with, say, \code{summary(res[["1-3-4-5"]])} etc., where \code{res} is the saved result. Or the output can be examined by, for instance, using \code{lapply(res, summary)} and \code{lapply(res, plot)}.
+}
+\value{
+	A list of objects of class haplin is returned.
+}
+\references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
+Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
+\author{Hakon K. Gjessing\cr
+Professor of Biostatistics\cr
+Division of Epidemiology\cr
+Norwegian Institute of Public Health\cr
+\email{hakon.gjessing@fhi.no}}
+
+\note{
+	Further information is found on the web page.
+}
+%\seealso{\code{\link{haplin}}, \code{\link{suest}}, \code{\link{summary.haplin}}, \code{\link{plot.haplin}}}
+\seealso{\code{\link{haplin}}, \code{\link{summary.haplin}}, \code{\link{plot.haplin}}}
+\examples{
+
+\dontrun{
+# (Almost) all standard haplin runs can be done with haplinSlide. 
+# Below is an illustration. See the haplin help page for more 
+# examples.
+# 
+# Analyzing the effect of fetal genes, including triads with missing data,
+# using a multiplicative response model. When winlength = 1, separate
+# markers are used. To make longer windows, winlength can be increased
+# correspondingly:
+result.1 <- haplinSlide("C:/work/data.dat", use.missing = T, response = "mult",
+reference = "ref.cat", winlength = 1)
+# Provide summary of separate results:
+lapply(result.1, summary)
+# Plot results:
+par(ask = T)
+lapply(result.1, plot)
+%# Compute an overall p-value for the scan, corrected for multiple testing
+%# and dependencies between windows:
+%suest(result.1)
+
+}
+
+}

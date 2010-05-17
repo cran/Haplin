@@ -1,5 +1,5 @@
 f.read.data <- function(indata, sep = " ", allele.sep=";", na.strings="NA", use.missing = F, markers="ALL", variables = 0, family = "mfc"){
-## INDATA  : ASCII FILE WITH ALLELE DATA
+## INDATA  : NAME OF ASCII FILE WITH ALLELE DATA
 ## SEP : SEPARATOR BETWEEN COLUMNS IN INDATA
 ## ALLELE.SEP : SEPARATOR WITHIN COMLUMNS
 ## NA.STRINGS : MISSING VALUES
@@ -79,8 +79,8 @@ if(na.strings == " " || na.strings == ""){
 .data <- apply(.data,2,as.character)
 .data <- replace(.data, .data==paste(na.strings,allele.sep,na.strings,sep=""), NA)
 .data <- replace(.data, is.na(.data), "NA")
-.full.data <- .data
-row.names(.full.data) <- 1:(dim(.full.data)[1])
+.data.full <- .data
+row.names(.data.full) <- 1:(dim(.data.full)[1])
 row.names(.data) <- 1:dim(.data)[1]
 na.strings <- "NA"
 .data <- apply(.data,2,as.character)
@@ -92,26 +92,26 @@ if(variables > 0){
 	###.xnamevec <- c(sapply(1:variables,function(i) c(paste("x",i,sep=""))))
 }
 ## GENETIC DATA:
-.data <- .data[,(1 + variables):dim(.data)[2], drop = F]
+.data.gen <- .data[,(1 + variables):dim(.data)[2], drop = F]
 ## TEST IF DATA CONTAIN MISSING VALUES:
-.true <- apply(.data,2,function(x,na.s,na.sep) x==paste(na.s,na.s,sep=na.sep)|is.na(x)|x==na.s,na.s=na.strings,na.sep=allele.sep)
-###.data <- apply(.data,2,as.character)
-.data <- replace(.data,.data==na.strings,paste(na.strings,na.strings,sep=allele.sep))
+.true <- apply(.data.gen,2,function(x,na.s,na.sep) x==paste(na.s,na.s,sep=na.sep)|is.na(x)|x==na.s,na.s=na.strings,na.sep=allele.sep)
+###.data.gen <- apply(.data.gen,2,as.character)
+.data.gen <- replace(.data.gen,.data.gen==na.strings,paste(na.strings,na.strings,sep=allele.sep))
 ## IF THE LENGTH OF THE CHARACTER IS GREATER THAN 2:
-if(all(nchar(.data[.true == F]) > 2)){
-	.data <-lapply(1:dim(.data)[2],function(i,data,allele.sep) do.call("rbind",strsplit(unlist(data[,i]),split=allele.sep)),data=.data,allele.sep=allele.sep)
-	.data <- do.call("cbind",.data)
+if(all(nchar(.data.gen[.true == F]) > 2)){
+	.data.gen <-lapply(1:dim(.data.gen)[2],function(i,data,allele.sep) do.call("rbind",strsplit(unlist(data[,i]),split=allele.sep)),data=.data.gen,allele.sep=allele.sep)
+	.data.gen <- do.call("cbind",.data.gen)
 }
-else if(all(nchar(.data[.true == F]) == 2)){
-	.data <- replace(.data,.data == paste(na.strings,allele.sep,na.strings,sep=""),paste(na.strings,na.strings,sep=""))
+else if(all(nchar(.data.gen[.true == F]) == 2)){
+	.data.gen <- replace(.data.gen,.data.gen == paste(na.strings,allele.sep,na.strings,sep=""),paste(na.strings,na.strings,sep=""))
 	## SPLIT ALL CHARACTER STRINGS IN HALF, PUT SIDE BY SIDE IN SEPARATE COLUMNS
-	.dim.tmp <- dim(.data)
-	.nchar <- nchar(.data)
-	.data <- rbind(substring(.data, first = 1, last = .nchar/2), substring(.data, first = .nchar/2 + 1, last = .nchar))
-	dim(.data) <- c(.dim.tmp[1], 2 * .dim.tmp[2])
+	.dim.tmp <- dim(.data.gen)
+	.nchar <- nchar(.data.gen)
+	.data.gen <- rbind(substring(.data.gen, first = 1, last = .nchar/2), substring(.data.gen, first = .nchar/2 + 1, last = .nchar))
+	dim(.data.gen) <- c(.dim.tmp[1], 2 * .dim.tmp[2])
 }
 ## FIND THE NAMES OF THE UNIQUE ALLELES IN EACH LOCUS:
-.data <- apply(.data,2,as.character)
+.data.gen <- apply(.data.gen,2,as.character)
 ## IF ARGUMENT FAMILY IS EQUAL TO "MFC" THEN THERE IS 6 COLUMNS FOR EACH LOCI, ELSE IF FAMILY IS
 ## EQUAL TO "C" THEN THER IS 2 COLUMNS FOR EACH LOCI
 if(family == "mfc"){
@@ -121,7 +121,7 @@ if(family == "mfc"){
 	.t <- 2
 }
 ## FIND THE NUMBER OF LOCI
-.nloci <- dim(.data)[2]/.t
+.nloci <- dim(.data.gen)[2]/.t
 #
 ## CHECK THAT markers ARE WITHIN RANGE OF DATA
 if(is.numeric(markers)){
@@ -130,26 +130,26 @@ if(is.numeric(markers)){
 if(is.numeric(markers)){
 	## SELECT THE MARKERS SPECIFIED IN markers ARGUMENT 
 	.sel <- as.numeric(t(outer((markers-1)*.t, 0:(.t - 1), "+")) + 1)
-	.data <- .data[, .sel, drop = F]
-	###.tmp <- lapply(1:length(markers), function(i,markers,.data,.t) .data[,(1+(markers[i]-1)*.t):(markers[i]*.t)],markers=markers,.data=.data,.t=.t)
-	###.data <- do.call("cbind", .tmp)
+	.data.gen <- .data.gen[, .sel, drop = F]
+	###.tmp <- lapply(1:length(markers), function(i,markers,.data.gen,.t) .data.gen[,(1+(markers[i]-1)*.t):(markers[i]*.t)],markers=markers,.data.gen=.data.gen,.t=.t)
+	###.data.gen <- do.call("cbind", .tmp)
 	.nloci <- length(markers)
 }
-row.names(.data) <- 1:(dim(.data))[1]
+row.names(.data.gen) <- 1:(dim(.data.gen))[1]
 #
 ## REMOVE ROWS WITH MISSING:
 if(!use.missing){
 	## CAN'T USE NA.EXCLUDE DUE TO DATA ON CHARACTER FORMAT
-	if(variables > 0) .xdata <- .xdata[apply(.data,1,function(x,na.strings) all(x != na.strings),na.strings=na.strings),,drop = F]
-	.data <- .data[apply(.data,1,function(x,na.strings) all(x != na.strings),na.strings=na.strings),]
-	.na.message <- dim(.full.data)[1]-dim(.data)[1]
+	if(variables > 0) .xdata <- .xdata[apply(.data.gen,1,function(x,na.strings) all(x != na.strings),na.strings=na.strings),,drop = F]
+	.data.gen <- .data.gen[apply(.data.gen,1,function(x,na.strings) all(x != na.strings),na.strings=na.strings),]
+	.na.message <- dim(.data.full)[1]-dim(.data.gen)[1]
 }else{
-	.tmp <- ((.data == "NA") + 0) %*% rep(1,dim(.data)[2]) == 0 # Q & D
-	.na.message <- dim(.full.data)[1]-sum(.tmp)
+	.tmp <- ((.data.gen == "NA") + 0) %*% rep(1,dim(.data.gen)[2]) == 0 # Q & D
+	.na.message <- dim(.data.full)[1]-sum(.tmp)
 }
-.row.names <- row.names(.data)
+.row.names <- row.names(.data.gen)
 ## FIND HOW MANY ROWS REMOVED DUE TO MISSING VALUES:
-.omitted <- seq(nrow(.full.data))[is.na(match(row.names(.full.data),row.names(.data)))]
+.omitted <- seq(nrow(.data.full))[is.na(match(row.names(.data.full),row.names(.data.gen)))]
 if(length(.omitted) == 0) .omitted <- NULL
 #
 ## CONSTRUCT A NAME VECTOR:
@@ -167,21 +167,25 @@ if(is.numeric(markers)){
 		.namevector <- c(sapply(1:.nloci,function(i) c(paste("l",i,".c1",sep=""),paste("l",i,".c2",sep=""))))
 	}
 }
-## IF THERE ARE ANY VARIABLES IF DATA, THEY ARE ADDED :
+## IF THERE ARE ANY VARIABLES IN DATA, THEY ARE ADDED :
 if(variables > 0){
-	.namevector <- c(.xnamevec,.namevector)
-	.data <- cbind(apply(.xdata[,,drop=F],2,as.character),.data)
+	.namevector <- c(.xnamevec, .namevector)
+	.data.out <- cbind(apply(.xdata[,,drop=F],2,as.character), .data.gen)
+}else .data.out <- .data.gen
+if(dim(.data.out)[2] != length(.namevector)){
+	## SOMEWHAT AD-HOC TEST FOR A MISSPECIFIED n.vars ARGUMENT
+	cat("\n")
+	stop("There's a problem with the number of variables in the data file.\n Are you sure the argument 'n.vars' is set to the correct value?", call. = F)
 }
-## MAKE SURE THAT DATA ARE CHARACTER
-.data <- apply(.data,2,as.character)
-dimnames(.data) <- list(NULL,.namevector)
+dimnames(.data.out) <- list(NULL, .namevector)
+#
 ## RETURNS NUMBER OF ROWS DROPPED:
-attr(.data,"rows.with.na")  <- .na.message
+attr(.data.out,"rows.with.na")  <- .na.message
 ## RETURNS WHICH ROWS DROPPED:
-attr(.data,"rows.dropped")  <- as.numeric(.omitted)
+attr(.data.out,"rows.dropped")  <- as.numeric(.omitted)
 if(identical(markers, "ALL")){
-	attr(.data,"markers") <- 1:.nloci
-}else attr(.data, "markers") <- markers
-return(.data)
+	attr(.data.out,"markers") <- 1:.nloci
+}else attr(.data.out, "markers") <- markers
+return(.data.out)
 }
  

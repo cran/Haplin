@@ -129,7 +129,7 @@ if(xchrom){
 .tag.allcol <- f.create.tag(.data.long)
 .ind.unique.allcol <- !duplicated(.tag.allcol)
 #
-.data.long <- .data.long[.ind.unique.allcol,]
+.data.long <- .data.long[.ind.unique.allcol, , drop = F]
 #
 #
 ## EXPAND ALL NAs WITH SEQUENCE OF ALL POSSIBLE ALLELES FOR THE CORRESPONDING MARKER:
@@ -142,7 +142,7 @@ if(!xchrom){
 			.nexpand[is.na(.data.long[,i]) & (.data.long[,"ind.marker"] == j)] <- .nalleles[j]
 			# CREATE THE INDEX FOR EXPANSION AND EXPAND:
 			.ind.expand <- rep(seq(along = .nexpand), .nexpand)
-			.data.long <- .data.long[.ind.expand,]
+			.data.long <- .data.long[.ind.expand, , drop = F]
 			# REPLACE THE NAs IN THE EXPANDED DATA WITH SEQUENCE OF ALL POSSIBLE ALLELES AT MARKER:
 			.data.long[is.na(.data.long[,i]) & (.data.long[,"ind.marker"] == j),i] <- 1:.nalleles[j]	
 		}
@@ -167,12 +167,12 @@ if(xchrom){
 ## SET MARKERS SIDE BY SIDE, WITH ALL POSSIBLE COMBINATIONS:
 	.line.long <- 1:(dim(.data.long)[1])
 	# MATRIX OF LINE NUMBERS CORRESPONDING TO EACH COMB OF UNIQUE LINES AND MARKERS:
-	.line.bits <- tapply(.line.long, as.data.frame(.data.long[,c("ind.unique.line", "ind.marker")]), function(x)x, simplify = F)
+	.line.bits <- tapply(.line.long, as.data.frame(.data.long[,c("ind.unique.line", "ind.marker"), drop = F]), function(x)x, simplify = F)
 	# CREATE ALL POSSIBLE COMBINATIONS OF MARKER GENOTYPES WITH OTHER MARKER GENOTYPES:
 	.line.seq <- apply(.line.bits, 1, function(x) as.numeric(t(as.matrix(do.call("expand.grid", x))))) # WARNING: IF ALL EXPANSIONS HAVE SAME LENGTH, THIS IS A MATRIX, NOT A VECTOR OF MODE LIST.
 	.line.seq <- as.numeric(unlist(.line.seq)) # as.numeric ALSO HANDLES .line.seq WHEN A MATRIX
 	# EXPAND DATA WITH ALL POSSIBLE COMBINATIONS:
-	.data.long <- .data.long[.line.seq,]
+	.data.long <- .data.long[.line.seq,,drop = F]
 	.navn <- dimnames(.data.long)[[2]] # SAVE NAMES BEFORE RESHAPING
 	# REFORMAT DATA TO SET SIDE BY SIDE:
 	.data.long <- t(matrix(as.numeric(t(.data.long)), nrow = dim(.data.long)[2]*.nmarkers))
@@ -203,7 +203,7 @@ if(xchrom){
 #
 	if(!xchrom) .indtmp <- c(as.numeric(outer(7*(0:(.nmarkers - 1)), 1:4,  "+")), 5)
 	if(xchrom) .indtmp <- c(as.numeric(outer(8*(0:(.nmarkers - 1)), 1:4,  "+")), c(6, 5)) # SEX IS ADDED
-	.data.long <- .data.long[, .indtmp]
+	.data.long <- .data.long[, .indtmp, drop = F]
 	dimnames(.data.long)[[2]][dimnames(.data.long)[[2]] == "l1.ind.unique.line"] <- "ind.unique.line"
 	if(xchrom) dimnames(.data.long)[[2]][dimnames(.data.long)[[2]] == "l1.sex"] <- "sex"
 #

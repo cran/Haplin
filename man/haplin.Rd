@@ -9,15 +9,16 @@
 haplin(filename, 
 markers = "ALL", n.vars = 0, sep = " ", allele.sep = ";", 
 na.strings = "NA", design = "triad", use.missing = FALSE, 
-xchrom = FALSE, maternal = FALSE, test.maternal = FALSE, scoretest = "no",
-ccvar = NULL, covar = NULL, sex = NULL, reference = "reciprocal", 
-response = "free", threshold = 0.01, max.haplos = NULL, 
-haplo.file = NULL, resampling = FALSE, max.EM.iter = 50, 
-data.out = "no", verbose = TRUE, printout = TRUE)
+xchrom = FALSE, maternal = FALSE, test.maternal = FALSE, 
+scoretest = "no", ccvar = NULL, covar = NULL, sex = NULL, 
+reference = "reciprocal", response = "free", 
+threshold = 0.01, max.haplos = NULL, haplo.file = NULL, 
+resampling = FALSE, max.EM.iter = 50, data.out = "no", 
+verbose = TRUE, printout = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-	\item{}{Of the following arguments, only \code{filename} is required. Use of the remaining arguments will depend on the type of analysis. }
+	\item{}{Of the following arguments, only \code{filename} is required. Use of the remaining arguments will depend on the type of analysis.}
 	\item{filename}{A character string giving the name and path of the ASCII data file to be read. }
 	\item{markers}{ Default is "ALL", which means HAPLIN uses all available markers in the data set in the analysis. For the current version of HAPLIN the number of markers used at a single run should probably not exceed 4 or 5 due to the computational burden. The markers argument can be used to select appropriate markers from the file without creating a new file for the selected markers. For instance, if markers is set to c(2,4), HAPLIN will only use the second and fourth markers supplied in the data set. When running HAPLIN, it may be a good idea to start exploring a few markers at a time, using this argument.  }
 	\item{n.vars}{Numeric. The number of variables (columns) in the data file before (to the left) of the genetic data.}
@@ -40,7 +41,7 @@ data.out = "no", verbose = TRUE, printout = TRUE)
 	\item{haplo.file}{Not yet implemented.}
 	\item{resampling}{ Default is FALSE. When FALSE, the individual haplotypes reconstructed by the EM algorithm as assumed known when computing CIs and p-values. If set to "jackknife" a jackknife-based resampling procedure is used when computing confidence intervals and p-values for effect estimates. This takes more time, but corrects the CIs and p-values for the uncertainty contained in unphased data. Note: in this version of Haplin, the resampling is no longer needed since the confidence intervals and p-values are already corrected in the standard computation. }
 	\item{max.EM.iter}{ The maximum number of iterations used by the EM algorithm. This value can be increased if necessary, which sometimes is the case with e.g. case-control data which a substantial amount of missing. However, for triad data with little missing information there is usually no need for many iterations. }
-	\item{data.out}{ Not yet implemented.}
+	\item{data.out}{Character. Accepts values "no", "prelim", "null" or "full", with "no" as default. For values other than default, \code{haplin} returns the data file prepared for analysis rather than the usual \code{haplin} estimation results. The data file contains the haplotypes identified for each triad, and a vector of weights giving the probability distribution of different haplotype configurations within a triad. The probabilities are computed from preliminary haplotype frequency estimates, from the null model or from the full likelihood model. The "prelim" option will be much faster but somewhat less precise than the likelihood models.}
 	\item{verbose}{ Default is T (=TRUE). During the EM algorithm, HAPLIN prints the estimated parameters and deviance for each step. To avoid the output, set this argument to F (=FALSE). }
 	\item{printout}{Logical. If TRUE (default), haplin prints a full summary of the results after finishing the estimation. If FALSE, no such printout is given, but the \code{summary} function can later be applied to a saved result to get the same summary.}
 }
@@ -48,7 +49,8 @@ data.out = "no", verbose = TRUE, printout = TRUE)
   The output can be examined by print, summary and plot.
 }
 \value{
-  An object of class haplin is returned.
+  An object of class \code{haplin} is returned.
+ (The only exception is when \code{data.out} is set different from "no", where \code{haplin} will produce a data file with haplotypes identified.)
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
 Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
@@ -62,7 +64,7 @@ Norwegian Institute of Public Health\cr
 
 \note{Further information is found on the web page.
 }
-\seealso{\code{\link{summary.haplin}}, \code{\link{plot.haplin}}, \code{\link{pedToHaplin}}}
+\seealso{\code{\link{summary.haplin}}, \code{\link{plot.haplin}}, \code{\link{pedToHaplin}}, \code{\link{haplinSlide}}}
 \examples{
 
 \dontrun{
@@ -124,6 +126,16 @@ design = "cc.triad")
 # run can be used:
 haplin("data.dat", use.missing = T, n.vars = 2, ccvar = 2, 
 design = "cc", response = "mult", reference = "ref.cat")
+
+# An example of how to produce a data file with all possible haplotypes
+# identified for each triad, together with their probaility weights:
+result.data <- haplin("C:/work/data.dat", use.missing = T, 
+markers = c(3,4,8), data.out = "prelim")
+# result.data will then contain the data file, with a vector of 
+# probabilities (freq) computed from the preliminary haplotype
+# frequencies.
+
+
 
 }
 

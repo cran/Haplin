@@ -31,7 +31,7 @@ class(.info) <- "info"
 .allowed$model$scoretest <- c("yes", "no", "only")
 .allowed$model$design <-  c("triad", "cc.triad", "cc")
 .allowed$haplos$response <-  c("mult", "free")
-.allowed$control$data.out <-  c("no", "prelim", "null", "full")
+.allowed$control$data.out <-  c("no", "basic", "prelim", "null", "full")
 #
 for(i in seq(along = .info)[-1]){# NO CHECK FOR filename
 	for(j in seq(along = .info[[i]])){
@@ -60,20 +60,16 @@ if(.xchrom & !is.numeric(.info$variables$sex)) stop('Argument "sex" should be a 
 if(.xchrom & .ccdesign) stop('The designs "cc" and "cc.triad" are not (yet) implemented for x-chromosomes')
 if(.xchrom & .info$model$maternal) stop('"xchrom = TRUE" cannot currently be used with "maternal = TRUE"')
 #
-## MAKE SURE DATA'S NOT DUMPED WHEN scoretest = "only"
-if(.info$model$scoretest == "only" & (.info$control$data.out != "no")){
-	warning('If data.out is set, it overrides scoretest = "only"')
-	.info$control$scoretest <- "yes" ## KAN GJERNE SETTES TIL "no", FOR DEN BRUKES JO IKKE LIKEVEL (PR. IDAG)
+## MAKE SURE FULL DATA'S NOT DUMPED WHEN scoretest = "only"
+if(.info$model$scoretest == "only" & (.info$control$data.out == "full")){
+	warning('Since data.out = "full", scoretest argument is changed from "only" to "no"')
+	.info$control$scoretest <- "no" 
 }
 #
 ## CHECK VALUES FOR MARKERS
 if(!is.numeric(.info$filespecs$markers) & !identical(.info$filespecs$markers, "ALL")) stop('"markers" argument must be either "ALL" (default) or an integer value.') 
 #
 ##
-if(.info$model$scoretest == "only"){
-	.info$model$scoretest <- "yes"
-	warning('scoretest = "only" not really implemented, using "yes" instead')
-}
 #
 ## ONLY USE response = "mult" FOR cc (FOR NOW), AND NO MATERNAL EFFECTS
 if((.info$model$design == "cc") & (.info$haplos$response != "mult")){
@@ -86,7 +82,7 @@ if((.info$model$design == "cc") & (.info$model$maternal)) stop('Cannot use mater
 #if((.info$haplos$response != "free") & .info$model$maternal) stop('response != "free" not implemented for maternal effects')
 
 if((.info$haplos$response == "mult") & is.element(.info$haplos$reference, c("reciprocal", "population"))){
-	warning('response = "free" must be used with reference category (numeric or "ref.cat"). Currently changed to reference = "ref.cat"')
+	warning('response = "mult" must be used with reference category (numeric or "ref.cat"). Currently changed to reference = "ref.cat"')
 	.info$haplos$reference <- "ref.cat"
 }
 #

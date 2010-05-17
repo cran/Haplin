@@ -14,7 +14,7 @@ f.sel.haplos <- function(info){
 #
 if(.flag.file){
 ## IF HAPLOTYPE FILE IS SPECIFIED, PICK HAPLOS FROM FILE
-	.haplos.use <- try(read.table(file = info$haplos$haplo.file, header = T))
+	.haplos.use <- try(read.table(file = info$haplos$haplo.file, header = T), silent = T)
 	if(inherits(.haplos.use, "try-error")) stop('Problems reading file specified in "haplo.file" argument')
 	.haplos.use <- .haplos.use[,"haplos"]
 	.tmp.use <- tolower(.haplos.use)

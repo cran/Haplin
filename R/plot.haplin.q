@@ -4,6 +4,7 @@ plot.haplin <- function(x, reference, separate.plots = F, filename, filetype = "
 .n.sel.haplo <- sum(x$selected.haplotypes)
 .maternal <- x$result$maternal
 .info <- x$info
+if(.info$model$scoretest == "only") stop('Sorry, plotting is not very helpful when haplin was run with scoretest = "only"')
 if(missing(use.dd)) use.dd <- 1:.n.sel.haplo
 #
 #

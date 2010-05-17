@@ -113,7 +113,7 @@ for (i in 1:.l){
 
 for (i in seq(along = .d)){
 	.tmp <- .vcov.score.emp.list[[i]]
-	.tmp <- try(solve(.tmp)) # KRYSS FINGRE!
+	.tmp <- try(solve(.tmp), silent = T) # KRYSS FINGRE!
 	if(inherits(.tmp, "try-error")) {.err <- T; next}
 	if(dim(.tmp)[1] == 1) .tmp <- sqrt(.tmp)
 	else .tmp <- mroot(.tmp) # KRYSS FINGRE!
@@ -121,7 +121,9 @@ for (i in seq(along = .d)){
 	.vc <- solve(.vcov.list[[i]])
 	if(dim(.vc)[1] == 1) .vc <- sqrt(.vc)
 	else .vc <- mroot(.vc)
-	.fact <- .tmp %*% t(.vc)
+	.fact <- try(.tmp %*% t(.vc), silent = T) ## NBNB! HER BLIR DET FEILMELDING HVIS .vc IKKE ER AV FULL RANK NAAR MAN BRUKER mroot I LINJEN OVER!
+	## SKJER SJELDENT, MEN SKJEDDE I KJORING AV suest PAA JACOBSSONS "tempres/o.run.hap_slide.3.cc.RData", GEN "COL5A1"
+	if(inherits(.fact, "try-error")) {.err <- T; next}
 	.Glist[[i]] <- .fact
 }
 

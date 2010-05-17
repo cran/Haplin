@@ -1,4 +1,4 @@
-f.data <- function(info){
+f.data <- function(info, quick = F){
 #
 ##
 ## SKAL ERSTATTE FOERSTE DEL AV HAPLIN!
@@ -71,6 +71,12 @@ if(verbose) cat("Done\n")
 	allele
 }
 .info$haplos$alleles <- lapply(.info$haplos$alleles, .f.change.case) # IS THIS A GOOD IDEA?
+#
+## RETURN DATA BEFORE "HEAVY" PREPARATION
+if(quick){
+	cat("Er info helt oppdatert??\n")
+	return(list(data = .data, info = .info))
+}
 #	
 ##
 ## DESIGN-DEPENDENT DATA PREPARATIONS:
@@ -177,6 +183,16 @@ if(design == "cc"){
 ## COMPUTE PRELIMINARY HAPLOTYPE FREQUENCIES USING A SIMPLE EM-VERSION:
 ##
 .prelim.freq <- f.preliminary.freq.new(.data, .info)
+
+if(F){
+	# TESTING AV HELT NY/HURTIGERE ESTIMERING
+	#.test <- f.esti(.data, .info)
+	#tull <<- .test
+
+	#stop("jada!")
+}
+
+
 .data$freq <- .prelim.freq
 .info$haplos$prelim.haplotype.freq <- attr(.prelim.freq, "prelim.haplotype.freq")
 #
