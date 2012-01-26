@@ -1,4 +1,4 @@
-f.jackknife.new <- function(data, maternal, ref.cat, verbose = F, use.EM, max.EM.iter, ...){
+f.jackknife <- function(data, maternal, verbose = F, use.EM, max.EM.iter, info, ...){
 
 ### TIL NY VARIANT ### f.jackknife <- function(data, design.matrix, verbose = F...){
 
@@ -9,6 +9,8 @@ f.jackknife.new <- function(data, maternal, ref.cat, verbose = F, use.EM, max.EM
 ## PREPARE:
 .ind <- unique(data$ind)
 .coef.jack <- vector(length(.ind), mode = "list")
+ref.cat <- info$haplos$ref.cat
+.response <- info$haplos$response
 #
 ## JACKKNIFE LOOP:
 for (i in seq(along = .ind)){
@@ -21,7 +23,7 @@ for (i in seq(along = .ind)){
 
 ### TIL NY VARIANT ###	.coef.jack[[i]] <- f.EM.test(data = .data.tmp, design.matrix = design.matrix, verbose = verbose, ...)$result$coefficients
 	if(use.EM){
-	.coef.jack[[i]] <- f.EM.missing(.data.tmp, maternal = maternal, xchrom = F, max.EM.iter = max.EM.iter, verbose = verbose, ref.cat = ref.cat)$result$coefficients}
+	.coef.jack[[i]] <- f.EM.missing(.data.tmp, maternal = maternal, response = .response, max.EM.iter = max.EM.iter, verbose = verbose, info = info)$result$coefficients}
 	else{
 		stop("Sjekk denne! Her skal det vel vaere .data.agg.tmp?")
 		.coef.jack[[i]] <- f.tri.glm(.data.tmp$freq, maternal = maternal, ref.cat = ref.cat)$result$coefficients}
@@ -66,7 +68,8 @@ if(F){
 			cat("\nJackknife sample no.", i, "of", length(.ind), "total\n")
 	### TIL NY VARIANT ###	.coef.jack[[i]] <- f.EM.test(data = .data.tmp, design.matrix = design.matrix, verbose = verbose, ...)$result$coefficients
 			if(use.EM){
-			.coef.jack[[i]] <- f.EM.missing(.data.tmp, maternal = maternal, max.EM.iter = max.EM.iter, verbose = verbose, ref.cat = ref.cat)$result$coefficients}
+				.coef.jack[[i]] <- f.EM.missing(.data.tmp, maternal = maternal, response = .response, max.EM.iter = max.EM.iter, verbose = verbose, info = info)$result$coefficients
+			}
 			else{.coef.jack[[i]] <- f.tri.glm(.data.tmp$freq, maternal = maternal, ref.cat = ref.cat)$result$coefficients}
 		}# END for i
 	#

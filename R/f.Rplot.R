@@ -1,8 +1,13 @@
-f.Rplot <- function(lwd, ylim, .L, .U, .L.dd, .U.dd, .len = .len, .pos, .est, .est.in, .ddpos, .est.dd, .est.dd.in, use.dd, ...){
+f.Rplot <- function(lwd, ylim, .L, .U, .L.dd, .U.dd, .len = .len, .pos, .est, .est.in, .ddpos, .est.dd, .est.dd.in, use.dd, use.single, ...){
 ##
 ## BASIC PLOTTING OF EFFECT VALUES AND THEIR CONFIDENCE INTERVALS
 ##
 if(missing(use.dd)) use.dd <- seq(along = .est) # IF NOTHING ELSE REQUESTED, USE ALL
+
+
+## LA DENNE INN FOR AA KORRIGERE FEIL I PLOTTING AV haptable. BURDE VAERT SKIKKELIG IMPLEMENTERT
+if(missing(use.single)) use.single <- seq(along = .pos)
+
 
 #
 ## CHECKING AND FIXING DATA POINTS OUTSIDE ylim. THIS REMOVES BOTHERSOME WARNINGS
@@ -31,9 +36,9 @@ abline(h = 1, lwd = lwd)	#
 points(.pos[.est.in], .est[.est.in], pch = "x", font = 2)	#
 points(.ddpos[.est.dd.in], .est.dd[.est.dd.in], pch = "o", font = 2)	#
 # WITH CIs AND LINE-ENDS
-.f.segments.rest(.pos, .L, .pos, .U, y.lim = ylim, lwd = lwd, ...)	#
-.f.segments.rest(.pos - .len, .U, .pos + .len, .U, y.lim = ylim, lwd = lwd, ...)
-.f.segments.rest(.pos - .len, .L, .pos + .len, .L, y.lim = ylim, lwd = lwd, ...)	#
+.f.segments.rest(.pos, .L, .pos, .U, y.lim = ylim, lwd = lwd, use = is.element(seq(along = .pos), use.single), ...)	#
+.f.segments.rest(.pos - .len, .U, .pos + .len, .U, y.lim = ylim, lwd = lwd, use = is.element(seq(along = .pos), use.single), ...)
+.f.segments.rest(.pos - .len, .L, .pos + .len, .L, y.lim = ylim, lwd = lwd, use = is.element(seq(along = .pos), use.single), ...)	#
 #
 .f.segments.rest(.ddpos, .L.dd, .ddpos, .U.dd, y.lim = ylim, lwd = lwd, use = is.element(seq(along = .ddpos), use.dd), ...)	#
 .f.segments.rest(.ddpos - .len, .U.dd, .ddpos + .len, .U.dd, y.lim = ylim, lwd = lwd, use = is.element(seq(along = .ddpos), use.dd), ...)

@@ -15,7 +15,7 @@ if(.info$model$scoretest == "only") stop('Sorry, haptable is not very helpful wh
 #
 ## EXTRACT AND COMPUTE ALLELE-RELATED RESULTS
 .alls <- t(sapply(object$alleles, function(x) c(alleles = paste(names(x), collapse = "/"), counts = paste(x, collapse = "/"))))
-.alls <- data.frame(.alls, HWE.pv = sapply(object$HWE.res, function(x) x$p.value), stringsAsFactors = F)
+.alls <- dframe(.alls, HWE.pv = sapply(object$HWE.res, function(x) x$p.value))
 #
 ## EXTRACT HAPLOTYPES USED
 .selected.haplotypes <- object$selected.haplotypes
@@ -58,37 +58,36 @@ if(.reference.method == "ref.cat"){
 	.ref <- rep(" - ", .nh)
 	.ref[.ref.cat] <- "ref"
 }
-if(.reference.method == "reciprocal")
-	.ref <- rep("resip", .nh)
-if(.reference.method == "population")
-	.ref <- rep("popul", .nh)
+if(.reference.method %in% c("reciprocal", "population"))
+	.ref <- rep(.reference.method, .nh)
 #
 ## REFORMAT TABLE
-.tab <- data.frame(haplofreq = .effs[1:.nh,], reference = .ref, RR = .effs[(.nh+1):(2*.nh),], RRdd = .effs[(2*.nh+1):(3*.nh),])
+.tab <- dframe(haplofreq = .effs[1:.nh,], reference = .ref, RR = .effs[(.nh+1):(2*.nh),], RRdd = .effs[(2*.nh+1):(3*.nh),])
 if(object$result$maternal){
-	.tabm <- data.frame(RRm = .effs[(3*.nh+1):(4*.nh),], RRmdd = .effs[(4*.nh+1):(5*.nh),])
+	.tabm <- dframe(RRm = .effs[(3*.nh+1):(4*.nh),], RRmdd = .effs[(4*.nh+1):(5*.nh),])
 	.tab <- cbind(.tab, .tabm)
 }
 #
 ## JOIN RESULTS INTO DATA FRAME
-.tab <- data.frame(haplos = .selected.haplotypes, pv.overall = rep(object$loglike["p.value.overall"], dim(.tab)[1]), .tab, stringsAsFactors = F)
+.tab <- dframe(haplos = .selected.haplotypes, pv.overall = rep(object$loglike["p.value.overall"], dim(.tab)[1]), .tab)
 .tab$haplofreq.p.value <- NULL
 
 
 .diff <- .nh - dim(.alls)[1]
-if(.diff > 0) .alls <- as.data.frame(lapply(.alls, function(x) c(x, rep(NA, .diff))))
-if(.diff < 0) .tab <- as.data.frame(lapply(.tab, function(x) c(x, rep(NA, -.diff))))
+if(.diff > 0) .alls <- as.dframe(lapply(.alls, function(x) c(x, rep(NA, .diff))))
+if(.diff < 0) .tab <- as.dframe(lapply(.tab, function(x) c(x, rep(NA, -.diff))))
 
 #
 ##
 .ntri.mat <- matrix(.ntri.seq, nrow = dim(.tab)[1], ncol = 4, byrow = T, dimnames = list(NULL, names(.ntri.seq)))
 
-.tab <- data.frame(.ntri.mat, .alls, .tab)
+.tab <- dframe(.ntri.mat, .alls, .tab)
 
 names(.tab)[names(.tab) == "haplofreq.est."] <- "haplofreq"
 names(.tab)[names(.tab) == "After.rem.Mend..inc."] <- "After.rem.Mend.inc."
 
 rownames(.tab) <- NULL
+#class(.tab) <- "haptable"
 return(.tab)
 
 

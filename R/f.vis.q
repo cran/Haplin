@@ -1,11 +1,11 @@
 "f.vis"<-
-function(..., vis = F, fc = F)
+function(..., vis = T, fc = F)
 {
 # BESTE VERSJON?
 	.ex.debug <- exists(".debug")
 	.ex.vis <- !missing(vis)
 	if(.ex.vis) .vis <- vis	# vis OVERSTYRER .debug
-	if(!.ex.vis & .ex.debug) .vis <- .debug	
+	if(!.ex.vis & .ex.debug) .vis <- get(".debug")
 	# .debug SLAAR INN HVIS vis MANGLER
 	if(!.ex.vis & !.ex.debug) .vis <- T	# DEFAULT BEHAVIOR
 #

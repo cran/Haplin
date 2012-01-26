@@ -8,7 +8,7 @@ else .markers <- 1:n.markers
 
 .n.markers <- length(.markers)
 
-if(winlength > .n.markers) warning('"winlength" is larger than the number of available markers. Truncated.')
+if(winlength > .n.markers) warning('"winlength" is larger than the number of available markers.\n It has been truncated to the right length.', call. = F)
 .winlen <- min(.n.markers, winlength) # LENGTH OF SLIDING WINDOW
 .nwin <- .n.markers - .winlen + 1 # NUMBER OF SLIDING WINDOWS OF LENGTH (AT MOST) winlen
 

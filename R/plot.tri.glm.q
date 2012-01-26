@@ -1,8 +1,13 @@
-"plot.tri.glm"<- function(res, reference.method, design, selected.haplotypes, type = 1, ylim = c(0.2, 5), lwd = 2, use.dd, info, ...)
+"plot.tri.glm"<- function(res, reference.method, design, selected.haplotypes, type = 1, ylim = c(0.2, 5), lwd = 2, use.dd, use.single, info, ...)
 {
 # PLOTS THE RESULT OF ESTIMATED ALLELE EFFECTS
 #
-
+#
+## EXTRACT VALUES FOR PLOTTING
+#
+.coef <- summary(res, reference.method = reference.method, conf.int = T, info = info)$effects #
+#
+##
 .mar <- par()$mar
 .space <- 0.5
 #
@@ -16,11 +21,23 @@
 .nall <- res$nall
 .ref.cat <- res$ref.cat #
 .haplos <- names(selected.haplotypes)[selected.haplotypes]
+if(missing(use.single)) use.single <- seq(along = .haplos)
 if(missing(use.dd)) use.dd <- seq(along = .haplos)
 .maternal <- res$maternal
+#
+##
+if(F){
+	#
+	## DENNE KAN ERSTATTE RESTEN AV FUNKSJONEN. VIRKER, MEN DET ER FORTSATT NOEN PROBLEMER MED PARAMETRE, DEFAULTS ETC, F.EKS. ylim SOM BLIR 0.2-5. use.single er heller ikke implementert! (skal fjerne single for gutter i x-chrom, ikke for jenter eller moren!)
+	f.plot.effects(coeff = .coef, ref.cat = .ref.cat, reference.method = reference.method, haplos = names(selected.haplotypes)[selected.haplotypes], maternal = .maternal, type = type, ylim = ylim, use.dd = use.dd, use.single = use.single, verbose = info$control$verbose, ...)
+	#
+	return()
+}
+#
+##
 .xlab <- "Haplotype no."
 if(.print.haplos) .xlab <- "Haplotype"
-if(.print.haplos & (.las == 2)) .xlab <- "" # TURN OF LABEL IF HAPLOTYPE NAMES ARE PERPEND. TO AXIS
+if(.print.haplos & (.las == 2)) .xlab <- "" # TURN OFF LABEL IF HAPLOTYPE NAMES ARE PERPEND. TO AXIS
 .shift <- 0.05
 .len <- 0.02	#
 .top <- T
@@ -65,10 +82,6 @@ if(type == 4){# MOTHER, BOTTOM HALF
 par(mar = .mar)
 #
 #
-## EXTRACT VALUES FOR PLOTTING
-#
-.coef <- summary(res, design = design, reference.method = reference.method, conf.int = T, info = info)$effects #
-#
 #
 ## MARKING REFERENCE AND SETTING UP POSITIONS FOR BARS:
 	.pos <- 1:.nall - .shift #
@@ -94,7 +107,7 @@ else .ref.message <- paste("Ref = ", .ref.cat)
 .f.in <- function(x, yl) {(x >= yl[1]) & (x <= yl[2])}
 #
 .est <- .coef[.names, "est."]
-.est.in <- .f.in(.est, ylim)
+.est.in <- .f.in(.est, ylim) & is.element(seq(along = .est), use.single) # PLOT ONLY EFFECTS WITHIN BOUNDARIES, AND WHICH THE USER REQUESTS
 .est.dd <- .coef[.ddnames, "est."]
 .est.dd.in <- .f.in(.est.dd, ylim) & is.element(seq(along = .est.dd), use.dd) # PLOT ONLY EFFECTS WITHIN BOUNDARIES, AND WHICH THE USER REQUESTS
 #
@@ -128,7 +141,7 @@ if(any(!.est.in) | any(!.est.dd.in)) {
 	if(info$control$verbose) cat('\nNote: Some relative risk estimates fall outside the default plotting range.\nConsider replotting, with argument "ylim" set wider\n')
 }
 
-f.Rplot(lwd = lwd, ylim = ylim, .L = .L, .U = .U, .L.dd = .L.dd, .U.dd = .U.dd, .len = .len, .pos = .pos, .est = .est, .est.in = .est.in, .ddpos = .ddpos, .est.dd = .est.dd, .est.dd.in = .est.dd.in, use.dd = use.dd)
+f.Rplot(lwd = lwd, ylim = ylim, .L = .L, .U = .U, .L.dd = .L.dd, .U.dd = .U.dd, .len = .len, .pos = .pos, .est = .est, .est.in = .est.in, .ddpos = .ddpos, .est.dd = .est.dd, .est.dd.in = .est.dd.in, use.dd = use.dd, use.single = use.single)
 
 	if(missing(ylim)) axis(side = 2, at = .yticks, tick = 0.02, font = 2, lwd = lwd)
 	else

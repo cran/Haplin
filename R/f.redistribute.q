@@ -1,4 +1,4 @@
-f.redistribute <- function(pred, data, design, xchrom, expand = T){
+f.redistribute <- function(pred, data, info, expand = T){
 ##
 ## REDISTRIBUTE OBSERVED FREQUENCIES ACCORDING TO PREDICTED
 ## NOTE: pred IS OF LENGTH MATCHING THE DESIGN MATRIX, NOT data.
@@ -7,10 +7,9 @@ f.redistribute <- function(pred, data, design, xchrom, expand = T){
 ## IF expand = T THE OUTPUT IS OF LENGTH pred. IF NOT, IT 
 ## FITS THE SIZE OF data
 ##
+#
 ## MATCH PREDICTED FREQUENCIES TO data:
-.n.haplo <- sum(attr(data, "selected.haplotypes"))
-
-.pos <- f.pos.match(data = data, design = design, xchrom = xchrom, n.sel.haplos = .n.haplo)
+.pos <- f.pos.match(data = data, info = info)
 .pred <- pred[.pos]
 	
 	

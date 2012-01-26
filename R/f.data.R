@@ -1,14 +1,11 @@
-f.data <- function(info, quick = F){
+f.data <- function(data, quick = FALSE){
+##
+## MISCELLANEOUS DATA PROCESSING
+## 
 #
 ##
-## SKAL ERSTATTE FOERSTE DEL AV HAPLIN!
-#
-#
-#
-
-#
-#
-.info <- info
+.data.read <- data
+.info <- attr(.data.read, "info") ## NEEDS UPDATING IN CASE markers OR allele.sep WERE CHANGED IN f.read.data
 ## SET PARAMETERS, FOR SIMPLICITY
 design <- .info$model$design
 xchrom <- .info$model$xchrom
@@ -16,18 +13,10 @@ use.missing <- .info$model$use.missing
 verbose <- .info$control$verbose
 .n.vars <-  .info$filespecs$n.vars
 #
-## READ DATA
-if(verbose)	cat("\nReading data from file...  ")
-if((design == "triad") | (design == "cc.triad")) {
-	.fam <- "mfc"
-}
-if(design == "cc") .fam <- "c"
-.data.read <- f.read.data(indata = .info$filename, sep = .info$filespecs$sep, allele.sep = .info$filespecs$allele.sep, na.strings = .info$filespecs$na.strings, markers = .info$filespecs$markers, use.missing = use.missing, variables = .n.vars, family = .fam) ##
-if(verbose)	cat("Done\n")
-#
 ## COUNT AND REPORT MISSING
 .rows.with.na <- attr(.data.read, "rows.with.na")
 .rows.dropped <- attr(.data.read, "rows.dropped")
+.info$data$rows.dropped <- .rows.dropped
 #
 .ntri.seq <- rep(NA, 4) # THE NUMBER OF TRIADS AVAILABLE AT EACH STAGE
 .orig.lines.seq <- vector(4, mode = "list") # THE ORIGINAL LINE NUMBERS AVAILABLE AT EACH STAGE
@@ -59,6 +48,19 @@ if(.rows.with.na == 0){
 if(verbose) cat("\nPreparing data for analysis...  ")
 .data <- f.prep.data(.data.read, info = .info)	
 if(verbose) cat("Done\n")
+
+
+
+#
+## DETTE ER EN AD-HOC REPARASJON AV KODINGEN AV KJONNSVARIABEL
+if(.info$model$xchrom && !is.null(.info$variables$sel.sex) && (.info$variables$sel.sex == 2)){
+	if(any(.data[, .info$variables$sex] != 1)) stop()
+		.data[, .info$variables$sex] <- 2
+}
+
+
+
+
 #
 ## EXTRACT ALLELE INFORMATION:
 .info$haplos$alleles <- attr(.data, "alleles")
@@ -74,7 +76,6 @@ if(verbose) cat("Done\n")
 #
 ## RETURN DATA BEFORE "HEAVY" PREPARATION
 if(quick){
-	cat("Er info helt oppdatert??\n")
 	return(list(data = .data, info = .info))
 }
 #	
@@ -100,12 +101,12 @@ if(!xchrom){
 #
 ##
 if(design == "triad" | design == "cc.triad"){
-#
-## REPORT MENDELIAN INCONSISTENCIES:
+	#
+	## REPORT MENDELIAN INCONSISTENCIES:
 	.rows.with.Mendelian.inconsistency <- attr(.data.gen, "rows.with.Mendelian.inconsistency") # LINE NUMBERS REFER TO DATA AFTER POSSIBLE REMOVAL OF MISSING 
 	#
 	if(length(.rows.with.Mendelian.inconsistency) == 0){
-		###.ind.Mend <- numeric(0) # WILL REFER TO LINE NUMBERS (WITH POSS. MEND. INCONS.) IN ORIGINAL FILE
+		.ind.Mend <- numeric()
 		.ntri.seq[3] <- .ntri.seq[2]
 		.orig.lines.seq[[3]] <- .orig.lines.seq[[2]]
 		if(!use.missing & .rows.with.na > 0)
@@ -113,26 +114,17 @@ if(design == "triad" | design == "cc.triad"){
 		else
 			if(verbose) cat("No lines contained Mendelian inconsistencies\n")
 	}else{
-
-
-#		if(use.missing | .rows.with.na == 0) .ind.Mend <- .rows.with.Mendelian.inconsistency
-#		else{
-#			###.ind.Mend <- seq(length = dim(.data.read)[1] + .rows.with.na)
-#			###.ind.Mend <- .ind.Mend[-.rows.dropped][.rows.with.Mendelian.inconsistency]
-#			.ind.Mend <- .orig.lines.seq[[2]][.rows.with.Mendelian.inconsistency]
-#		}
-		.ind.Mend <- .orig.lines.seq[[2]][.rows.with.Mendelian.inconsistency]
+		.ind.Mend <- .orig.lines.seq[[2]][.rows.with.Mendelian.inconsistency] ## WILL REFER TO LINE NUMBERS (WITH POSS. MEND. INCONS.) IN ORIGINAL FILE
 		if(verbose) cat("The following", length(.ind.Mend), "data lines were dropped due to Mendelian inconsistencies:\n", .ind.Mend, "\n")	
-		###.ntri.seq[3] <- .ntri.seq[2] - length(.ind.Mend)
 		.orig.lines.seq[[3]] <- .orig.lines.seq[[2]][-.rows.with.Mendelian.inconsistency]
 		.ntri.seq[3] <- length(.orig.lines.seq[[3]])
 	}
 }
 if(design == "cc"){
+	.ind.Mend <- numeric()
 	.ntri.seq[3] <- .ntri.seq[2] # CC CANNOT DETECT MEND. INCONS...
 	.orig.lines.seq[[3]] <- .orig.lines.seq[[2]]
 }
-#
 #
 ##
 ## PRELIMINARY DATA FIXUP:
@@ -183,16 +175,6 @@ if(design == "cc"){
 ## COMPUTE PRELIMINARY HAPLOTYPE FREQUENCIES USING A SIMPLE EM-VERSION:
 ##
 .prelim.freq <- f.preliminary.freq.new(.data, .info)
-
-if(F){
-	# TESTING AV HELT NY/HURTIGERE ESTIMERING
-	#.test <- f.esti(.data, .info)
-	#tull <<- .test
-
-	#stop("jada!")
-}
-
-
 .data$freq <- .prelim.freq
 .info$haplos$prelim.haplotype.freq <- attr(.prelim.freq, "prelim.haplotype.freq")
 #
@@ -236,9 +218,32 @@ if(design == "cc" | design == "cc.triad"){
 	.data$cc <- .cc
 }
 #
+## ADD ON COVARIATE INFORMATION IF REQUESTED
+if(!is.null(.info$variables$covar)){
+	.covar <- .info$variables$covar ## COLUMN NUMBER
+	.tmpind <- match(.data$orig.lines, .orig.lines.seq[[2]])## WARNING: .data.vars SHOULD STILL HAVE THE SAME ORDERING AS .data.read, AND .orig.lines.seq[[2]] SHOULD REFER TO THIS ORDERING!
+	.co <- .data.vars[.tmpind, .covar] ## INTEGER VALUES FROM RECODED DATA FILE
+	if(any(is.na(.co))) stop(paste(sum(is.na(.co)), " missing values found in covariate! Must be removed from file before analysis.\n", sep = ""))
+	## COVAR TABLE
+	.covar.tab <- attr(.data.vars, "variables")[[.covar]]
+	if(length(.covar.tab) == 1) stop(paste('Covariate variable "covar" has only a single value ', paste(.codes, collapse = ", "), '. It should have two or more different values!', sep = ""))
+	## (A PROBABLY UNNECESSARY) QUICK CHECK:
+	.tmpco <- sort(unique(.co))
+	if(any(.tmpco != seq(along = .tmpco))) stop('Something\'s wrong with the "covar" variable!') # SHOULDN'T BE NECESS.
+	#
+	if(verbose){### THIS SHOULD RATHER BE PART OF STANDARD OUTPUT...
+		cat("\nDistribution of the covariate variable:", sep = "")
+		print(attr(.data.vars, "variables")[[.covar]])
+	}
+	.data$covar <- .co
+	#
+	## ADD COVARIATE INFORMATION TO .info
+	.info$variables$covar.codes <- .covar.tab
+}
+#
 ## ADD INFORMATION TO THE .info OBJECT
-.info$data$rows.dropped <- .rows.dropped
 .info$data$ntri.seq <- .ntri.seq
+.info$data$lines.Mend.inc <- .ind.Mend ## LINE NUMBERS (IN ORIGINAL FILE) WITH MEND. INCONS.
 .info$check$HWE.res <- .HWE.res
 .info$haplos$reference.method <- reference.method
 .info$haplos$ref.cat <- ref.cat

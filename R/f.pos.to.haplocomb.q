@@ -15,15 +15,15 @@ f.pos.to.haplocomb <- function(pos, A, comb, fam = "mf"){
 	.nhaplo <- prod(A)
 #
 	if(fam == "mf"){
-		.rep <- 4
 		.navn0 <- c("m1", "m2", "f1", "f2")
-	
+	}
+	if(fam == "mfx"){
+		.navn0 <- c("m1", "m2", "f2")
 	}
 	if(fam == "c"){
-		.rep <- 2
-		.navn0 <- c("c1", "c2")
-	
+		.navn0 <- c("c1", "c2")	
 	}
+	.rep <- length(.navn0)
 
 	if(T){
 		if(!missing(pos)){
@@ -39,7 +39,7 @@ f.pos.to.haplocomb <- function(pos, A, comb, fam = "mf"){
 		# FROM COMBINATION TO POSITION, CONVERTS SINGLE NUMERIC TO MATRIX IF NECESS.
 			if(!is.matrix(comb)){
 				if(is.numeric(comb) && (length(comb) == .rep*.nmarkers)){
-					f.vis(comb <- matrix(comb, ncol = .rep*.nmarkers))
+					comb <- matrix(comb, ncol = .rep*.nmarkers)
 				}else stop("Input is not a numeric matrix!")
 			}
 			.pos <- f.pos.in.grid(comb = comb, A = rep(A, .rep))

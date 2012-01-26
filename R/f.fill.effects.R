@@ -6,7 +6,6 @@ f.fill.effects <- function(resmat, info){
 ## PREPARE
 .n.sel.haplos <- sum(info$haplos$selected.haplotypes)
 .maternal <- info$model$maternal
-.resp <- info$haplos$response
 #
 ## BUILDING BLOCKS FOR EFFECT NAMES
 .mf <- paste("mf", 1:.n.sel.haplos, sep = "")
@@ -15,24 +14,12 @@ f.fill.effects <- function(resmat, info){
 .m <- paste("m", 1:.n.sel.haplos, sep = "")
 .mdd <- paste("mdd", 1:.n.sel.haplos, sep = "")
 #
-## SET UP RELEVANT EFFECT NAMES VECTOR:
+## SET UP RELEVANT EFFECT NAMES VECTOR (NOTE THAT THIS IS SET UP INDEPENDENT OF RESPONSE MODEL):
 if(!.maternal){
-	if(.resp == "free"){
-		.navn <- c(.mf, .c, .cdd)
-	}
-	if(.resp == "mult"){
-#		.navn <- c(.mf, .c)
-		.navn <- c(.mf, .c, .cdd)
-	}
+	.navn <- c(.mf, .c, .cdd)
 }
 if(.maternal){
-	if(.resp == "free"){
-		.navn <- c(.mf, .c, .cdd, .m, .mdd)
-	}
-	if(.resp == "mult"){
-#		.navn <- c(.mf, .c, .m)
-		.navn <- c(.mf, .c, .cdd, .m, .mdd)
-	}
+	.navn <- c(.mf, .c, .cdd, .m, .mdd)
 }
 #
 ## CHECK FOR INCORRECT NAMES
@@ -46,11 +33,7 @@ names(.ut) <- .resnavn
 names(.ut) <- .navn
 .ut[!is.element(.navn, .resnavn)] <- 0
 .ut <- do.call("cbind", .ut)
-
-
-f.vis(head(resmat), vis = F)
-f.vis(head(.ut), vis = F)
-
+#
+##
 return(.ut)
-
 }

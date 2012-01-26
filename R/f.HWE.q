@@ -6,7 +6,7 @@ f.HWE <- function(data, quiet.warning = F){
 ##
 ## NOTE: NECESSARY TO MAKE SURE THAT ALL POSSIBLE GENOTYPES ARE COUNTED
 #
-if(!is.numeric(data) | dim(data)[2] != 2) stop("Wrong data type for HWE testing!")
+if(!is.numeric(data) | dim(data)[2] != 2) stop("Wrong data type for HWE testing!", call. = F)
 
 ## COUNT AND REMOVE MISSING
 .d1 <- dim(data)[1]
@@ -17,7 +17,7 @@ if(!is.numeric(data) | dim(data)[2] != 2) stop("Wrong data type for HWE testing!
 ## TOTAL ALLELE COUNT
 .a <- c(.data[,1], .data[,2])
 .aux <- sort(unique(.a))
-if(any(.aux != seq(along = .aux))) stop("Wrong data type for HWE testing!")
+if(any(.aux != seq(along = .aux))) stop("Wrong data type for HWE testing!", call. = F)
 .frek <- tabulate(.a)
 .nall <- length(.frek)
 #

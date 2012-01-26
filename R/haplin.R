@@ -1,9 +1,9 @@
-haplin <- function(filename, 
+haplin <- function(filename, data, pedIndex,
 markers = "ALL", n.vars = 0, sep = " ", allele.sep = ";", na.strings = "NA",
 design = "triad", use.missing = FALSE, xchrom = FALSE, maternal = FALSE, test.maternal = FALSE, scoretest = "no",
-ccvar = NULL, covar = NULL, sex = NULL,
+ccvar = NULL, covar = NULL, sex = NULL, comb.sex = "double",
 reference = "reciprocal", response = "free", threshold = 0.01, max.haplos = NULL, haplo.file = NULL,
-resampling = FALSE, max.EM.iter = 50, data.out = "no", verbose = TRUE, printout = TRUE
+resampling = "no", max.EM.iter = 50, data.out = "no", verbose = TRUE, printout = TRUE
 )
 {
 ##
@@ -14,11 +14,8 @@ resampling = FALSE, max.EM.iter = 50, data.out = "no", verbose = TRUE, printout 
 # PAABEGYNT 13/1-04 KL. 22.46
 #
 #
-.mcall <- lapply(match.call()[-1], function(x) eval.parent(x, 3))
-.defaults <- formals()
-.info <- f.check.pars(.mcall, .defaults)
-
-#
+## EXTRACT AND CHECK ARGUMENTS
+.info <- f.catch(match.call(), formals())
 #
 ## SET PARAMETERS, FOR SIMPLICITY
 design <- .info$model$design
@@ -33,30 +30,54 @@ verbose <- .info$control$verbose
 resampling <- .info$control$resampling
 data.out <- .info$control$data.out
 printout <- .info$control$printout
-
-#
-## MAKE SURE CONTRASTS ARE RIGHT (ALTHOUGH NOT STRICTLY NECESSARY):
-.old.options <- options()
-on.exit(options(.old.options))
-options(contrasts = c("contr.treatment", "contr.poly"))	#
-options(stringsAsFactors = F)
 #
 ## INSTALL MASS (FOR THE mvrnorm FUNCTION):
-require(MASS)
+#require(MASS)
+#
+## START
+if(verbose)cat("\n## HAPLIN, VERSION 4.0 ##\n")
+#
+##
+if(missing(data)){
+	if(!.info$filespecs$database){
+		## READ DATA FROM FILE (NOTE THAT info IS UPDATED AND RETURNED AS AN ATTR. TO .data.read)
+		if(verbose)	cat("\nReading data from file...  ")
+		.data.read <- f.read.data(.info) ##
+		gc()
+		if(verbose)	cat("Done\n")
+	}else{
+		## READ DATA FROM DATABASE
+		## LITT AD HOC, DETTE HER...
+		.data.read <- as.matrix(loadData(filename, markers = .info$filespecs$markers))
+		###.info$filespecs$markers <- seq(along = .info$filespecs$markers)
+		.data.read <- f.data.ready(.data.read, .info, sel.markers = F)
+	}
+} else{
+	## PREPARE DATA DIRECTLY FROM R OBJECT
+	if(class(data) == "gwaa.data"){
+		## CONVERT FROM GenABEL-OBJECT TO HAPLIN DATA MATRIX
+		if(identical(.info$filespecs$markers, "ALL")) .info$filespecs$markers <- seq(length.out = nsnps(data))
+		if(missing(pedIndex)){## GI FEILMELDING DERSOM markers ER UTENFOR RANGE?
+			.data.read <- gwaaToHaplin(data = data[, .info$filespecs$markers], design = design)
+		}else{
+			.data.read <- gwaaToHaplin(data = data[, .info$filespecs$markers], pedIndex = pedIndex, design = design)
+		}
+		.data.read <- f.data.ready(.data.read, .info, sel.markers = F)
+	}else{
+		.data.read <- f.data.ready(data, .info, sel.markers = T)
+	}
+}
 #
 ## DATA OUT, IF REQUESTED
 if(data.out == "basic"){
-	.tmp <- f.data(info = .info, quick = T)
+	.tmp <- f.data(data = .data.read, quick = T)
 	return(.tmp)
 	#.data <- .tmp$data
 	#.info <- .tmp$info
 }
 #
-## START
-if(verbose)cat("\n## HAPLIN, VERSION 3.5 ##\n")
-#
 ## READ AND PREPARE DATA, RETURN HERE
-.tmp <- f.data(info = .info)
+.tmp <- f.data(data = .data.read)
 .data <- .tmp$data
 .info <- .tmp$info
 #
@@ -110,7 +131,7 @@ if(.test.response){
 ## ESTIMATE ALL MODELS IN .testseq
 #
 ## "DEFAULT" ARGUMENTS TO EM
-.EM.args <- list(data = .data, maternal = maternal, ref.cat = ref.cat, design = design, xchrom = xchrom, response = response, max.EM.iter = max.EM.iter, x = T, verbose = verbose, suppressEmWarnings = F)
+.EM.args <- list(data = .data, maternal = maternal, response = response, max.EM.iter = max.EM.iter, x = T, verbose = verbose, suppressEmWarnings = F, info = .info)
 #
 .res.list <- vector(length(.testseq), mode = "list")
 for (i in seq(along = .res.list)){
@@ -141,11 +162,12 @@ if(scoretest == "only"){
 #
 #
 if(resampling == "jackknife"){
-	if(design != "triad") stop("Jackknifing has not been tested with case-control data....")
-	if(.info$model$scoretest == "only") stop('Jackknifing has not been tested when scoretest == "only"')
-	if(xchrom) stop("Jackknifing not tested with xchrom data!")
+	if(design != "triad") stop("Jackknifing has not been tested with case-control data....", call. = F)
+	if(.info$model$scoretest == "only") stop('Jackknifing has not been tested when scoretest == "only"', call. = F)
+	if(xchrom) stop("Jackknifing not tested with xchrom data!", call. = F)
+	if(!is.null(.info$variables$covar))stop("Jackknifing not tested with covariates!", call. = F)
 	if(verbose) cat("\nStarting jackknife\n")
-	.res.resamp <- f.jackknife.new(data = .data, maternal = maternal, ref.cat = ref.cat, verbose = F, use.EM = T, max.EM.iter = max.EM.iter)
+	.res.resamp <- f.jackknife(data = .data, maternal = maternal, ref.cat = ref.cat, verbose = F, use.EM = T, max.EM.iter = max.EM.iter, info = .info)
 	attr(.res, "cov.resamp") <- .res.resamp$cov
 }
 #
@@ -207,25 +229,8 @@ if(T){
 # MERK: NÅ ER DET INGEN OPSJON FOR test.maternal = T HVIS scoretest = F!
 
 
-		###.restemp <- .res
-		####
-		##### SCORE AND VAR.COVAR COMPUTED UNDER NULL HYPO
-		###.tmp.0 <- f.var.covar(pred = .res.0$pred, X = .restemp$result$x, data = .data, info = .info)
-		###.score.0 <- .tmp.0[["score"]]
-		###.var.cov.0 <- .tmp.0[["var.covar"]]
-
-###}else{
-###    .score.ut <- NULL
-###    .var.cov.0 <- NULL
-###}
-
-###cat("HEKK!\n")
-###        .var.cov.0 <- .var.cov.mother.0
-###        .score.ut <- .score.mother.ut
-
 
 .tmp.0 <- .o.var.covar.list[[.l]]
-.score.0 <- .score.list[[.l]] ## BRUKES IKKE!!
 .var.cov.0 <- .var.cov.list[[.l]] # NOTE THAT THIS IS COMPUTED FOR THE FULL MODEL, BUT ASSUMING H0. IT IS USED, FOR INSTANCE, IN f.suest
 
 
@@ -233,7 +238,9 @@ if(T){
 
 #
 ## COMPUTE "EXACT" VAR-COVAR, TAKING EM INTO ACCOUNT
-.var.cov <- f.var.covar(pred = .res$pred, X = .res$result$x, data = .data, info = .info)[["var.covar"]]
+.temp1 <- f.var.covar(pred = .res$pred, X = .res$result$x, data = .data, info = .info)
+.var.cov <- .temp1$var.covar
+# .var.cov <- f.var.covar(pred = .res$pred, X = .res$result$x, data = .data, info = .info)[["var.covar"]]
 attr(.res, "cov.correct") <- .var.cov
 
 
@@ -243,25 +250,22 @@ attr(.res, "cov.correct") <- .var.cov
 if(verbose) cat("\nEstimation finished, preparing output...  ")
 #
 #
-.out <- list(result = .res, design = design, alleles = .info$haplos$alleles, selected.haplotypes = .info$haplos$selected.haplotypes, resampling = resampling, orig.call = sys.call(), date = date(), reference.method = .info$haplos$reference.method, rows.dropped = .info$data$rows.dropped, HWE.res = .info$check$HWE.res, ntri.seq = .ntri.seq, loglike = .lratio.ut, score = .score.ut, var.cov = .var.cov.ut, info = .info, temp = list(o.var.covar.list = .o.var.covar.list, npars.0 = .npars.0))
+.out <- list(result = .res, design = design, alleles = .info$haplos$alleles, selected.haplotypes = .info$haplos$selected.haplotypes, resampling = resampling, orig.call = sys.call(), date = date(), reference.method = .info$haplos$reference.method, rows.dropped = .info$data$rows.dropped, HWE.res = .info$check$HWE.res, ntri.seq = .ntri.seq, loglike = .lratio.ut, score = .score.ut, var.cov = .var.cov.ut, info = .info, temp = list(o.var.covar.list = .o.var.covar.list, npars.0 = .npars.0), temp1 = .data)
 class(.out) <- "haplin"	#
 if(verbose) cat("Done\n")
 #
 if(printout){
 ## PRINTOUT AND PLOTTING, FOR THE CONVENIENCE OF THE USER:
-	plot(.out, reference = .info$haplos$reference.method)#
+	if(scoretest != "only"){
+		plot(.out, reference = .info$haplos$reference.method)#
+	}
 #
 	if(verbose) cat("\n#################################\n")
 	#
 	print(summary(.out, reference = .info$haplos$reference.method)) #
 }
 
-if(F | length(.res.list) > 2){
-	f.vis(.lratio.list, vis = T)
-	tull <- lapply(.scoretest.list, function(x)unlist(x[-1]))
-	f.vis(tull, vis = T)
-
-}
-
-	invisible(.out)
+#
+##
+invisible(.out)
 }
