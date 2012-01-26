@@ -7,7 +7,7 @@ f.prep.dataout <- function(info, data, res){
 #
 ## IF data.out IS NOT "prelim", FREQUENCIES SHOULD BE EXTRACTED FROM ESTIMATED OBJECT
 if(.data.out %in% c("null", "full")){
-	.pred.redist <- f.redistribute(pred = res$pred, data = .data, design = info$model$design, xchrom = info$model$xchrom, expand = F)
+	.pred.redist <- f.redistribute(pred = res$pred, data = .data, info = info, expand = F)
 	.data$freq <- .pred.redist # REPLACE THE OLD PRELIMINARY FREQ WITH PREDICTED UNDER FULL MODEL
 }
 #
@@ -25,6 +25,12 @@ if(info$control$verbose)	{
 if(info$model$design %in% c("cc", "cc.triad")){
 	.data$cc[.data$cc == 1] <- "control"
 	.data$cc[.data$cc == 2] <- "case"
+}
+#
+## GIVE EXPLICIT CODING FOR sex VARIABLE, IF RELEVANT
+if(info$model$xchrom){
+	.data$sex[.data$sex == 1] <- "boy"
+	.data$sex[.data$sex == 2] <- "girl"
 }
 #
 ## REMOVE UNNECESSARY INFORMATION

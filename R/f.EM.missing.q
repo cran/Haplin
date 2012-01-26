@@ -1,28 +1,8 @@
-"f.EM.missing" <- function(data, maternal, ref.cat, design = "triad", xchrom, response = "free", max.EM.iter, x = F, verbose = T, suppressEmWarnings = F)
+"f.EM.missing" <- function(data, maternal, response = "free", max.EM.iter, x = F, verbose = T, suppressEmWarnings = F, info)
 {
 ## PERFORMS THE ESSENTIALS OF THE EM-ALGORITHM, INCLUDING HANDLING AMBIGUOUS HAPLOTYPES
 ## AND MISSING GENOTYPE DATA
 #
-#
-#### PREPARE: ############################
-.n.haplo <- sum(attr(data, "selected.haplotypes")) # BURDE HENTES FRA info?
-#
-if((design == "triad") & !xchrom){
-	.l <- .n.haplo^4 # ALL POSSIBLE GENOTYPES FOR TRIAD
-}
-if((design == "triad") & xchrom){
-	.l <- 2 * .n.haplo^3 # ALL POSSIBLE GENOTYPES FOR TRIAD, BOTH MALES AND FEMALES
-}
-if(design == "cc"){
-	if(xchrom) stop("Not implemented!")
-	.l <- 2 * .n.haplo^2 # ALL POSSIBLE GENOTYPES FOR BOTH CASES AND CONTROLS
-}
-if(design == "cc.triad"){
-	if(xchrom) stop("Not implemented!")
-	.l <- 2 * .n.haplo^4 # ALL POSSIBLE GENOTYPES FOR TRIAD, BOTH CASES AND CONTROLS
-}
-#
-.tmpfreq <- rep(1, .l)
 #
 ## SAKER SOM HAR MED AGGREGERTE DATA AA GJORE
 ###	.tmpfreq <- rep(1, length(.agg.freq))
@@ -36,16 +16,16 @@ if(design == "cc.triad"){
 #
 #
 #### INITIALIZE EM LOOP: ##################
+.tmpfreq <- -1 ## SIGNALS INITIALIZATION
 .deviance <- numeric(max.EM.iter)	#
 i <- 1	#
 .EM.conv <- F
 #### EM LOOP: ###########################
 repeat{
 	# M-STEP:
-	f.vis(sum(.tmpfreq), vis = F)
 	#
 	## ACTUAL ESTIMATION
-	.res <- f.tri.glm(.tmpfreq, maternal = maternal, ref.cat = ref.cat, response = response, design = design, xchrom = xchrom)	#
+	.res <- f.tri.glm(.tmpfreq, maternal = maternal, response = response, info = info)	#
 	#
 	## PARAMETERS NEEDED TO CHECK CONVERGENCE
 	.deviance[[i]] <- .res$result$deviance	# THIS IS TWICE THE MINUS LOG-LIKELIHOOD OF THE GLM
@@ -89,7 +69,7 @@ repeat{
 	i <- i + 1
 	.coef.old <- .coef.new
 	.pred <- .res$pred	#
-	.tmpfreq <- f.redistribute(pred = .pred, data = data, design = design, xchrom = xchrom)
+	.tmpfreq <- f.redistribute(pred = .pred, data = data, info = info)
 	#
 	## CHECK CONSISTENCY OF NEW VALUES:
 		if(any(is.na(.pred))) {
@@ -104,7 +84,7 @@ next
 #
 if(x){
 	## ADD DESIGN MATRIX IN LAST STEP, IF REQUESTED:
-	.res <- f.tri.glm(.tmpfreq, maternal = maternal, ref.cat = ref.cat, response = response, design = design, xchrom = xchrom, x = x)#
+	.res <- f.tri.glm(.tmpfreq, maternal = maternal, response = response, x = x, info = info)#
 } # WARNING: REQUIRES .tmpfreq TO BE UNCHANGED AFTER LAST COMPUTATION OF .res!
 #
 attr(.res, "iter.used") <- i

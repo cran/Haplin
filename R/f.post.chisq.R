@@ -14,3 +14,4 @@ f.post.chisq <- function(coeff, covar, contrast.mat){
 return(.ut)
 
 }
+

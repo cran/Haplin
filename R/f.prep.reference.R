@@ -30,7 +30,7 @@ stop("Invalid reference")
 #
 ## CHECK THAT ONLY REFCAT IS USED WHEN ONLY TWO HAPLOTYPES/ALLELES	
 if(.n.sel.haplos == 2 & .reference.method != "ref.cat"){
-	cat("\nNOTE: ONLY SINGLE REFERENCE CATEGORY METHOD ALLOWED FOR TWO HAPLOTYPES/ALLELES!\n (reference has been set to", .ref.cat, ")\n")
+	if(info$control$verbose) cat("\nNOTE: ONLY SINGLE REFERENCE CATEGORY METHOD ALLOWED FOR TWO HAPLOTYPES/ALLELES!\n (reference has been set to", .ref.cat, ")\n")
 	.reference.method <- "ref.cat"
 }
 #

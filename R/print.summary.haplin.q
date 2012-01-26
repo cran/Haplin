@@ -12,7 +12,12 @@ print.summary.haplin <- function(x, digits = NULL, ...){
 .info <- x$info
 .alleles <- x$alleles
 .ntri.seq <- x$ntri.seq
-#	
+#
+cat("----Arguments supplied to haplin in this run:----\n")
+cat("\n")
+print(.info, args.only = T)
+cat("\n")
+#
 cat("----Data summary:----\n")
 #
 ## ACCOUNTING FOR LOST DATA

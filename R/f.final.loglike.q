@@ -1,4 +1,4 @@
-f.final.loglike <- function(data, pred, info){
+f.final.loglike <- function(data, pred, info, type = "EM"){
 ##
 ## COMPUTES THE MAXIMUM LOG-LIKELIHOOD (UP TO A CONSTANT) FOR THE FINAL RESULT
 ## NOTE: TAKES INTO ACCOUNT MISSING INFORMATION, I.E. IS not THE FULL
@@ -10,66 +10,42 @@ f.final.loglike <- function(data, pred, info){
 ## MAXIMIZED FULL LIKELIHOOD, FOR ALL HAPLOTYPE COMBINATIONS IN STANDARD
 ## ORDERING
 ##
-##
+## type = "EM" IS THE ONE TO USE. type = "full" IS (UP TO A CONSTANT) THE 
+## SAME AS THE ONE OBTAINED FROM -res$result$deviance/2, I.E. THE GLM 
+## LOGLIKE. 
+## SO THAT ONE GETS THE SAME RESULT FROM 
+## -res.0$result$deviance + res$result$deviance
+## AS FROM
+## 2*(.loglike.0 - .loglike)
+## WHEN
+## .loglike.0 <- f.final.loglike(data = data, pred = res.0$pred, info = info, type = "full")
+## .loglike <- f.final.loglike(data = data, pred = res$pred, info = info, type = "full")
 #
-##
-## PREPARE:
-.n.sel.haplos <- sum(info$haplos$selected.haplotypes)
-.design <- info$model$design
-.xchrom <- info$model$xchrom
-#
-##
 ## STANDARDIZE TO PROBABILITIES, AS IN A MULTINOMIAL:
-.prob <- pred/sum(pred)
+.prob <- pred/sum(pred) ## (NOT REALLY NEEDED SINCE ONLY A CONSTANT?)
 #
 ##
 ## MATCH PREDICTED PROBABILITIES TO ORIGINAL DATA:
-
-if(F){# ERSTATTET AV FUNKSJONEN f.pos.match
-	if((.design == "triad") & !.xchrom){
-		.pos <- f.pos.in.grid(A = rep(.n.sel.haplos, 4), comb = as.matrix(data[,c("m1", "m2", "f1", "f2")]))
-	}
-	if((.design == "triad") & .xchrom){
-		.pos <- f.pos.in.grid(A = c(rep(.n.sel.haplos, 3), 2), comb = as.matrix(data[,c("m1", "m2", "f2", "sex")]))
-	}
-	if(.design == "cc"){
-		if(.xchrom)stop("Not implemented")
-		.pos <- f.pos.in.grid(A = c(rep(.n.sel.haplos, 2), 2), comb = as.matrix(data[,c("c1", "c2", "cc")]))
-	}
-	if(.design == "cc.triad"){
-		if(.xchrom)stop("Not implemented")
-		.pos <- f.pos.in.grid(A = c(rep(.n.sel.haplos, 4), 2), comb = as.matrix(data[,c("m1", "m2", "f1", "f2", "cc")]))
-	}
-	.pos.test <- f.pos.match(data = data, design = .design, xchrom = .xchrom, n.sel.haplos = .n.sel.haplos)
-	if(!all.equal(.pos, .pos.test)) stop()
-}
-.pos <- f.pos.match(data = data, design = .design, xchrom = .xchrom, n.sel.haplos = .n.sel.haplos)
+.pos <- f.pos.match(data = data, info = info)
 .prob <- .prob[.pos]
-
-
-if(T){
-
-# TESTER LITT HER... DETTE BURDE SVARE TIL DEN FULLE?
-
+#
+##
+if(type == "full"){
+	## CORRESPONDS TO THE FULL, UNCORRECTED GLM LOGLIKE, UP TO A CONSTANT
 	.probsum <- f.groupsum(.prob, data$ind)
 	.probnorm <- .prob/.probsum
-
-	.test.loglike <- sum(.probnorm * log(.prob))
-
+	.loglike <- sum(.probnorm * log(.prob))
 }
-
-
-#
-##
-## SUM PREDICTED PROBABILITIES OVER AMBIGUITIES FOR EACH TRIAD:
+if(type == "EM"){
+	## THIS IS THE ONE TO USE, CORRECTS FOR EM UNCERTAINTY
+	#
+	## SUM PREDICTED PROBABILITIES OVER AMBIGUITIES FOR EACH TRIAD:
 	.prob <- tapply(.prob, data$ind, sum)
-#
-##
-## COMPUTE LOG-LIKELIHOOD:
+	#
+	## COMPUTE LOG-LIKELIHOOD:
 	.loglike <- sum(log(.prob)) # NOTE: FREQUENCIES ARE 1
+}
 #	
-##
 ## FINISH:
-return(c(loglike = .loglike, test.loglike = .test.loglike))
-
+return(.loglike)
 }

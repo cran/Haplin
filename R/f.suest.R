@@ -3,8 +3,6 @@ f.suest <- function(reslist, main = "", ad.hoc = 0, debug = T, diag.plot = T){
 ## reslist IS A LIST OF RESULTS FROM haplin, RUN ON THE SAME DATA FILE
 ## (CURRENTLY USES ONLY OVERLAPPING LINES FROM EACH ESTIMATION)
 ##
-library(MASS)
-library(mgcv) # FOR mroot
 
 
 .l <- length(reslist)
@@ -19,7 +17,7 @@ if(ad.hoc == 0) .npars <- sapply(reslist, function(x) sum(x$info$haplos$selected
 if(ad.hoc > 0) .npars <- sapply(reslist, function(x) x$temp$npars.0[ad.hoc])
 if(debug) cat("ad hoc!\n")
 if(reslist[[1]]$info$model$design %in% c("cc", "cc.triad")) .npars <- .npars + 1
-if(reslist[[1]]$info$model$xchrom) .npars <- .npars + 1
+if(reslist[[1]]$info$model$xchrom & is.null(reslist[[1]]$info$variables$sel.sex)) .npars <- .npars + 1
 if(debug) cat("...dettte ogsaa!\n")
 #
 ## JOIN SCORES INTO A SINGLE MATRIX

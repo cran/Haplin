@@ -7,6 +7,7 @@ function(object.list, test = c("single", "double"))
 # test CAN INCLUDE ANY OF "haplo.freq", "single", "double"
 #### PREPARE: ###################
 ###require(MASS)
+.vis <- F
 
 ### BURDE SJEKKE AT object.list VIRKELIG ER EN LISTE AV HAPLIN-OBJ.
 ### I UTSKRIFTER, BRUK VIRKELIGE NAVN PAA STRATA, TATT FRA object.list!
@@ -42,7 +43,7 @@ if(any(!.sjekk)) stop()
 .cdd <- grep("cdd[[:digit:]]", .names, value = T)
 ## SOME AD HOC TESTING
 if((length(.mf) == 0) | (length(.c) == 0)) stop("Something's wrong with the coefficient names")
-if((length(.cdd) == 0) & (.response != "mult")) stop("Something's wrong with the coefficient names")
+if((length(.cdd) == 0) & (.response == "free")) stop("Something's wrong with the coefficient names")
 #
 ## FOR THE HAPLOTYPE FREQUENCIES, SUBTRACT FIRST PARAMETER FROM THE REST,
 ## TO "NORMALIZE".
@@ -55,27 +56,27 @@ if((length(.cdd) == 0) & (.response != "mult")) stop("Something's wrong with the
 #
 ## EXTRACT RELEVANT PARAMETERS
 .coef.c <- lapply(.coef, function(x)x[.c, , drop = F])
-if(.response != "mult") .coef.cdd <- lapply(.coef, function(x)x[.cdd, , drop = F])
+if(.response == "free") .coef.cdd <- lapply(.coef, function(x)x[.cdd, , drop = F])
 .coef.comb <- lapply(.coef, function(x)x[c(.c, .cdd), , drop = F])
 #
 .cov.c <- lapply(.cov, function(x) x[.c, .c, drop = F])
-if(.response != "mult") .cov.cdd <- lapply(.cov, function(x) x[.cdd, .cdd, drop = F])
+if(.response == "free") .cov.cdd <- lapply(.cov, function(x) x[.cdd, .cdd, drop = F])
 .cov.comb <- lapply(.cov, function(x) x[c(.c, .cdd), c(.c, .cdd), drop = F])
 #
 .contr.c <- diag(length(.coef.c[[1]]))
-if(.response != "mult") .contr.cdd <- diag(length(.coef.cdd[[1]]))
+if(.response == "free") .contr.cdd <- diag(length(.coef.cdd[[1]]))
 .contr.comb <- diag(length(.coef.comb[[1]]))
 #
 .res.c <- vector(length(.coef.c), mode = "list")
-if(.response != "mult") .res.cdd <- vector(length(.coef.cdd), mode = "list")
+if(.response == "free") .res.cdd <- vector(length(.coef.cdd), mode = "list")
 .res.comb <- vector(length(.coef.comb), mode = "list")
 
 for (i in seq(along = .coef.c)){
 	.res.c[[i]] <- f.post.chisq(coeff = .coef.c[[i]], covar = .cov.c[[i]], contrast.mat = .contr.c)
-	if(.response != "mult") .res.cdd[[i]] <- f.post.chisq(coeff = .coef.cdd[[i]], covar = .cov.cdd[[i]], contrast.mat = .contr.cdd)
+	if(.response == "free") .res.cdd[[i]] <- f.post.chisq(coeff = .coef.cdd[[i]], covar = .cov.cdd[[i]], contrast.mat = .contr.cdd)
 	.res.comb[[i]] <- f.post.chisq(coeff = .coef.comb[[i]], covar = .cov.comb[[i]], contrast.mat = .contr.comb)
 	f.vis(.res.c, vis = F)
-	if(.response != "mult") f.vis(.res.cdd, vis = F)
+	if(.response == "free") f.vis(.res.cdd, vis = F)
 }
 cat("\nIndividual Wald tests within each stratum, \nfor single dose, double dose and combined:\n")
 cat("\nPost-hoc (Wald) test single dose:")
@@ -83,7 +84,7 @@ cat("\nPost-hoc (Wald) test single dose:")
 dimnames(.res.c.vis) <- list(rep("", dim(.res.c.vis)[1]), rep("", dim(.res.c.vis)[2]))
 print(.res.c.vis, quote = F, print.gap = 0)
 
-if(.response != "mult") {
+if(.response == "free") {
 	cat("\nPost-hoc (Wald) test double dose:")
 	.res.cdd.vis <- cbind("Stratum: ", format(.stratnavn, justify = "right"), ", Chi-squared = ", round(sapply(.res.cdd, function(x)x$chisq), 3), ", df's = ", sapply(.res.cdd, function(x) x$df), ", p-value = ", round(sapply(.res.cdd, function(x) x$pval), 5))
 	dimnames(.res.cdd.vis) <- list(rep("", dim(.res.cdd.vis)[1]), rep("", dim(.res.cdd.vis)[2]))
@@ -111,16 +112,16 @@ print(.p.value.overall.vis, quote = F, print.gap = 0)
 .names.list <- list(haplo.freq = .mf, single = .c, double = .cdd)
 .nam <- names(.names.list)
 if(!all(test %in% .nam)) stop('Invalid input in argument "test"')
-f.vis(.velg <- unlist(.names.list[.nam %in% test])) # MAKE SURE SELECTION IS IN CORRECT ORDER
+f.vis(.velg <- unlist(.names.list[.nam %in% test]), vis = .vis) # MAKE SURE SELECTION IS IN CORRECT ORDER
 #
-f.vis(.coef <- lapply(.coef, function(x)x[.velg, , drop = F]))
-f.vis(.cov <- lapply(.cov, function(x) x[.velg, .velg, drop = F]))
+f.vis(.coef <- lapply(.coef, function(x)x[.velg, , drop = F]), vis = .vis)
+f.vis(.cov <- lapply(.cov, function(x) x[.velg, .velg, drop = F]), vis = .vis)
 #
 ## RESHAPE COEFFICIENTS AND COVARIANCE MATR. INTO FULL SIZE
 .n.pars <- length(.coef[[1]])
 .l <- length(.coef)
-f.vis(.coef.vec <- unlist(.coef))
-f.vis(.cov.mat <- f.bdiag(.cov))
+f.vis(.coef.vec <- unlist(.coef), vis = .vis)
+f.vis(.cov.mat <- f.bdiag(.cov), vis = .vis)
 #
 ## BUILD CONTRAST MATRIX
 .A <- f.post.contrasts(test.type = "interaction", n.res = .l, n.pars = .n.pars)
@@ -144,7 +145,7 @@ return(.chisq)
 return(.A)
 return(.cov)
 return()
-f.vis(.coef, .cov, vis = T)
+f.vis(.coef, .cov, vis = F)
 
 
 

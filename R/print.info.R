@@ -1,25 +1,31 @@
-print.info <- function(info){
-
-.f.printlist <- function(x){
-	.ut <- rep(NA, length(x))
-	for(i in seq(along = x)){
-		.ut[i] <- paste(' ', names(x)[i], ': "',  paste(x[i], collapse = '" "'), '"', sep = '')
+print.info <- function(info, args.only = F){
+##
+## ABBREVIATED PRINTING OF info OBJECT. IF args.only = T, SHOWS ONLY
+## THOSE VALUES THAT ARE USABLE AS ARGUMENTS TO HAPLIN
+##
+## NOTE: ASSUMES filename IS THE FIRST ELEMENT, AND ALL OTHER ARGUMENTS
+## TO HAPLIN ARE AT THE SECOND "LEVEL" OF LIST
+#
+## FOR SAFETY'S SAKE
+.info <- unclass(info)
+#
+## NAMES OF ARGUMENTS TO haplin
+if(args.only){
+	#
+	## IF ONLY TO SHOW ARGUMENTS TO A HAPLIN CALL, REMOVE THE OTHERS
+	.names <- names(formals(haplin))
+	for(i in 2:length(.info)){
+		## REMOVE ELEMENTS IN EACH GROUP
+		.info[[i]] <- .info[[i]][is.element(names(.info[[i]]), .names)]
 	}
-	return(.ut)
+	## REMOVE GROUPS NOT RELATED TO ARGUMENTS
+	.ind <- sapply(.info, function(x) length(x) > 0)
+	.info <- .info[.ind]
 }
-
-
-cat("\nHaplin call summary:\n")
-cat('Filename: "', info$filename, '"\n', sep = "")
-cat("File specifications:\n")
-cat(.f.printlist(info$filespecs), sep = "\n")
-cat("Model specifications:\n")
-cat(.f.printlist(info$model), sep = "\n")
-cat("Variables specifications:\n")
-cat(.f.printlist(info$variables), sep = "\n")
-cat("\n")
-
-
-
+#
+## ABBREVIATED PRINTING
+f.printlist(.info)
+#
+return(invisible(.info))
 
 }

@@ -15,7 +15,7 @@ f.aggregate <- function(data){
 	.freq <- f.groupsum(X = rep(1, .nlines), INDICES = .tag)
 	.unique <- !duplicated(.tag)
 	.tag.unique <- .tag[.unique]
-	.data.agg <- data.frame(data, freq = .freq)
+	.data.agg <- dframe(data, freq = .freq)
 	.data.agg <- .data.agg[.unique, , drop = F]
 	.lines <- .lines[.tag.unique] # RE-ORDERS .lines TO SAME SEQUENCE AS LINES IN DATA. NOTE THAT NAMES OF .lines ALSO CORRESPONDS TO THE TAG VALUES
 #

@@ -14,13 +14,13 @@ f.sel.haplos <- function(info){
 #
 if(.flag.file){
 ## IF HAPLOTYPE FILE IS SPECIFIED, PICK HAPLOS FROM FILE
-	.haplos.use <- try(read.table(file = info$haplos$haplo.file, header = T), silent = T)
-	if(inherits(.haplos.use, "try-error")) stop('Problems reading file specified in "haplo.file" argument')
+	.haplos.use <- try(read.table(file = info$haplos$haplo.file, header = T, stringsAsFactors = F), silent = T)
+	if(inherits(.haplos.use, "try-error")) stop('Problems reading file specified in "haplo.file" argument', call. = F)
 	.haplos.use <- .haplos.use[,"haplos"]
 	.tmp.use <- tolower(.haplos.use)
 	.tmp.all <- tolower(.haplotypes)
 	.miss <- setdiff(.tmp.use, .tmp.all)
-	if(length(.miss) > 0) stop(paste("Haplotypes ", paste(.miss, collapse = ", "), " not found in file!", sep = ""))
+	if(length(.miss) > 0) stop(paste("Haplotypes ", paste(.miss, collapse = ", "), " not found in file!", sep = ""), call. = F)
 	.selected.haplotypes <- is.element(.tmp.all, .tmp.use)
 	if(.flag.max) warning('Argument "max.haplos" ignored since haplotypes are specified with "haplo.file"')
 }else{
@@ -35,7 +35,7 @@ if(.flag.max && sum(.selected.haplotypes) > info$haplos$max.haplos){
 	.selected.haplotypes[.ord] <- T
 }
 #
-if(sum(.selected.haplotypes) < 2) stop("Less than 2 haplotypes selected. Threshold may be set too high.")
+if(sum(.selected.haplotypes) < 2) stop("Less than 2 haplotypes above threshold. Locus may have low information content (or threshold set too high).", call. = F)
 #
 dim(.selected.haplotypes) <- NULL # JUST REMOVE REMNANTS OF A DIMENSION
 names(.selected.haplotypes) <- .haplotypes

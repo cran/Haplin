@@ -82,13 +82,10 @@ haplinTDT <- function(filename,
     }
     if (.info$model$design == "cc") 
       .fam <- "c"
-    .data.read <- f.read.data(indata = .info$filename, sep = .info$filespecs$sep, 
-                              allele.sep = .info$filespecs$allele.sep, na.strings = .info$filespecs$na.strings, 
-                              markers = .info$filespecs$markers, use.missing = .info$model$use.missing, 
-                              variables = .info$filespecs$n.vars, family = .fam)
+	.data.read <- f.read.data(info = .info)
     if (.info$control$verbose) 
       cat("Done\n")
-    .markers <- attr(.data.read, "markers")
+	.markers <- attr(.data.read, "info")$filespecs$markers
     .nmarker <- length(.markers)
 
     ## Second: Read and transform data using haplin

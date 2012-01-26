@@ -22,9 +22,9 @@ if(missing(outdata)) stop('File name argument "outdata" must be specified!')
 ## READ DATA
 cat("\nReading data...")
 if(!missing(sep)){
-	.indata <- read.table(file = indata, sep = sep, as.is = T, na.strings = na.strings, colClasses = "character")
+	.indata <- read.table(file = indata, sep = sep, as.is = T, na.strings = na.strings, colClasses = "character", stringsAsFactors = F)
 }else{# TAKE ADVANTAGE OF read.table'S INTERPRETATION OF WHITE SPACE, ETC.
-	.indata <- read.table(file = indata, as.is = T, na.strings = na.strings, colClasses = "character")
+	.indata <- read.table(file = indata, as.is = T, na.strings = na.strings, colClasses = "character", stringsAsFactors = F)
 }
 cat("Done")
                                         #
@@ -34,7 +34,7 @@ cat("Done")
   .nmarkers <- .nvars - 6
   if(.nmarkers <= 0) stop("Not enough columns in file! Did you specify the correct separator?")
   .vardata <- .indata[, 1:6]
-  .gendata <- as.matrix(.indata[, -(1:6)])
+  .gendata <- as.matrix(.indata[, -(1:6), drop = F])
                                         #
   if(merge){## GENETIC DATA MUST BE PASTED WITH A ";" TO CONFORM
     cat("\nPasting data columns pairwise...")
@@ -54,7 +54,7 @@ cat("Done")
   ## NAME COLUMNS
   if(F && !missing(mapfile)){
 	mapfile <- NULL # BARE TULL, MEN MAA UNNGAA FEILMELDING I R CMD check
-    .map <- read.table(mapfile)
+    .map <- read.table(mapfile, stringsAsFactors = F)
     names(.map)[c(1,2,4)] <- c("chrom", "marker", "pos")
     dimnames(.gendata)[[2]] <- .map$marker
   } else dimnames(.gendata)[[2]] <- paste("mark", 1:.nmarkers, sep = "")
@@ -185,7 +185,8 @@ cat("Done")
   cat("\nReshaping data...")
   .navn <- dimnames(.utdata)[[2]]
   .navn <- as.vector(t(outer(.navn, c("m", "f", "c"), paste, sep = ".")))
-  .utdata <- f.matrix.to.list(.utdata)
+  .utdata <- lapply(seq(dim(.utdata)[2]), function(i) .utdata[, i])# CONV. TO LIST
+  ###.utdata <- f.matrix.to.list(.utdata)
   .utdata <- lapply(.utdata, function(x) matrix(x, ncol = 3, byrow = T))
   .utdata <- do.call("cbind", .utdata)
   dimnames(.utdata) <- list(NULL, .navn)

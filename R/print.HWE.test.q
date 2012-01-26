@@ -24,3 +24,4 @@ digits <- 4
 print(.tab.ut)
 cat("Chisq: ", format(x$chisq, digits = digits), "   ", "Df: ", x$df, "   ", "P-value: ", format(x$p.value, digits = digits), "\n")
 }
+

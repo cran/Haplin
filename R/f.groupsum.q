@@ -40,7 +40,7 @@ if(length(X) != length(INDICES)) stop("Different lengths of X and INDICES!")	#
 #
 if(!expand){
 		.nondup <- !duplicated(INDICES)
-		.ut <- data.frame(sumx = .sum[.nondup], INDICES = INDICES[.nondup]) 
+		.ut <- dframe(sumx = .sum[.nondup], INDICES = INDICES[.nondup]) 
 			# IN ORIGINAL ORDERING!! BUT ONLY FIRST OF EACH KIND
 		return(.ut)
 	}

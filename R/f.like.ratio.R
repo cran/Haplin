@@ -1,46 +1,30 @@
 f.like.ratio <- function(res.0, res, data, info){
-
+##
+## PERFORMS A LIKELIHOOD RATIO TEST BETWEEN THE TWO RESULTS IN res.0 AND res.
+## res.0 AND res ARE OF TYPE tri.glm, pred.0 and pred ARE res0$pred and res$pred.
+## IMPORTANT: THE LIKELIHOODS ARE COMPUTED ONLY UP TO A CONSTANT. SO COMPARISONS
+## SHOULD BE MADE ONLY ON NESTED MODELS COMPUTED FROM THE SAME (SINGLE) DATA SET!
+##
+## THE TEST CORRECTS FOR EM UNCERTAINTY. SEE COMMENTS IN f.final.loglike
+##
 #
-#
-## OBTAIN LOG-LIKELIHOOD, VIA DIFFERENT METHODS (SHOULD BE SORTED OUT...):
+## COMPUTE df's (THIS SHOLD BE DONE IN A MORE DIRECT FASHION, BUT OK....)
 .anova <- anova(res.0$result, res$result, test = "Chisq")
 .df <- .anova$Df[2]
-
-
-
-if(F){
-	.lratio.test <- anova(res.0$result, res$result, test = "Chisq")[2,"P(>|Chi|)"]
-}	
-f.vis(.loglike.ratio.full <- .anova$Deviance[2], vis = F)
-
-.loglike.0 <- f.final.loglike(data = data, pred = res.0$pred, info = info)
-.loglike <- f.final.loglike(data = data, pred = res$pred, info = info)
-
-f.vis(.loglike.ratio <- 2*(.loglike - .loglike.0), vis = F)
-
-.loglike.ratio <- c(.loglike.ratio, full.loglike = .loglike.ratio.full)
+## COMPUTE FINAL LIKELIHOOD FOR TWO RESULTS, TAKING EM INTO ACCOUNT
+.loglike.0 <- f.final.loglike(data = data, pred = res.0$pred, info = info, type = "EM")
+.loglike <- f.final.loglike(data = data, pred = res$pred, info = info, type = "EM")
+#
+## LOG RATIO OF THE TWO
+.loglike.ratio <- 2*(.loglike - .loglike.0)
 names(.loglike.ratio) <- paste(names(.loglike.ratio), ".ratio", sep = "")
-
-.lratio.test <- 1 - pchisq(.loglike.ratio, df = .df)
-
-.lratio.test <- .lratio.test[1] ## BRUKER BARE DEN FORSTE, DE ANDRE VAR EKSPERIMENTELLE
-
-.lratio.ut <- c(loglike.0 = unname(.loglike.0[1]), loglike = unname(.loglike[1]), df = .df, p.value.overall = unname(.lratio.test))
-	
-## return(.lratio.test)	
-
-if(F){	
-	f.vis(.tmpan <- anova(res.0$result, res$result, test = "Chisq"), vis = T)
-	print(anova(res.0$result, res$result, test = "Chisq"), digits = 12)
-
-
-	f.vis(res.0$result$dev - res$result$dev, vis = T)
-}
-
-
-
-
+#
+## COMPUTE TEST P-VALUE
+.lratio.test <- pchisq(.loglike.ratio, df = .df, lower.tail = F)
+#
+## COLLECT OUTPUT VALUES
+.lratio.ut <- c(loglike.0 = unname(.loglike.0), loglike = unname(.loglike), df = .df, p.value.overall = unname(.lratio.test))
+#
+##
 return(.lratio.ut)
-
-
 }

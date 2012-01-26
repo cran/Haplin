@@ -29,8 +29,8 @@ if(xchrom){# STORE SEX VARIABLE SEPARATELY
 	.data.agg$sex <- NULL
 	#
 	if(any(is.na(.sex))) stop(paste(sum(is.na(.sex)), " missing values found in sex variable! Must be removed from file before analysis.\n", sep = ""))
-	.tmp <- sort(unique(.sex))
-	if(!identical(.tmp, c(1,2))) stop(paste("The sex variable is coded ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2 (females).", sep = "")) #
+	   .tmp <- sort(unique(.sex))
+	   if(!all(is.element(.tmp, c(1,2)))) stop(paste("The sex variable is coded ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2 (females).", sep = "")) #
 	#if(verbose) cat("\nNote: The following sex variable coding has been assumed: males = 1, females = 2")
 }
 .lines <- attr(.data.agg, "orig.lines")

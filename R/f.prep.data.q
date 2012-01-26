@@ -8,7 +8,8 @@ if((info$model$design == "triad") | (info$model$design == "cc.triad")) {
 	.t <- 6
 }else if(info$model$design == "cc") .t <- 2
 #
-markers <- attr(data,"markers")
+##
+markers <- info$filespecs$markers
 variables <- info$filespecs$n.vars
 #
 if(variables > 0){

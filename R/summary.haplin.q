@@ -16,11 +16,9 @@ summary.haplin <- function(object, reference, ...){ #
 		}
 #
 #
-.summ.res <- summary.tri.glm(object$result, design = object$design, reference.method = reference.method, info = .info, ...) #
-## .alleles <- attr(object, "alleles")
-## .haplotypes <- attr(object, "haplotypes")
-	.alleles <- object$alleles
-	.selected.haplotypes <- object$selected.haplotypes
+.summ.res <- summary.tri.glm(object$result, reference.method = reference.method, info = .info, ...) #
+.alleles <- object$alleles
+.selected.haplotypes <- object$selected.haplotypes
 
 .ut <- list(summary.tri.glm = .summ.res, info = .info, alleles = .alleles, selected.haplotypes = .selected.haplotypes, HWE.res = object$HWE.res, ntri.seq = object$ntri.seq, loglike = object$loglike, score = object$score)
 class(.ut) <- "summary.haplin"

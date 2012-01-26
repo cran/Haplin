@@ -140,7 +140,7 @@ sex = NULL, threshold = 0.01, verbose = TRUE, printout = TRUE)
   pp. 53-66.
   }
 
-\author{Hakon K. Gjessing (Professor of Biostatistics) and Oivind Skare\cr
+\author{Oivind Skare,\cr with Hakon K. Gjessing\cr
   Division of Epidemiology\cr
   Norwegian Institute of Public Health\cr
   \email{hakon.gjessing@fhi.no}}

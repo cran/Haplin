@@ -16,7 +16,7 @@ f.triad.to.transmit <-
        .nvar <- .count[1]
        if(any(.count != .nvar))
          stop("Number of variables differ from row to row")
-       .data <- read.table(file = indata,sep=sep,na.strings=na.strings)
+       .data <- read.table(file = indata,sep=sep,na.strings=na.strings, stringsAsFactors = F)
      }
    else
      {
@@ -25,7 +25,7 @@ f.triad.to.transmit <-
        .nvar <- .count[1]
        if(any(.count != .nvar))
          stop("Number of variables differ from row to row")
-       .data <- read.table(file = indata,na.strings=na.strings)
+       .data <- read.table(file = indata,na.strings=na.strings, stringsAsFactors = F)
      }
   .data <- lapply(1:length(.data),function(i,.data) as.character(.data[[i]]),.data=.data)
   .data <- lapply(1:length(.data),function(i,.data,allele.sep) replace(.data[[i]],.data[[i]]=="NA",paste("NA","NA",sep=allele.sep)),.data=.data,allele.sep=allele.sep)

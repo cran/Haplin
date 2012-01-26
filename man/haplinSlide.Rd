@@ -6,17 +6,21 @@
  Produces a list, each element of which is an object of class \code{haplin}, which is the result of fitting the log-linear models to the data one "window" at a time. 
 }
 \usage{
-haplinSlide(filename, markers = "ALL", winlength = 1, printout, 
-verbose, ...)
+haplinSlide(filename, data, pedIndex, markers = "ALL", winlength = 1, printout, 
+verbose, cpus = 1, table.output = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-	\item{filename}{A character string giving the name and path of the ASCII data file to be read.}
+	\item{filename}{A character string giving the name and path of the ASCII data file to be read. The file should be in the Haplin data format. }
+	\item{data}{An R-object which is the result of using \code{load.gwaa.data} to load data into R. See the web page for a description of how to convert a ped file into a file that can be loaded. The conversion uses \code{prepPed} and \code{convert.snp.ped}.}
+	\item{pedIndex}{A file of family indexes constructed by using \code{prepPed} on the original ped file. This file is used by Haplin to extract and store family information.}
 	\item{markers}{Default is "ALL", which means haplinSlide uses all available markers in the data set in the analysis. Alternatively, the relevant markers can be specified by, for instance, \code{markers = c(1, 3:10)}, which would use the 10 first markers except marker 2. \code{haplinSlide} will then run haplin on a series of windows selected from the supplied \code{markers}. The \code{winlength} argument decides the length of the windows. See details.
 }
 	\item{winlength}{Length of the sliding, overlapping windows to be run along the markers. See details.}
 	\item{printout}{Default is FALSE. If TRUE, provides a full summary of each \code{haplin} result during the run of \code{haplinSlide}.}
 	\item{verbose}{Same as for \code{haplin}, but defaults to FALSE to reduce output size.}
+	\item{cpus}{\code{haplinSlide} allows parallel processing of its analyses. The \code{cpus} argument should preferably be set to the number of available cpu's. If set lower, it will save some capacity for other processes to run. Setting it too high should not cause any serious problems.}
+	\item{table.output}{If \code{TRUE}, the \code{haptable} function will be applied to each result after estimation, greatly reducing the size of the output. }
 	\item{...}{Remaining arguments to be used by \code{\link{haplin}} in each run.}
 }
 \details{
@@ -37,7 +41,7 @@ Norwegian Institute of Public Health\cr
 	Further information is found on the web page.
 }
 %\seealso{\code{\link{haplin}}, \code{\link{suest}}, \code{\link{summary.haplin}}, \code{\link{plot.haplin}}}
-\seealso{\code{\link{haplin}}, \code{\link{summary.haplin}}, \code{\link{plot.haplin}}}
+\seealso{\code{\link{haplin}}, \code{\link{summary.haplin}}, \code{\link{plot.haplin}}, \code{\link{haptable}}}
 \examples{
 
 \dontrun{
