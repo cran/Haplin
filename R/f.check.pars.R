@@ -79,21 +79,26 @@ if(!is.name(.info$filename)){
 #
 ## SET VALUES IN THE gwaa.data CASE
 if(class(mcall$data) == "gwaa.data"){
+	#
+	## REPLACE "ALL" IF NECESSARY
+	if(identical(.info$filespecs$markers, "ALL")) .info$filespecs$markers <- seq(length.out = nsnps(mcall$data))
+	#
+	## SET CORRECT VALUES FOR COLUMN NUMBERS
 	if(.info$model$design == "triad"){
-		.info$filespecs$n.vars <- 10
+		.info$filespecs$n.vars <- 3 * ncol(phdata(mcall$data)) + 1
 		if(.xchrom){
 			.info$variables$sex <- 7
 		}
 	}
 	if(.info$model$design == "cc.triad"){
-		.info$filespecs$n.vars <- 10
+		.info$filespecs$n.vars <- 3 * ncol(phdata(mcall$data)) + 1
 		.info$variables$ccvar <- 10
 		if(.xchrom){
 			.info$variables$sex <- 7
 		}
 	}
 	if(.info$model$design == "cc"){
-		.info$filespecs$n.vars <- 4
+		.info$filespecs$n.vars <- ncol(phdata(mcall$data)) + 1
 		.info$variables$ccvar <- 4
 		if(.xchrom){
 			.info$variables$sex <- 3

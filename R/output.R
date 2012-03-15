@@ -35,7 +35,7 @@ if(.reply.summary){
 	cat(.summary, file = .file.summary, sep = "\n")
 }
 if(.reply.plot){
-	jpeg(file = .file.plot, res = 300, height = 2000, width = 2000)
+	jpeg(filename = .file.plot, res = 300, height = 2000, width = 2000)
 		plot(object)
 	dev.off()
 }

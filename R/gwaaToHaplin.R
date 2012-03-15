@@ -49,11 +49,21 @@ if(design == "cc"){
 	.nvars <- 1*.nph + 1 ## 1*3 + 1
 }
 #
+## CONFORM WITH HAPLIN 
+.data[,1:.nvars][is.na(.data[,1:.nvars])] <- "NA"
+#
 ## SPLIT COLUMNS OF  genetic data INTO TWO SEPARATE ALLELES
 .data <- cbind(.data[, 1:.nvars, drop = F], f.split.matrix(.data[, -(1:.nvars), drop = F], split = "/"))
 #
 ##
 #.data <- as.dframe(.data)
+#
+##
+.ccvar <- grep("cc_c", colnames(.data))
+.sex <- grep("sex_c", colnames(.data))
+attr(.data, "n.vars") <- .nvars
+attr(.data, "ccvar") <- .ccvar
+attr(.data, "sex") <- .sex
 #
 ##
 return(.data)

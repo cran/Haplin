@@ -2,8 +2,8 @@ Package: Haplin
 Type: Package
 Title: Analyzing case-parent triad and/or case-control data with SNP
         haplotypes
-Version: 4.0
-Date: 2012-01-26
+Version: 4.1
+Date: 2012-03-15
 Author: Hakon K. Gjessing
 Maintainer: Hakon K. Gjessing <hakon.gjessing@fhi.no>
 Depends: MASS, mgcv, filehash, snowfall, GenABEL, DatABEL, tools
@@ -18,10 +18,9 @@ Description: Haplin performs a genetic association analysis of
         from triads with missing genotypic data, for instance if some
         SNPs has not been typed for some individuals. Haplin also
         allows estimation of effects of maternal haplotypes,
-        particularly appropriate in perinatal epidemiology. Analyses of
-        GWAS data with parallel processing are supported.
+        particularly appropriate in perinatal epidemiology.
 License: GPL (>= 2)
 URL: http://www.uib.no/smis/gjessing/genetics/software/haplin/
-Packaged: 2012-01-26 16:25:08 UTC; hkgjess
+Packaged: 2012-03-15 23:55:47 UTC; Administrator
 Repository: CRAN
-Date/Publication: 2012-01-27 11:17:42
+Date/Publication: 2012-03-16 10:04:26

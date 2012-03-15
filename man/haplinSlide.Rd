@@ -7,7 +7,7 @@
 }
 \usage{
 haplinSlide(filename, data, pedIndex, markers = "ALL", winlength = 1, printout, 
-verbose, cpus = 1, table.output = FALSE, ...)
+verbose, cpus = 1, table.output = FALSE, slaveOutfile = "", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,10 +21,13 @@ verbose, cpus = 1, table.output = FALSE, ...)
 	\item{verbose}{Same as for \code{haplin}, but defaults to FALSE to reduce output size.}
 	\item{cpus}{\code{haplinSlide} allows parallel processing of its analyses. The \code{cpus} argument should preferably be set to the number of available cpu's. If set lower, it will save some capacity for other processes to run. Setting it too high should not cause any serious problems.}
 	\item{table.output}{If \code{TRUE}, the \code{haptable} function will be applied to each result after estimation, greatly reducing the size of the output. }
+	\item{slaveOutfile}{Character. To be used when \code{cpus > 1}. If \code{slaveOutfile = ""} (default), output from all running cores will be printed in the standard R session window. Alternatively, the output can be saved to a file by specifying the file path and name.}
 	\item{...}{Remaining arguments to be used by \code{\link{haplin}} in each run.}
 }
 \details{
-	\code{haplinSlide} runs \code{haplin} on a series of overlapping windows of the chosen markers. Except for the \code{markers} and \code{winlength} arguments, all arguments are used exactly as in \code{haplin} itself. For instance, if \code{markers = c(1, 3, 4, 5, 7, 8)} and \code{winlength = 4}, \code{haplinSlide} will run \code{haplin} on first the markers \code{c(1, 3, 4, 5)}, then on \code{c(3, 4, 5, 7)} and finally on \code{c(4, 5, 7, 8)}. The results are returned in a list. The elements are named "1-3-4-5" etc., and can be extracted with, say, \code{summary(res[["1-3-4-5"]])} etc., where \code{res} is the saved result. Or the output can be examined by, for instance, using \code{lapply(res, summary)} and \code{lapply(res, plot)}.
+	\code{haplinSlide} runs \code{haplin} on a series of overlapping windows of the chosen markers. Except for the \code{markers} and \code{winlength} arguments, all arguments are used exactly as in \code{haplin} itself. For instance, if \code{markers = c(1, 3, 4, 5, 7, 8)} and \code{winlength = 4}, \code{haplinSlide} will run \code{haplin} on first the markers \code{c(1, 3, 4, 5)}, then on \code{c(3, 4, 5, 7)}, and finally on \code{c(4, 5, 7, 8)}. The results are returned in a list. The elements are named "1-3-4-5" etc., and can be extracted with, say, \code{summary(res[["1-3-4-5"]])} etc., where \code{res} is the saved result. Or the output can be examined by, for instance, using \code{lapply(res, summary)} and \code{lapply(res, plot)}.\cr
+	When running \code{haplinSlide} on a large number of markers, the output can become prohibitively large. In that case \code{table.output} should be set to \code{TRUE}, and \code{haplinSlide} will return a list of summary "haptables". This list can then be stacked into a single dataframe using \code{toDataFrame}.\cr
+	When multiple cores are available, set the \code{cpus} to the number of cores that should be used. This will run \code{haplinSlide} in parallel on the chosen number of cores. Note that feedback is provided by each of the cores separately, and some cores may start working on markers far out in the sequence.
 }
 \value{
 	A list of objects of class haplin is returned.
@@ -41,7 +44,7 @@ Norwegian Institute of Public Health\cr
 	Further information is found on the web page.
 }
 %\seealso{\code{\link{haplin}}, \code{\link{suest}}, \code{\link{summary.haplin}}, \code{\link{plot.haplin}}}
-\seealso{\code{\link{haplin}}, \code{\link{summary.haplin}}, \code{\link{plot.haplin}}, \code{\link{haptable}}}
+\seealso{\code{\link{haplin}}, \code{\link{summary.haplin}}, \code{\link{plot.haplin}}, \code{\link{haptable}}, \code{\link{toDataFrame}}}
 \examples{
 
 \dontrun{

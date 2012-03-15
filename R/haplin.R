@@ -34,39 +34,14 @@ printout <- .info$control$printout
 ## INSTALL MASS (FOR THE mvrnorm FUNCTION):
 #require(MASS)
 #
-## START
-if(verbose)cat("\n## HAPLIN, VERSION 4.0 ##\n")
+## START 
+if(verbose)cat("\n## HAPLIN, VERSION 4.1 ##\n")
 #
 ##
-if(missing(data)){
-	if(!.info$filespecs$database){
-		## READ DATA FROM FILE (NOTE THAT info IS UPDATED AND RETURNED AS AN ATTR. TO .data.read)
-		if(verbose)	cat("\nReading data from file...  ")
-		.data.read <- f.read.data(.info) ##
-		gc()
-		if(verbose)	cat("Done\n")
-	}else{
-		## READ DATA FROM DATABASE
-		## LITT AD HOC, DETTE HER...
-		.data.read <- as.matrix(loadData(filename, markers = .info$filespecs$markers))
-		###.info$filespecs$markers <- seq(along = .info$filespecs$markers)
-		.data.read <- f.data.ready(.data.read, .info, sel.markers = F)
-	}
-} else{
-	## PREPARE DATA DIRECTLY FROM R OBJECT
-	if(class(data) == "gwaa.data"){
-		## CONVERT FROM GenABEL-OBJECT TO HAPLIN DATA MATRIX
-		if(identical(.info$filespecs$markers, "ALL")) .info$filespecs$markers <- seq(length.out = nsnps(data))
-		if(missing(pedIndex)){## GI FEILMELDING DERSOM markers ER UTENFOR RANGE?
-			.data.read <- gwaaToHaplin(data = data[, .info$filespecs$markers], design = design)
-		}else{
-			.data.read <- gwaaToHaplin(data = data[, .info$filespecs$markers], pedIndex = pedIndex, design = design)
-		}
-		.data.read <- f.data.ready(.data.read, .info, sel.markers = F)
-	}else{
-		.data.read <- f.data.ready(data, .info, sel.markers = T)
-	}
-}
+
+.data.read <- f.get.data(data, pedIndex, .info)
+
+
 #
 ## DATA OUT, IF REQUESTED
 if(data.out == "basic"){

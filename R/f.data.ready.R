@@ -2,10 +2,6 @@ f.data.ready <- function(data, info, sel.markers = !info$filespecs$database){
 ##
 ## PREPARES HAPLIN DATA FROM A CHARACTER MATRIX
 ##
-
-
-###if(!identical(as.character(info$filename), ""))stop("Cannot specify filename AND data", call. = F) # FLYTT DENNE TIL f.check.pars
-
 #
 ##
 if(mode(data) != "character") stop("data must be a character matrix", call. = F) ## BURDE ENDRE PÅ DETTE?

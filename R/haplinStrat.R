@@ -1,4 +1,4 @@
-haplinStrat <- function(filename, covar = NULL, ...){
+haplinStrat <- function(filename, data, pedIndex, covar = NULL, ...){
 #
 #
 ## GET HAPLIN DEFAULTS, OVERRIDE DEFAULTS FOR SPECIFIED ARGUMENTS
@@ -13,30 +13,10 @@ if(.verbose){
 	cat("\nReading data from file...  ")
 }
 #
-##
-if(!.info$filespecs$database){
-	#
-	## READ FULL DATA FILE. 
-	.data.read <- f.read.data(info = .info) 
-	if(.verbose) cat("Done\n")
-	#
-	##
-	.markers <- attr(.data.read, "markers")
-	.info <- attr(.data.read, "info")
-	.d <- dim(.data.read)
-}else{
-	## READ DATA FROM DATABASE
-	## LITT AD HOC, DETTE HER...
-	.tmp <- as.matrix(loadData(filename, markers = .info$filespecs$markers))
-	.data.read <- f.data.ready(.tmp, .info)
-}
-
-
-
-
-
-### cat("HVA MED 'ALL'??\n")
-
+## GET FULL DATA
+.data.read <- f.get.data(data, pedIndex, .info)
+## UPDATE .info
+.info <- attr(.data.read, "info")
 
 
 #

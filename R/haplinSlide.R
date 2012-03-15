@@ -1,4 +1,4 @@
-haplinSlide <- function(filename, data, pedIndex, markers = "ALL", winlength = 1, printout = FALSE, verbose = FALSE, cpus = 1, table.output = FALSE, ...)
+haplinSlide <- function(filename, data, pedIndex, markers = "ALL", winlength = 1, printout = FALSE, verbose = FALSE, cpus = 1, table.output = FALSE, slaveOutfile = "", ...)
 {
 ##
 ## RUN HAPLIN ON SLIDING WINDOWS
@@ -6,7 +6,6 @@ haplinSlide <- function(filename, data, pedIndex, markers = "ALL", winlength = 1
 #.para <- "snow"
 .para <- "snowfall"
 #.para <- "doSMP"
-
 
 ## BRUKER "#i#" TIL AA KOMMENTERE VEKK DET SOM GIR ADVARSEL MED R CMD check, SIDEN DE RETTE PAKKENE IKKE ER INSTALLERT
 
@@ -25,49 +24,34 @@ if(winlength > 1) cat("\nImportant: Remember that SNPs must be in correct physic
 .use.missing <- .info$model$use.missing ## SAVE OLD VALUE
 .info$model$use.missing <- T ## ENFORCE
 
+
+
+
+
+
 #
 ##
-if(.missdata){
-	if(!.info$filespecs$database){
-		#
-		## READ FULL DATA FILE. 
-		if(.info$control$verbose)	cat("\nReading data from file...  ")
-		.data.read <- f.read.data(info = .info) 
-		if(.info$control$verbose)	cat("Done\n")
-		#
-		## EXTRACT UPGRADED INFO
-		.info <- attr(.data.read, "info")
-	}
+
+
+if(!.missdata && (class(data) == "gwaa.data")){
+	## ONLY REDUCE NUMBER OF MARKERS, BUT DO NOT CONVERT YET
+	.data.read <- data[, .info$filespecs$markers]
 }else{
-	## PREPARE DATA DIRECTLY FROM R OBJECT
-	if(class(data) == "gwaa.data"){
-		if(identical(.info$filespecs$markers, "ALL")) .info$filespecs$markers <- seq(length.out = nsnps(data))
-		.data.read <- data[, .info$filespecs$markers]
-	}else{
-		.data.read <- f.data.ready(data, .info, sel.markers = T)
-	}
+	## READ AND CONVERT DATA
+	.data.read <- f.get.data(data, pedIndex, .info)
+	.info <- attr(.data.read, "info")
 }
 
-.markers0 <- .info$filespecs$markers
+
 .info$model$use.missing <- .use.missing ## REVERT TO ORIGINAL VALUE
-
-
-
-
-
-
-
-
-
-
 
 
 
 #
 ## FIND MARKERS INCLUDED IN EACH WINDOW. NB: THEY NOW REFER TO MARKERS IN THE _REDUCED_ FILE, NOT THE ORIGINAL ONE
-.slides <- f.windows(markers = seq(along = .markers0), winlength = winlength)
+.slides <- f.windows(markers = seq(along = .info$filespecs$markers), winlength = winlength)
 ## USE ORIGINAL MARKER SPECIFICATION AS NAMES
-.names <- .markers0[.slides]
+.names <- .info$filespecs$markers[.slides]
 .names <- matrix(.names, ncol = ncol(.slides))
 .names <- f.create.tag(.names, sep = "-")
 #
@@ -76,46 +60,39 @@ if(.missdata){
 #
 ## REPRODUCE HAPLIN ARGUMENTS FROM .info
 .args <- f.args.from.info(.info)
-## RESET SOME ARGUMENTS TO BE USED WITH SEPARATE RUNS
 #
 ##
 cat("\n")
 #
-## FUNCTION TO RUN ON EACH WINDOW
-.f.run <- function(i, args_ = .args, tab.out = table.output){
-		## FUNCTION TO RUN HAPLIN ON A SINGLE WINDOW
-		##
-		cat("Running Haplin on Window '", .names[i], "' (", i, "/", .nres, ")...:  ", sep = "")
-		#
-		if(cpus > 1){
-			## HAPLIN MUST BE MADE AVAILABLE IN EACH RUN
-			suppressPackageStartupMessages({
-				require(Haplin, quietly = T)
-				#require(HaplinB, quietly = T)
-				#require(GenABEL, quietly = T)
-			})
-		}
-		#
-		##
-		if(.missdata){
-			if(!.info$filespecs$database){
-				args_$markers <- .slides[i,]
-				args_$filename <- NULL
-				args_$data <- .data.read
-			}else{
-				args_$markers <- .info$filespecs$markers[.slides[i,]]
-			}
-		}else{
+## FUNCTION TO RUN HAPLIN ON A SINGLE WINDOW
+.f.run <- function(i){
+	cat("Running Haplin on Window '", .names[i], "' (", i, "/", .nres, ")...:  ", sep = "")
+	args_ <- .args
+	#
+	if(cpus > 1){
+		## HAPLIN MUST BE MADE AVAILABLE IN EACH RUN
+		suppressPackageStartupMessages({
+			require(Haplin, quietly = T)
+		})
+	}
+	#
+	##
+	if(.missdata){
+		if(!.info$filespecs$database){
 			args_$markers <- .slides[i,]
-			if((class(data) == "gwaa.data") & !.misspedIndex){
-				args_$pedIndex <- pedIndex
-			}
 			args_$filename <- NULL
 			args_$data <- .data.read
+		}else{
+			args_$markers <- .info$filespecs$markers[.slides[i,]]
 		}
-#		save(args_, file = paste("temp/tempargs", i, ".RData", sep = ""))
-#		save(load.gwaa.data, file = paste("temp/loadgwaa.RData", sep = ""))
-		
+	}else{
+		args_$markers <- .slides[i,]
+		if((class(data) == "gwaa.data") & !.misspedIndex){
+			args_$pedIndex <- pedIndex
+		}
+		args_$filename <- NULL
+		args_$data <- .data.read
+	}
 		#
 		## RUN HAPLIN
 		.res <- try(do.call("haplin", args_), silent = T)
@@ -124,14 +101,14 @@ cat("\n")
 		if(class(.res) == "try-error") cat("RUN FAILED\n")
 		else{
 			cat("done\n")
-			if(tab.out) .res <- haptable(.res)
+			if(table.output) .res <- haptable(.res)
 		}		
 		return(.res)
 }
 #
 ## DO THE RUN
-## EITHER IN SEQUENCE (SINGLE CPU, WILL REPORT MORE) 
-## OR IN PARALLEL (MULTIPLE CPUs, FASTER, CURRENTLY NO REPORTING)
+## EITHER IN SEQUENCE (SINGLE CPU) 
+## OR IN PARALLEL (MULTIPLE CPUs)
 if(cpus == 1){
 	.res.list <- lapply(seq(length.out = .nres), .f.run)
 	names(.res.list) <- .names
@@ -139,15 +116,13 @@ if(cpus == 1){
 	## CHECK FOR HAPLIN FAILURES
 	.errs <- sapply(.res.list, class) == "try-error"
 }else{
-	# kunne også i utskriften vist f.eks. kjører haplin på vindu nr. 4 av 100, f.eks.
-	# Hvordan får man forresten til utskrift underveis fra de forskjellige CPUene?
 	#
 	if(!is.numeric(cpus)) stop('The number of cpu-s "cpus" must be numeric!', call. = F)
 	#
 	#	## INITIALIZE CPUS
 	if(.para == "snowfall"){
 		## SNOWFALL
-		sfInit(parallel = T, cpus = cpus)
+		sfInit(parallel = T, slaveOutfile = slaveOutfile, cpus = cpus)
 		on.exit(sfStop())
 	}
 	if(.para == "doSMP"){
@@ -167,7 +142,7 @@ if(cpus == 1){
 	cat("Run Haplin using ", cpus, " cpu's\n", sep = "")
 	if(.para == "snowfall")	.res.list <- sfLapply(seq(length.out = .nres), .f.run)
 #i#	if(.para == "snow") .res.list <- parLapply(w, seq(length.out = .nres), .f.run)
-#i#	if(.para == "doSMP") .res.list <- foreach(i = seq(length.out = .nres)) %dopar% .f.run(i, args_ = .args, tab.out = table.output)
+#i#	if(.para == "doSMP") .res.list <- foreach(i = seq(length.out = .nres)) %dopar% .f.run(i)
 	names(.res.list) <- .names
 	#
 	## CHECK FOR HAPLIN FAILURES
