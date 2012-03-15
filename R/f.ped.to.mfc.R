@@ -32,7 +32,7 @@ if(design %in% c("triad", "cc.triad")){
 	.d.c <- data[match(.pedIndex$id.child, .id),]
 	#
 	## DIMENSION FOR JOINED DATA SET
-	.d <- round(dim(data) * c(1/3,3))
+	.d <- c(nrow(.pedIndex), 3 * ncol(data))
 	## NEW JOINED (INTERLACED) DATA SET
 	.ut <- matrix(NA_character_, nrow = .d[1], ncol = .d[2])
 	.ut[, seq(1, .d[2], 3)] <- .d.m
