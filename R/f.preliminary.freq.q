@@ -91,7 +91,7 @@ i <- 0
 			.pred <- .pred[,1] * .pred[,2] * .pred[,3] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
 		}
 		if(design == "cc"){
-			if(.xchrom) stop ("Not implemented!")
+#			if(.xchrom) stop ("Not implemented!")
 			.pred <- .pred[,1] * .pred[,2] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
 		}
 #

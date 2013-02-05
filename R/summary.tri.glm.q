@@ -37,7 +37,7 @@ if(!conf.int) {
 #
 
 if(F){
-	### SE PÅ MULIGHETEN FOR Å UTELUKKE PROBLEMESTIMATER:
+	### SE PAA MULIGHETEN FOR AA UTELUKKE PROBLEMESTIMATER:
 	###.prob.par <- sqrt(diag(.cov)) > 1e2
 	.prob.par <- sqrt(diag(.cov))/abs(.coef) > 5
 	if(all(.prob.par)) stop("Too much uncertainty in estimates")

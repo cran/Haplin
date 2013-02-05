@@ -1,6 +1,6 @@
 haplin <- function(filename, data, pedIndex,
 markers = "ALL", n.vars = 0, sep = " ", allele.sep = ";", na.strings = "NA",
-design = "triad", use.missing = FALSE, xchrom = FALSE, maternal = FALSE, test.maternal = FALSE, scoretest = "no",
+design = "triad", use.missing = FALSE, xchrom = FALSE, maternal = FALSE, test.maternal = FALSE, poo = FALSE, scoretest = "no",
 ccvar = NULL, covar = NULL, sex = NULL, comb.sex = "double",
 reference = "reciprocal", response = "free", threshold = 0.01, max.haplos = NULL, haplo.file = NULL,
 resampling = "no", max.EM.iter = 50, data.out = "no", verbose = TRUE, printout = TRUE
@@ -35,7 +35,7 @@ printout <- .info$control$printout
 #require(MASS)
 #
 ## START 
-if(verbose)cat("\n## HAPLIN, VERSION 4.1 ##\n")
+if(verbose)cat("\n## HAPLIN, VERSION 5.0 ##\n")
 #
 ##
 
@@ -62,7 +62,7 @@ if(data.out == "prelim"){
 	return(.data.out)
 }
 #
-## DISSE BLIR NÅ DEFINERT BARE I f.data OG MÅ DERFOR GJØRES EKSPLISITTE:
+## DISSE BLIR NAA DEFINERT BARE I f.data OG MAA DERFOR GJORES EKSPLISITTE:
 .ntri.seq <- .info$data$ntri.seq
 ref.cat <- .info$haplos$ref.cat
 
@@ -79,8 +79,8 @@ if(!.info$model$test.maternal & .info$model$scoretest == "only"){
 	.testseq <- list(list(maternal = F, response = "simple", x = F), list(maternal = maternal, response = response, x = T, max.EM.iter = 0, suppressEmWarnings = T))
 	###.res.oneiter <- f.EM.missing(data = .data, response = .info$haplos$response, maternal = maternal, verbose = verbose, ref.cat = ref.cat, design = design, max.EM.iter = 0, x = T, suppressEmWarnings = T)
 	.messages <- c("\nUsing EM to estimate model with no effect:\n", "\nComputing design matrix for full model:\n")
-		## MERK: EGENTLIG NOK BARE Å FÅ UT X. *OG* ET ESTIMAT AV coefficients SIDEN LENGDEN AV DET FAKTISK BRUKES... (BURDE EGENTLIG IKKE VÆRE NØDVENDIG)
-		## DESSUTEN: BURDE HER KUNNE KJØRE BÅDE mult OG free. MEN: free GÅR IKKE NØDVENDIGVIS FOR cc
+		## MERK: EGENTLIG NOK BARE AA FAA UT X. *OG* ET ESTIMAT AV coefficients SIDEN LENGDEN AV DET FAKTISK BRUKES... (BURDE EGENTLIG IKKE VARE NODVENDIG)
+		## DESSUTEN: BURDE HER KUNNE KJORE BAADE mult OG free. MEN: free GAAR IKKE NODVENDIGVIS FOR cc
 }
 #
 if(.info$model$test.maternal){
@@ -201,7 +201,7 @@ if(T){
 }
 
 
-# MERK: NÅ ER DET INGEN OPSJON FOR test.maternal = T HVIS scoretest = F!
+# MERK: NAA ER DET INGEN OPSJON FOR test.maternal = T HVIS scoretest = F!
 
 
 
@@ -242,5 +242,5 @@ if(printout){
 
 #
 ##
-invisible(.out)
+return(invisible(.out))
 }

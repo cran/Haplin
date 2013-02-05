@@ -70,7 +70,11 @@ if(F){
 			if(use.EM){
 				.coef.jack[[i]] <- f.EM.missing(.data.tmp, maternal = maternal, response = .response, max.EM.iter = max.EM.iter, verbose = verbose, info = info)$result$coefficients
 			}
-			else{.coef.jack[[i]] <- f.tri.glm(.data.tmp$freq, maternal = maternal, ref.cat = ref.cat)$result$coefficients}
+			else{
+				stop("This part needs updating...")
+				.design.matrix <- NA # BARE FOR AA UNNGAA R CMD check FEILMELDING
+				.coef.jack[[i]] <- f.tri.glm(.data.tmp$freq, design.matrix = .design.matrix, maternal = maternal, ref.cat = ref.cat)$result$coefficients
+			}
 		}# END for i
 	#
 	## SET IN MATRIX FORM:

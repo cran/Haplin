@@ -19,8 +19,13 @@ if(n.vars > 0){
 	.data.vars <- NULL
 }
 #
-## TEST HWE
-.HWE.res <- f.HWE.design(.data.gen, design = design, xchrom = xchrom)
+## TEST FOR HWE
+if(!xchrom){
+	.HWE.res <- f.HWE.design(.data.gen, design = design) 
+}
+if(xchrom){
+	.HWE.res <- f.HWE.design(.data.gen, design = design, sex = data[, info$variables$sex]) 
+}
 #
 ## RESHAPE GENETIC DATA
 #
@@ -34,18 +39,16 @@ if((design %in% c("triad", "cc.triad")) & xchrom){
 	.data.gen <- f.sort.alleles.new(.data.gen, xchrom = T, sex = data[, info$variables$sex])
 }
 #
-## CASE-CONTROL DESIGN:
-if(design == "cc"){
+## CASE-CONTROL DESIGN (NO X-CHROM):
+if((design == "cc") & !xchrom){
 	.data.gen <- f.sort.alleles.cc(.data.gen)
 }
 #
+## CASE-CONTROL DESIGN (ON THE X-CHROM):
+if((design == "cc") & xchrom){
+	.data.gen <- f.sort.alleles.cc(.data.gen, xchrom = T, sex = data[, info$variables$sex])
+}
 #
-
-
+#
 return(list(data.gen = .data.gen, data.vars = .data.vars, HWE.res = .HWE.res))
-
-
-
-
-
 }

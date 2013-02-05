@@ -6,6 +6,11 @@ haptable.haplin <- function(object){
 ## COMPUTE SUMMARY
 .summ.res <- summary(object)
 .info <- object$info
+.poo <- .info$model$poo
+.comb.sex <- .info$model$comb.sex
+.rem.dd <- FALSE
+if(!is.null(.comb.sex) && (.comb.sex == "males")) .rem.dd <- TRUE
+#
 if(.info$model$scoretest == "only") stop('Sorry, haptable is not very helpful when haplin was run with scoretest = "only"')
 #
 ## NUMBER OF TRIADS USED IN ANALYSIS
@@ -21,6 +26,7 @@ if(.info$model$scoretest == "only") stop('Sorry, haptable is not very helpful wh
 .selected.haplotypes <- object$selected.haplotypes
 .nh <- sum(.selected.haplotypes)
 .selected.haplotypes <- names(.selected.haplotypes)[.selected.haplotypes]
+.fn <- function(x) paste(x, 1:.nh, sep = "")
 #
 ## EXTRACT EFFECTS MATRIX
 .effs <- .summ.res$summary.tri.glm$effects
@@ -62,9 +68,17 @@ if(.reference.method %in% c("reciprocal", "population"))
 	.ref <- rep(.reference.method, .nh)
 #
 ## REFORMAT TABLE
-.tab <- dframe(haplofreq = .effs[1:.nh,], reference = .ref, RR = .effs[(.nh+1):(2*.nh),], RRdd = .effs[(2*.nh+1):(3*.nh),])
+if(!.poo){
+	if(!.rem.dd){
+		.tab <- dframe(haplofreq = .effs[.fn("p"),], reference = .ref, RR = .effs[.fn("RRc"),], RRdd = .effs[.fn("RRcdd"),])
+	}else{## LEAVE OUT DOUBLE DOSE
+		.tab <- dframe(haplofreq = .effs[.fn("p"),], reference = .ref, RR = .effs[.fn("RRc"),])
+	}
+}else{
+	.tab <- dframe(haplofreq = .effs[.fn("p"),], reference = .ref, RRcm = .effs[.fn("RRcm"),], RRcf = .effs[.fn("RRcf"),], RRcm_RRcf = .effs[.fn("RRcm_RRcf"),], RRdd = .effs[.fn("RRcdd"),])
+}
 if(object$result$maternal){
-	.tabm <- dframe(RRm = .effs[(3*.nh+1):(4*.nh),], RRmdd = .effs[(4*.nh+1):(5*.nh),])
+	.tabm <- dframe(RRm = .effs[.fn("RRm"),], RRmdd = .effs[.fn("RRmdd"),])
 	.tab <- cbind(.tab, .tabm)
 }
 #
@@ -87,7 +101,16 @@ names(.tab)[names(.tab) == "haplofreq.est."] <- "haplofreq"
 names(.tab)[names(.tab) == "After.rem.Mend..inc."] <- "After.rem.Mend.inc."
 
 rownames(.tab) <- NULL
-#class(.tab) <- "haptable"
+
+#
+## MAKE A REDUCED VERSION OF THE info OBJECT
+.info.red <- list()
+.info.red$model <- .info$model
+.info.red$variables <- .info$variables
+class(.info.red) <- "info"
+
+attr(.tab, "info") <- .info.red
+class(.tab) <- c("haptable", "data.frame")
 return(.tab)
 
 

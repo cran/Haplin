@@ -11,6 +11,7 @@ print.summary.haplin <- function(x, digits = NULL, ...){
 
 .info <- x$info
 .alleles <- x$alleles
+.nas <- .info$haplos$alleles.nas
 .ntri.seq <- x$ntri.seq
 #
 cat("----Arguments supplied to haplin in this run:----\n")
@@ -48,7 +49,8 @@ for (i in seq(along = .alleles)){
 	dimnames(.pr.all) <- list(rep("", dim(.pr.all)[[1]]), c("Allele", "Frequency", "Percent"))
 	#
 	## PRINT ALLELE FREQUENCIES AND HWE TEST
-	cat("Missing alleles: ", 2*x$HWE.res[[i]]$n.miss.geno, "\n")
+	#cat("Missing alleles: ", 2*x$HWE.res[[i]]$n.miss.geno, "\n")
+	cat("Missing alleles: ", .nas[i], "\n")
 	print(.pr.all, quote = F)
 	cat("Chi-squared test for HWE, p-value: ", format(x$HWE.res[[i]]$p.value, digits = .dig.overall), "\n")
 }# END FOR EACH MARKER

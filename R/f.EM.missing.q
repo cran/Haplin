@@ -20,12 +20,13 @@
 .deviance <- numeric(max.EM.iter)	#
 i <- 1	#
 .EM.conv <- F
+.design.matrix <- f.make.design(maternal = maternal, response = response, info = info)
 #### EM LOOP: ###########################
 repeat{
 	# M-STEP:
 	#
 	## ACTUAL ESTIMATION
-	.res <- f.tri.glm(.tmpfreq, maternal = maternal, response = response, info = info)	#
+	.res <- f.tri.glm(.tmpfreq, design.matrix = .design.matrix, maternal = maternal, info = info)	#
 	#
 	## PARAMETERS NEEDED TO CHECK CONVERGENCE
 	.deviance[[i]] <- .res$result$deviance	# THIS IS TWICE THE MINUS LOG-LIKELIHOOD OF THE GLM
@@ -84,7 +85,7 @@ next
 #
 if(x){
 	## ADD DESIGN MATRIX IN LAST STEP, IF REQUESTED:
-	.res <- f.tri.glm(.tmpfreq, maternal = maternal, response = response, x = x, info = info)#
+	.res <- f.tri.glm(.tmpfreq, design.matrix = .design.matrix, maternal = maternal, info = info, x = x)#
 } # WARNING: REQUIRES .tmpfreq TO BE UNCHANGED AFTER LAST COMPUTATION OF .res!
 #
 attr(.res, "iter.used") <- i

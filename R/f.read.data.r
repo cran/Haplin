@@ -29,9 +29,9 @@ else .split <- F
 .na.cond <- is.element(.na.strings, c("", " "))
 .sep.cond <- is.element(.sep, c("", " "))
 if(!.na.cond & (.sep != .allele.sep) & .sep.cond){
-	.data <- read.table(file = .indata, na.strings = .na.strings, colClasses = "character", stringsAsFactors = F)
+	.data <- read.table(file = .indata, na.strings = .na.strings, colClasses = "character", stringsAsFactors = F, strip.white = T)
 }else{
-	.data <- read.table(file = .indata, sep = .sep, na.strings = .na.strings, colClasses = "character", stringsAsFactors = F)
+	.data <- read.table(file = .indata, sep = .sep, na.strings = .na.strings, colClasses = "character", stringsAsFactors = F, strip.white = T)
 }
 
 
@@ -83,9 +83,10 @@ if(.info$model$xchrom & !is.null(.info$variables$sel.sex)){
 	if(any(!is.element(.tmp, c("1", "2")))) stop(paste("The sex variable is coded ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2 (females). Missing values are not allowed.", sep = ""))
 	##
 	.ind.sub <- .ind.sub & (.sex == .info$variables$sel.sex)
+	#
+	## CHECK AND REPORT IF NO LINES LEFT
+	if(sum(.ind.sub) == 0) stop(paste0('No lines of data left when using "comb.sex = ', .info$model$comb.sex, '"'), call. = F)
 }
-
-
 
 
 #
@@ -98,14 +99,11 @@ if(.info$model$xchrom & !is.null(.info$variables$sel.sex)){
 
 
 
-
-
-
-
-
-gc()
 .markers <- attr(.sel, "markers")
 .big <- prod(dim(.data)) > 10000000 # ROUGHLY 40 Mb(?) object.size
+if(.big){
+	gc()
+}
 #
 ## CONVERT TO MATRIX
 .data <- as.matrix(.data)
@@ -175,6 +173,7 @@ if(!.split){
 #
 ## REMOVE ROWS WITH MISSING, IF REQUESTED:
 if(!.use.missing){
+	if(all(.is.na)) stop('All data lines contain at least one missing, and "use.missing" is set to FALSE', call. = F)
 	if(.n.vars > 0) .xdata <- .xdata[!.is.na, , drop = F]
 	.data.gen <- .data.gen[!.is.na, , drop = F]
 	.omitted <- which(.is.na)
@@ -221,6 +220,11 @@ attr(.data.out, "rows.with.na")  <- .na.message
 ## RETURNS WHICH ROWS ARE DROPPED:
 attr(.data.out, "rows.dropped")  <- as.numeric(.omitted)
 attr(.data.out, "info") <- .info # THIS IS THE ONLY ONE THAT ACTUALLY SHOULD BE NECESSARY, BUT THE OTHERS ARE STILL USED...
+#
+## 
+.nrow <- nrow(.data.out)
+if(.nrow == 0) stop("No rows of data available!", call. = F)
+if(.nrow <= 15) warning(paste0("Only ", .nrow, " lines of data available!\nHaplin is unlikely to produce very reliable results...."), call. = F)
 #
 ## THE END
 return(.data.out)

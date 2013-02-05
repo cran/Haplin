@@ -6,6 +6,7 @@ f.fill.effects <- function(resmat, info){
 ## PREPARE
 .n.sel.haplos <- sum(info$haplos$selected.haplotypes)
 .maternal <- info$model$maternal
+.poo <- info$model$poo
 #
 ## BUILDING BLOCKS FOR EFFECT NAMES
 .mf <- paste("mf", 1:.n.sel.haplos, sep = "")
@@ -13,13 +14,21 @@ f.fill.effects <- function(resmat, info){
 .cdd <- paste("cdd", 1:.n.sel.haplos, sep = "")
 .m <- paste("m", 1:.n.sel.haplos, sep = "")
 .mdd <- paste("mdd", 1:.n.sel.haplos, sep = "")
+.cm <- paste("cm", 1:.n.sel.haplos, sep = "")
+.cf <- paste("cf", 1:.n.sel.haplos, sep = "")
 #
-## SET UP RELEVANT EFFECT NAMES VECTOR (NOTE THAT THIS IS SET UP INDEPENDENT OF RESPONSE MODEL):
-if(!.maternal){
+## SET UP RELEVANT EFFECT NAMES VECTOR (NOTE THAT THIS IS SET UP INDEPENDENTLY OF RESPONSE MODEL):
+if(!.maternal & !.poo){
 	.navn <- c(.mf, .c, .cdd)
 }
-if(.maternal){
+if(.maternal & !.poo){
 	.navn <- c(.mf, .c, .cdd, .m, .mdd)
+}
+if(!.maternal & .poo){
+	.navn <- c(.mf, .cm, .cf, .cdd)
+}
+if(.maternal & .poo){
+	.navn <- c(.mf, .cm, .cf, .cdd, .m, .mdd)
 }
 #
 ## CHECK FOR INCORRECT NAMES

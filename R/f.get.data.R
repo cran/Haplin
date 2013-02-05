@@ -13,7 +13,10 @@ if(missing(data)){
 		## READ DATA FROM FILE (NOTE THAT info IS UPDATED AND RETURNED AS AN ATTR. TO .data.read)
 		if(info$control$verbose)	cat("\nReading data from file...  ")
 		.data.read <- f.read.data(info) ##
-		gc()
+		.big <- prod(dim(.data.read)) > 10000000 # ROUGHLY 40 Mb(?) object.size
+		if(.big){
+			gc()
+		}
 		if(info$control$verbose)	cat("Done\n")
 	}else{
 		## READ DATA FROM DATABASE

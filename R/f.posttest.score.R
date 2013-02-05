@@ -35,7 +35,7 @@ if(any(!.sjekk)) stop()
 ## EXTRACT DATA, X AND PRED
 ###.pred <- object.list[["all"]]$result$pred ## SKAL KUN BRUKE DEN FRA FELLES ESTIMERING, DVS. H0
 .pred <- lapply(object.list, function(x) x$result$pred) ## SKAL KUN BRUKE DEN FRA FELLES ESTIMERING, DVS. H0
-.X <- object.list[["all"]]$result$result$x ## DENNE SKAL VÆRE LIK FOR ALLE ESTIMERINGER
+.X <- object.list[["all"]]$result$result$x ## DENNE SKAL VARE LIK FOR ALLE ESTIMERINGER
 .data <- lapply(object.list, function(x) x$temp1) ## HAR MIDLERTIDIG LAGT TIL DATA I OUTPUT
 
 ###.var.covar <- lapply(.data, function(da) f.var.covar(pred = .pred, X = .X, data = da, info = .info[[1]]))

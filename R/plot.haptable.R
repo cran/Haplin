@@ -1,32 +1,58 @@
-plot.haptable <- function(tab, separate.plots = F, filename, filetype = "png", use.dd, verbose = T, ...)
+plot.haptable <- function(x, separate.plots = F, filename, filetype = "png", use.dd, verbose = T, ...)
 {
 ##
 ## PLOT A HAPTABLE
 ## MERK: DENNE HAR MYE FELLES MED plot.haplin, BURDE KANSKJE VAERT SAMKJOERTE
 ##
 #
-.coef <- coef.haptable(tab)
-.n.sel.haplo <- length(attr(.coef, "haplos"))
-.maternal <- attr(.coef, "maternal")
-.ref.cat <- attr(.coef, "ref.cat")
-.reference.method <- attr(.coef, "reference.method")
+##
+## MERK! HAR IKKE IMPLEMENTERT use.single, SOM BRUKES TIL AA PLOTTE BOYS ONLY 
+## I X-CHROM. DEN ER HELLER IKKE IMPLEMENTERT I f.plot.effects. SE IMPLEMENTERING I 
+## plot.haplin. ?? ER DEN BRUKBAR TIL NOE SOM HELST?
+
+
+##
+## HAR IKKE INNE ARGUMENTET "reference", SOM LIGGER I plot.haplin
+
+.coef <- coef.haptable(x)
+.info <- attr(.coef, "info")
 .haplos <- attr(.coef, "haplos")
+.n.sel.haplo <- length(.haplos)
+.maternal <- .info$model$maternal
+.poo <- .info$model$poo
+.comb.sex <- .info$model$comb.sex
+.ref.cat <- .info$haplos$ref.cat
+.reference.method <- .info$haplos$reference.method
 #
-if(missing(use.dd)) use.dd <- 1:.n.sel.haplo
+if(missing(use.dd)){
+	.use.dd <- 1:.n.sel.haplo
+}else{
+	.use.dd <- use.dd
+}
+## OVERRIDE
+if(identical(.comb.sex, "males")) .use.dd <- F
+
+
+#use.single!
+
+
+.use.dd.mat <- .use.dd
+#
+.use.single.mat <- 1:.n.sel.haplo
 #
 ## PRODUCE JPEG OR PNG, IF REQUESTED
 .prod.file <- !missing(filename)
+
 #
 ##
-.params <- list(coeff = .coef, ref.cat = .ref.cat, reference.method = .reference.method, haplos = .haplos, maternal = .maternal, use.dd = use.dd, verbose = verbose, ...)
-
-##
-## MERK! HAR IKKE IMPLEMENTERT use.single, SOM BRUKES TIL Å PLOTTE BOYS ONLY 
-## I X-CHROM. DEN ER HELLER IKKE IMPLEMENTERT I f.plot.effects. SE IMPLEMENTERING I 
-## plot.haplin
-
-
-
+#
+## PARAMETERS FOR CHILD PLOT
+.params <- list(coeff = .coef, ref.cat = .ref.cat, reference.method = .reference.method, haplos = .haplos, maternal = .maternal, poo = .poo, use.dd = .use.dd, verbose = verbose, ...)
+#
+## CHANGE SOME PARAMETERS FOR MATENAL PLOT
+.params.mat <- .params
+.params.mat$use.dd <- .use.dd.mat
+.params.mat$use.single <- .use.single.mat
 #
 ##
 if(!.prod.file){
@@ -44,14 +70,14 @@ if(!.prod.file){
 		.params$type <- 3
 		invisible(do.call("f.plot.effects", .params))
 		par(mar = .par$mar)
-		.params$type <- 4
-		invisible(do.call("f.plot.effects", .params))
+		.params.mat$type <- 4
+		invisible(do.call("f.plot.effects", .params.mat))
 	}
 	if(.maternal & separate.plots){
 		.params$type <- 1
 		invisible(do.call("f.plot.effects", .params))
-		.params$type <- 2
-		invisible(do.call("f.plot.effects", .params))
+		.params.mat$type <- 2
+		invisible(do.call("f.plot.effects", .params.mat))
 	}
 }# END !.prod.file
 
@@ -83,8 +109,8 @@ if(.prod.file){
 		.params$type <- 3
 		invisible(do.call("f.plot.effects", .params))
 		par(mar = .par$mar)
-		.params$type <- 4
-		invisible(do.call("f.plot.effects", .params))
+		.params.mat$type <- 4
+		invisible(do.call("f.plot.effects", .params.mat))
 		dev.off()
 	}
 	if(.maternal & separate.plots){
@@ -103,8 +129,8 @@ if(.prod.file){
 		if(filetype == "jpeg"){
 			jpeg(filename = paste("2", filename, sep = ""), width = .jpeg.size[1], height = .jpeg.size[2], pointsize = 9, quality = 100)
 		}
-		.params$type <- 2
-		invisible(do.call("f.plot.effects", .params))
+		.params.mat$type <- 2
+		invisible(do.call("f.plot.effects", .params.mat))
 		dev.off()	
 	}
 }# END .prod.file
