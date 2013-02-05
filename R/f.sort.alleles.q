@@ -17,7 +17,7 @@ for(i in seq(1, .nmarkers * 6, 2)){
 	data[,i] <- .tmpcol1	
 	data[,i+1] <- .tmpcol2		
 }
-
+#
 ## AGGREGATE DATA WITH A FREQUENCY COUNT:
 if(!xchrom) .tmpd <- data
 if(xchrom) .tmpd <- cbind(data, sex = sex)
@@ -57,6 +57,8 @@ if(xchrom) .data.long <- cbind(.data.long, sex = rep(.sex, each = 8 * .nmarkers)
 #
 .ind.unique.line.marker <- f.pos.in.grid(A = c(.nmarkers, .nlines.unique), comb = .data.long[,c("ind.marker", "ind.unique.line")])	
 .data.long <- cbind(.data.long, ind.unique.line.marker = .ind.unique.line.marker)
+
+
 #
 ## IDENTIFY MENDELIANLY CONSISTENT COMBINATIONS:
 #
@@ -92,25 +94,23 @@ if(xchrom){
 	.valid4[is.na(.valid4)] <- T # IF ONE OR BOTH ARE MISSING THE COMBINATION IS VALID
 	#
 	.valid <- .valid2 & .valid4 & .valid.f & .valid.c
-}
+}# END if(xchrom)
 #	
 
-	.valid.markers <- tapply(.valid, as.data.frame(.data.long[,c("ind.unique.line", "ind.marker")]), any)
-	.valid.unique.lines <- apply(.valid.markers, 1, all) # NOTE: ASSUMES COMPLETE LIST OF INTEGERS FOR ind.unique.line, AND SORTED..
-###	.rows.with.Mendelian.inconsistency <- unlist(.lines[.tag[.unique][!.valid.unique.lines]])	
-	.rows.with.Mendelian.inconsistency <- unlist(.lines[!.valid.unique.lines])	
+.valid.markers <- tapply(.valid, as.data.frame(.data.long[,c("ind.unique.line", "ind.marker")]), any)
+.valid.unique.lines <- apply(.valid.markers, 1, all) # NOTE: ASSUMES COMPLETE LIST OF INTEGERS FOR ind.unique.line, AND SORTED..
+.rows.with.Mendelian.inconsistency <- unlist(.lines[!.valid.unique.lines])	
 #
 ## REMOVE ALL INCONSISTENT LINES (WARNING: COMPLETELY INCONSISTENT WILL HERE DISAPP.!):
 #
-##	.data.long <- data.frame(.data.long, .valid)
-	.keep <- .valid.unique.lines[.data.long[,"ind.unique.line"]] & .valid # KEEP ALL COSISTENT FOR THOSE WITH AT LEAST ONE CONSISTENT
-	.data.long <- .data.long[.keep,]
+.keep <- .valid.unique.lines[.data.long[,"ind.unique.line"]] & .valid # KEEP ALL COSISTENT FOR THOSE WITH AT LEAST ONE CONSISTENT
+.data.long <- .data.long[.keep,]
 #
 ## REDUCE TO A 4-COLUMN MATRIX (STILL LONG FORMAT) FOR ONLY MOTHER AND FATHER, REPLACE THE NAs WHENEVER
 # POSSIBLE, AND LEAVE REAL NAs OPEN:
 #
-	.ia2 <- is.na(.data.long[,2])
-	.ia4 <- is.na(.data.long[,4])
+.ia2 <- is.na(.data.long[,2])
+.ia4 <- is.na(.data.long[,4])
 if(!xchrom){
 	.data.long[.ia2, 2] <- .data.long[.ia2, 5]
 	.data.long[.ia4, 4] <- .data.long[.ia4, 6]
@@ -123,6 +123,7 @@ if(xchrom){
 }
 #
 .data.long <- .data.long[,-c(5,6)]
+
 #
 ## REMOVE DUPLICATE ROWS:
 #
@@ -134,6 +135,9 @@ if(xchrom){
 #
 ## EXPAND ALL NAs WITH SEQUENCE OF ALL POSSIBLE ALLELES FOR THE CORRESPONDING MARKER:
 #
+# MERK: SKULLE VEL EGENTLIG UNNGAATT AT GUTTER
+# BLE EKSPANDERT DOBBELT I xchrom, SLIK SOM DET
+# UNNGAAS AT FEDRE BLIR DET!
 if(!xchrom){
 	for(i in 4:1){# FOR EACH OF THE 4 ALLELES
 		for(j in 1:.nmarkers){
@@ -165,57 +169,42 @@ if(xchrom){
 }	# THIS MATRIX DOES NOT HAVE ANY REDUNDANT ROWS (?), BUT MAYBE AFTER PLACING ON SINGLE LINE...(?)
 ##
 ## SET MARKERS SIDE BY SIDE, WITH ALL POSSIBLE COMBINATIONS:
-	.line.long <- 1:(dim(.data.long)[1])
-	# MATRIX OF LINE NUMBERS CORRESPONDING TO EACH COMB OF UNIQUE LINES AND MARKERS:
-	.line.bits <- tapply(.line.long, as.data.frame(.data.long[,c("ind.unique.line", "ind.marker"), drop = F]), function(x)x, simplify = F)
-	# CREATE ALL POSSIBLE COMBINATIONS OF MARKER GENOTYPES WITH OTHER MARKER GENOTYPES:
-	.line.seq <- apply(.line.bits, 1, function(x) as.numeric(t(as.matrix(do.call("expand.grid", x))))) # WARNING: IF ALL EXPANSIONS HAVE SAME LENGTH, THIS IS A MATRIX, NOT A VECTOR OF MODE LIST.
-	.line.seq <- as.numeric(unlist(.line.seq)) # as.numeric ALSO HANDLES .line.seq WHEN A MATRIX
-	# EXPAND DATA WITH ALL POSSIBLE COMBINATIONS:
-	.data.long <- .data.long[.line.seq,,drop = F]
-	.navn <- dimnames(.data.long)[[2]] # SAVE NAMES BEFORE RESHAPING
-	# REFORMAT DATA TO SET SIDE BY SIDE:
-	.data.long <- t(matrix(as.numeric(t(.data.long)), nrow = dim(.data.long)[2]*.nmarkers))
-
+.line.long <- 1:(dim(.data.long)[1])
+# MATRIX OF LINE NUMBERS CORRESPONDING TO EACH COMB OF UNIQUE LINES AND MARKERS:
+.line.bits <- tapply(.line.long, as.data.frame(.data.long[,c("ind.unique.line", "ind.marker"), drop = F]), function(x)x, simplify = F)
+# CREATE ALL POSSIBLE COMBINATIONS OF MARKER GENOTYPES WITH OTHER MARKER GENOTYPES:
+.line.seq <- apply(.line.bits, 1, function(x) as.numeric(t(as.matrix(do.call("expand.grid", x))))) # WARNING: IF ALL EXPANSIONS HAVE SAME LENGTH, THIS IS A MATRIX, NOT A VECTOR OF MODE LIST.
+.line.seq <- as.numeric(unlist(.line.seq)) # as.numeric ALSO HANDLES .line.seq WHEN A MATRIX
+# EXPAND DATA WITH ALL POSSIBLE COMBINATIONS:
+.data.long <- .data.long[.line.seq,,drop = F]
+.navn <- dimnames(.data.long)[[2]] # SAVE NAMES BEFORE RESHAPING
+# REFORMAT DATA TO SET SIDE BY SIDE:
+.data.long <- t(matrix(as.numeric(t(.data.long)), nrow = dim(.data.long)[2]*.nmarkers))
+#
 ####
 ####
-	if(F){# SOME DATA CHECKING (NOT *REALLY* NECESSARY):
-# CHECK LINE NUMBERS:
-	.colno.check <- seq(from = 5, by = 7, length = .nmarkers)
-	.tmp <- .data.long[,.colno.check, drop = F]-.data.long[,.colno.check[1]]
-##	print(.tmp[1:10,])
-	if(any(.tmp != 0)) stop("Problem in data preparation!")
-
-# CHECK MARKER NUMBERS:
-	for (i in 1:.nmarkers){
-		.coltmp <- 6 + 7*(i - 1)
-		if(any(.data.long[,.coltmp] != i)) stop("Problem in data preparation!")
-	}
+# SET CORRECT NAMES AFTER RESHAPING:
+.navn <- as.character(t(outer(paste("l", 1:.nmarkers, sep = ""), .navn, function(x,y) paste(x,y,sep="."))))
+dimnames(.data.long) <- list(NULL, .navn)
 #
-#
-	}
-	
-	# SET CORRECT NAMES AFTER RESHAPING:
-	.navn <- as.character(t(outer(paste("l", 1:.nmarkers, sep = ""), .navn, function(x,y) paste(x,y,sep="."))))
-	dimnames(.data.long) <- list(NULL, .navn)
 ##
 ## REORDER COLUMNS AND FIX COLNAMES:
 #
-	if(!xchrom) .indtmp <- c(as.numeric(outer(7*(0:(.nmarkers - 1)), 1:4,  "+")), 5)
-	if(xchrom) .indtmp <- c(as.numeric(outer(8*(0:(.nmarkers - 1)), 1:4,  "+")), c(6, 5)) # SEX IS ADDED
-	.data.long <- .data.long[, .indtmp, drop = F]
-	dimnames(.data.long)[[2]][dimnames(.data.long)[[2]] == "l1.ind.unique.line"] <- "ind.unique.line"
-	if(xchrom) dimnames(.data.long)[[2]][dimnames(.data.long)[[2]] == "l1.sex"] <- "sex"
+if(!xchrom) .indtmp <- c(as.numeric(outer(7*(0:(.nmarkers - 1)), 1:4,  "+")), 5)
+if(xchrom) .indtmp <- c(as.numeric(outer(8*(0:(.nmarkers - 1)), 1:4,  "+")), c(6, 5)) # SEX IS ADDED
+.data.long <- .data.long[, .indtmp, drop = F]
+dimnames(.data.long)[[2]][dimnames(.data.long)[[2]] == "l1.ind.unique.line"] <- "ind.unique.line"
+if(xchrom) dimnames(.data.long)[[2]][dimnames(.data.long)[[2]] == "l1.sex"] <- "sex"
 #
 ##
 ##	COMPUTE HAPLOTYPE NUMBER FOR MARKER COMBINATIONS:
 #
-	.d2 <- dim(.data.long)[2]
-	if(!xchrom) .pos.haplo <- f.pos.to.haplocomb(A = .nalleles, comb = .data.long[, 1:(.d2 - 1)])
-	if(xchrom) .pos.haplo <- f.pos.to.haplocomb(A = .nalleles, comb = .data.long[,1:(.d2 - 2)])
-	.haplo.comb <- f.pos.to.haplocomb(pos = .pos.haplo, A = prod(.nalleles))
+.d2 <- ncol(.data.long)
+if(!xchrom) .pos.haplo <- f.pos.to.haplocomb(A = .nalleles, comb = .data.long[, 1:(.d2 - 1)])
+if(xchrom) .pos.haplo <- f.pos.to.haplocomb(A = .nalleles, comb = .data.long[,1:(.d2 - 2)])
+.haplo.comb <- f.pos.to.haplocomb(pos = .pos.haplo, A = prod(.nalleles))
 
-	dimnames(.haplo.comb) <- list(NULL, c("m1", "m2", "f1", "f2"))
+colnames(.haplo.comb) <- c("m1", "m2", "f1", "f2")
 
 #
 ##
@@ -228,14 +217,14 @@ if(xchrom){
 ### BOER SJEKKE DENNE?:
 ##
 ##
-	if(!xchrom) .ut <- cbind(comb = .haplo.comb, ind.unique.line = .data.long[,"ind.unique.line"], freq = .data.agg$freq[.data.long[,"ind.unique.line"]])
-	if(xchrom) .ut <- cbind(comb = .haplo.comb, sex = .data.long[,"sex"], ind.unique.line = .data.long[,"ind.unique.line"], freq = .data.agg$freq[.data.long[,"ind.unique.line"]])
-	.ut <- as.data.frame(.ut)
+if(!xchrom) .ut <- cbind(comb = .haplo.comb, ind.unique.line = .data.long[,"ind.unique.line"], freq = .data.agg$freq[.data.long[,"ind.unique.line"]])
+if(xchrom) .ut <- cbind(comb = .haplo.comb, sex = .data.long[,"sex"], ind.unique.line = .data.long[,"ind.unique.line"], freq = .data.agg$freq[.data.long[,"ind.unique.line"]])
+.ut <- as.data.frame(.ut)
 #
-	attr(.ut, "alleles") <- .alleles
-	attr(.ut, "rows.with.Mendelian.inconsistency") <- .rows.with.Mendelian.inconsistency
-	attr(.ut, "orig.lines") <- .lines # NOTE: .lines CAN BE INDEXED BY .tag AND .tag.unique (AS CHARACTER) OR BY ind.unique.line 
+attr(.ut, "alleles") <- .alleles
+attr(.ut, "rows.with.Mendelian.inconsistency") <- .rows.with.Mendelian.inconsistency
+attr(.ut, "orig.lines") <- .lines # NOTE: .lines CAN BE INDEXED BY .tag AND .tag.unique (AS CHARACTER) OR BY ind.unique.line 
 #	
-	return(.ut)
+return(.ut)
 
 }

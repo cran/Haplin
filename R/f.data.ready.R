@@ -4,7 +4,7 @@ f.data.ready <- function(data, info, sel.markers = !info$filespecs$database){
 ##
 #
 ##
-if(mode(data) != "character") stop("data must be a character matrix", call. = F) ## BURDE ENDRE PÅ DETTE?
+if(mode(data) != "character") stop("data must be a character matrix", call. = F) ## BURDE ENDRE PAA DETTE?
 
 .n.vars <- info$filespecs$n.vars
 .markers <- info$filespecs$markers
@@ -46,8 +46,10 @@ if(sel.markers){
 #
 ## EXTRACT DATA COLUMNS AND ROWS
 .data <- data[.ind.sub, .sel, drop = F]
-
-gc()
+.big <- prod(dim(.data)) > 10000000 # ROUGHLY 40 Mb(?) object.size
+if(.big){
+	gc()
+}
 
 
 if(.n.vars > 0){

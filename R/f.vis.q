@@ -24,8 +24,8 @@ function(..., vis = T, fc = F)
 	.arg <- as.character(.call)[ - c(1, .pos.rem)]
 	.is.char <- .is.char[ - c(1, .pos.rem)]	## .arg <- deparse(.call)
 #  
-## cat("Advarsel: også problem med tekststreng med komma...\n")
-## cat("Advarsel: må også kunne ta x...\n")
+## cat("Advarsel: ogsaa problem med tekststreng med komma...\n")
+## cat("Advarsel: maa ogsaa kunne ta x...\n")
 #
 #
 	if(.vis) {

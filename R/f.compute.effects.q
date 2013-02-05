@@ -7,6 +7,8 @@ function(x, maternal, reference.method, ref.cat, n.all, info)
 #
 #### PREPARE: ##########################
 design <- info$model$design
+.poo <- info$model$poo
+.fn <- function(x) paste(x, 1:n.all, sep = "")
 .safe <- T # USES A MORE STABLE (BUT MORE TIME-CONSUMING) COMPUTATION.
 		# SHOULD NOT BE NECESSARY IF NONE OF THE ALLELES ARE RARE
 #
@@ -27,94 +29,111 @@ else .resmat <- x #
 .J <- matrix(1, nrow = n.all, ncol = 1) #
 #
 #### COMPUTE ALLELE FREQUENCIES: #############
-.p <- exp(.resmat[, 1:n.all, drop = F])
+.p <- exp(.resmat[, .fn("mf"), drop = F])
 .p <- .p/as.numeric(.p %*% .J)	#
 #
 #### COMPUTE RELATIVE RISKS FOR CHILD: #############
-.R <- exp(.resmat[, (n.all + 1):(2 * n.all), drop = F])	#
-.Rstar <- exp(.resmat[, (2 * n.all + 1):(3 * n.all), drop = F])	#
-## IN REFCAT PARAMETRIZATION:
-.Rstartilde <- .R^2 * .Rstar
-## IN POPULATION REFERENCE:
-if(reference.method == "population") {
-	.B <- as.numeric((.R * .p) %*% .J)	# POPULATION BASELINE
-	.Rtilde <- .R/.B
-	.Rstartilde <- .Rstartilde/.B
-}
-## IN RECIPROCAL REFERENCE:
-if(reference.method == "reciprocal"){ #
-#
-	.f.minus <- function(x) as.numeric(x %*% rep(1, dim(x)[2])) - x #
-#
-	.f.kryssprod <- function(x, f.minus){
-		(x * f.minus(x)) %*% rep(1, dim(x)[2])		
-	} #
-#
-	.f.kryssprod.minus <- function(x){
-		.d2 <- dim(x)[2]
-		(as.numeric(x %*% rep(1, .d2)) - x)^2 - (as.numeric(x^2 %*% rep(1, .d2)) - x^2)
-	} #
-#
-	.f.minus.safe <- function(x){
-		.d <- dim(x)
-		.ut <- x
-		.ut[,] <- NA
-		for(i in seq(length = .d[2])){
-			.ut[,i] <- x[, -i, drop = F] %*% rep(1, .d[2] -1)
-		}
-		.ut
-	} #
-#		
-	.f.kryssprod.minus.safe <- function(x, f.minus, f.kryssprod){
-		.d <- dim(x)
-		.ut <- x
-		.ut[,] <- NA
-		for(i in seq(length = .d[2])){
-			.ut[,i] <- f.kryssprod(x[,-i, drop = F], f.minus)
-		}
-		.ut
-	} #
-#
-#
-	.pR <- .p * .R #
-#
-	if(.safe){
-		.now <- proc.time()[1]
-		.Pi.safe <- .R * .f.minus.safe(.pR) / .f.minus.safe(.p)
-		.Pi.minus.safe <- .f.kryssprod.minus.safe(.pR, .f.minus.safe, .f.kryssprod) / .f.kryssprod.minus.safe(.p, .f.minus.safe, .f.kryssprod)
-		.Fi.safe <- .Pi.safe/.Pi.minus.safe
-		.Fi.startilde.safe <- .Rstartilde/.Pi.minus.safe
-		f.vis(paste("used", proc.time()[1] - .now, "\n"), vis = F)
-		.Fi <- .Fi.safe
-		.Fi.startilde <- .Fi.startilde.safe
-	}# END if(.safe)
-	if(!.safe){
-		.now <- proc.time()[1]
-		.Pi <- .R * .f.minus(.pR) / .f.minus(.p)
-##		.Pi.minus <- (.f.minus(.pR)^2 - .f.minus(.pR^2))/(.f.minus(.p)^2 - .f.minus(.p^2))
-		.Pi.minus <- .f.kryssprod.minus(.pR)/.f.kryssprod.minus(.p)
-		if(any(.Pi.minus == 0)){
-			.Pi.minus[.Pi.minus == 0] <- 1e-10  
-			warning("NAs generated during simulation, perhaps due to rare haplotype!")
-		}
-		.Fi <- .Pi/.Pi.minus
-		.Fi.startilde <- .Rstartilde/.Pi.minus
-		f.vis(paste("used", proc.time()[1] - .now, "\n"), vis = F)
-	}# END if(!.safe)
-}# END reciprocal
+if(.poo){
+	## ONLY REFCAT AND POPULATION, THIS FAR
+	.Rcm <- exp(.resmat[, .fn("cm"), drop = F])	#
+	.Rcf <- exp(.resmat[, .fn("cf"), drop = F])	#
+	.Rstar <- exp(.resmat[, .fn("cdd"), drop = F])	#
+	## IN REFCAT PARAMETRIZATION:
+	.Rstartilde <- .Rcm * .Rcf * .Rstar
+	## IN POPULATION REFERENCE:
+	if(reference.method == "population") {
+		.Bcm <- as.numeric((.Rcm * .p) %*% .J)	# POPULATION BASELINE
+		.Bcf <- as.numeric((.Rcf * .p) %*% .J)	# POPULATION BASELINE
+		.Rcmtilde <- .Rcm/.Bcm
+		.Rcftilde <- .Rcf/.Bcf
+		.Rstartilde <- .Rstartilde/(.Bcm * .Bcf)
+	}
+}else{
+	.R <- exp(.resmat[, .fn("c"), drop = F])	#
+	.Rstar <- exp(.resmat[, .fn("cdd"), drop = F])	#
+	## IN REFCAT PARAMETRIZATION:
+	.Rstartilde <- .R^2 * .Rstar
+	## IN POPULATION REFERENCE:
+	if(reference.method == "population") {
+		.B <- as.numeric((.R * .p) %*% .J)	# POPULATION BASELINE
+		.Rtilde <- .R/.B
+		.Rstartilde <- .Rstartilde/.B^2 # KORRIGERT FRA .B
+	}
+	## IN RECIPROCAL REFERENCE:
+	if(reference.method == "reciprocal"){ #
+	#
+		.f.minus <- function(x) as.numeric(x %*% rep(1, dim(x)[2])) - x #
+	#
+		.f.kryssprod <- function(x, f.minus){
+			(x * f.minus(x)) %*% rep(1, dim(x)[2])		
+		} #
+	#
+		.f.kryssprod.minus <- function(x){
+			.d2 <- dim(x)[2]
+			(as.numeric(x %*% rep(1, .d2)) - x)^2 - (as.numeric(x^2 %*% rep(1, .d2)) - x^2)
+		} #
+	#
+		.f.minus.safe <- function(x){
+			.d <- dim(x)
+			.ut <- x
+			.ut[,] <- NA
+			for(i in seq(length = .d[2])){
+				.ut[,i] <- x[, -i, drop = F] %*% rep(1, .d[2] -1)
+			}
+			.ut
+		} #
+	#		
+		.f.kryssprod.minus.safe <- function(x, f.minus, f.kryssprod){
+			.d <- dim(x)
+			.ut <- x
+			.ut[,] <- NA
+			for(i in seq(length = .d[2])){
+				.ut[,i] <- f.kryssprod(x[,-i, drop = F], f.minus)
+			}
+			.ut
+		} #
+	#
+	#
+		.pR <- .p * .R #
+	#
+		if(.safe){
+			.now <- proc.time()[1]
+			.Pi.safe <- .R * .f.minus.safe(.pR) / .f.minus.safe(.p)
+			.Pi.minus.safe <- .f.kryssprod.minus.safe(.pR, .f.minus.safe, .f.kryssprod) / .f.kryssprod.minus.safe(.p, .f.minus.safe, .f.kryssprod)
+			.Fi.safe <- .Pi.safe/.Pi.minus.safe
+			.Fi.startilde.safe <- .Rstartilde/.Pi.minus.safe
+			f.vis(paste("used", proc.time()[1] - .now, "\n"), vis = F)
+			.Fi <- .Fi.safe
+			.Fi.startilde <- .Fi.startilde.safe
+		}# END if(.safe)
+		if(!.safe){
+			.now <- proc.time()[1]
+			.Pi <- .R * .f.minus(.pR) / .f.minus(.p)
+	##		.Pi.minus <- (.f.minus(.pR)^2 - .f.minus(.pR^2))/(.f.minus(.p)^2 - .f.minus(.p^2))
+			.Pi.minus <- .f.kryssprod.minus(.pR)/.f.kryssprod.minus(.p)
+			if(any(.Pi.minus == 0)){
+				.Pi.minus[.Pi.minus == 0] <- 1e-10  
+				warning("NAs generated during simulation, perhaps due to rare haplotype!")
+			}
+			.Fi <- .Pi/.Pi.minus
+			.Fi.startilde <- .Rstartilde/.Pi.minus
+			f.vis(paste("used", proc.time()[1] - .now, "\n"), vis = F)
+		}# END if(!.safe)
+	}# END reciprocal
+}# END if(!.poo)
 #
 #
 if(maternal) {#
 #### COMPUTE RELATIVE RISKS FOR MATERNAL EFFECTS, IF APPLICABLE: #############
-	.Rm <- exp(.resmat[, (3 * n.all + 1):(4 * n.all), drop = F])	#
-	.Rmstar <- exp(.resmat[, (4 * n.all + 1):(5 * n.all), drop = F]) # 
+	.Rm <- exp(.resmat[, .fn("m"), drop = F])	#
+	.Rmstar <- exp(.resmat[, .fn("mdd"), drop = F]) # 
 	## IN REFCAT PARAMETRIZATION:
 		.Rmstartilde <- .Rm^2 * .Rmstar
 	## IN POPULATION REFERENCE:
 	if(reference.method == "population") {
 		.Bm <- as.numeric((.Rm * .p) %*% .J)	# POPULATION BASELINE
 		.Rmtilde <- .Rm/.Bm
-		.Rmstartilde <- .Rmstartilde/.Bm
+		.Rmstartilde <- .Rmstartilde/.Bm^2 # KORRIGERT FRA .Bm
 	}
 	## IN RECIPROCAL REFERENCE:
 	if(reference.method == "reciprocal"){
@@ -147,33 +166,50 @@ if(maternal) {#
 #
 #
 #
-#### OUTPUT: ##########################  
-	if(reference.method == "ref.cat" & !maternal) {
-		#if(design == "cc"){
-		#.ut <- cbind(.p, .R, .Rstar)
-		#cat("gl\n")
-		#} else
-		.ut <- cbind(.p, .R, .Rstartilde)
-	}
-	if(reference.method == "population" & !maternal) {
-		.ut <- cbind(.p, .Rtilde, .Rstartilde)	#
-	}
-	if(reference.method == "reciprocal" & !maternal) {
-		.ut <- cbind(.p, .Fi, .Fi.startilde)	#
-	}
-	if(reference.method == "ref.cat" & maternal) {
-		.ut <- cbind(.p, .R, .Rstartilde, .Rm, .Rmstartilde)
-	}
-	if(reference.method == "population" & maternal) {
-		.ut <- cbind(.p, .Rtilde, .Rstartilde, .Rmtilde, .Rmstartilde)	#
-	}	
-	if(reference.method == "reciprocal" & maternal) {
-		.ut <- cbind(.p, .Fi, .Fi.startilde, .Fim, .Fim.startilde)	#
-	}
-
-	if(!maternal) dimnames(.ut)[[2]] <- c(paste("p", 1:n.all, sep = ""), paste("RRc", 1:n.all, sep = ""), paste("RRcdd", 1:n.all, sep = ""))
-	else
-	dimnames(.ut)[[2]] <- c(paste("p", 1:n.all, sep = ""), paste("RRc", 1:n.all, sep = ""), paste("RRcdd", 1:n.all, sep = ""), paste("RRm", 1:n.all, sep = ""), paste("RRmdd", 1:n.all, sep = ""))
-
-	return(.ut)
+#### OUTPUT: ##########################
+if(.poo){
+	if(maternal){
+		if(reference.method == "ref.cat") {
+			.ut <- cbind(.p, .Rcm, .Rcf, .Rcm/.Rcf, .Rstartilde, .Rm, .Rmstartilde)
+		}
+		if(reference.method == "population") {
+			.ut <- cbind(.p, .Rcmtilde, .Rcftilde, .Rcmtilde/.Rcftilde, .Rstartilde, .Rmtilde, .Rmstartilde)	#
+		}	
+		colnames(.ut) <- c(.fn("p"), .fn("RRcm"), .fn("RRcf"), .fn("RRcm_RRcf"), .fn("RRcdd"), .fn("RRm"), .fn("RRmdd"))
+	}else{
+		if(reference.method == "ref.cat") {
+			.ut <- cbind(.p, .Rcm, .Rcf, .Rcm/.Rcf, .Rstartilde)
+		}
+		if(reference.method == "population") {
+			.ut <- cbind(.p, .Rcmtilde, .Rcftilde, .Rcmtilde/.Rcftilde, .Rstartilde)
+		}	
+		colnames(.ut) <- c(.fn("p"), .fn("RRcm"), .fn("RRcf"), .fn("RRcm_RRcf"), .fn("RRcdd"))
+	}# END if(!maternal)
+}else{
+	if(maternal){
+		if(reference.method == "ref.cat") {
+			.ut <- cbind(.p, .R, .Rstartilde, .Rm, .Rmstartilde)
+		}
+		if(reference.method == "population") {
+			.ut <- cbind(.p, .Rtilde, .Rstartilde, .Rmtilde, .Rmstartilde)	#
+		}	
+		if(reference.method == "reciprocal") {
+			.ut <- cbind(.p, .Fi, .Fi.startilde, .Fim, .Fim.startilde)	#
+		}
+		colnames(.ut) <- c(.fn("p"), .fn("RRc"), .fn("RRcdd"), .fn("RRm"), .fn("RRmdd"))
+	}else{
+		if(reference.method == "ref.cat") {
+			.ut <- cbind(.p, .R, .Rstartilde)
+		}
+		if(reference.method == "population") {
+			.ut <- cbind(.p, .Rtilde, .Rstartilde)	#
+		}
+		if(reference.method == "reciprocal") {
+			.ut <- cbind(.p, .Fi, .Fi.startilde)	#
+		}
+		colnames(.ut) <- c(.fn("p"), .fn("RRc"), .fn("RRcdd"))
+	}# END if(!maternal)
+}# END if(!.poo)
+#
+return(.ut)
 }

@@ -8,11 +8,13 @@ f.ped.to.mfc <- function(data, pedIndex, design = "triad"){
 ## IMPORTANT: GENETIC COLUMNS SHOULD not BE SPLIT, I.E. ONLY ONE COLUMN PER MARKER
 ## id IS THE INDIVIDUAL ID VARIABLE CORRESPONDING TO EACH ROW IN data. MUST BE NAMED "id" IN data.
 ## pedIndex IS A FILE WITH FIRST A FAMILY COLUMN, THEN A CHILD INDEX, THEN MOTHER AND FATHER INDICES
-## I.E. EACH ROW CORRESPONDS TO A FAILY. INDICES WILL BE MISSING IF FAMILY MEMBER IS MISSING
+## I.E. EACH ROW CORRESPONDS TO A FAMILY. INDICES WILL BE MISSING IF FAMILY MEMBER IS MISSING
 ## IN ORIGINAL PED FILE
 ## FOR design %in% c("triad", "cc.triad"), pedIndex SHOULD ALWAYS BE SUPPLIED!
 ##
-#
+## NOTE: IF LINES HAVE BEEN REMOVED EITHER FROM THE data FILE OR FROM THE 
+## pedIndex FILE, THEY WILL BE MATCHED DOWN TO ONLY COMMON INDIVIDUALS
+##
 .id <- data[, "id"]
 #
 ##
@@ -27,6 +29,8 @@ if(!missing(pedIndex)){
 if(design %in% c("triad", "cc.triad")){
 	if(missing(pedIndex)) stop('pedIndex must be supplied (except for the "cc" design)')
 	## SELECT LINES OF data CORRESPONDING TO EITHER MOTHER, FATHER OR CHILD
+	## NOTE THAT DATA LINES NOT CORRESPONDING TO INDIVIDUALS IDENTIFIED IN THE
+	## pedIndex FILE WILL NOT BE SELECTED.
 	.d.m <- data[match(.pedIndex$id.mother, .id),]
 	.d.f <- data[match(.pedIndex$id.father, .id),]
 	.d.c <- data[match(.pedIndex$id.child, .id),]
@@ -42,8 +46,15 @@ if(design %in% c("triad", "cc.triad")){
 	.labs <- c("m", "f", "c")
 }
 if(design == "cc"){
-	## NO CHANGES
-	.ut <- data
+	if(missing(pedIndex)){
+		## NO CHANGES
+		.ut <- data
+	}else{
+		## SELECT LINES OF data CORRESPONDING TO CHILDREN IN pedIndex FILE
+		## NOTE THAT DATA LINES NOT CORRESPONDING TO INDIVIDUALS IDENTIFIED IN THE
+		## pedIndex FILE WILL NOT BE SELECTED.
+		.ut <- data[match(.pedIndex$id.child, .id),]
+	}
 	.labs <- "c"
 }
 #

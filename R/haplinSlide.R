@@ -4,8 +4,17 @@ haplinSlide <- function(filename, data, pedIndex, markers = "ALL", winlength = 1
 ## RUN HAPLIN ON SLIDING WINDOWS
 ##
 #.para <- "snow"
-.para <- "snowfall"
+#.para <- "snowfall"
 #.para <- "doSMP"
+#if(!missing(makeClusterArgs))
+.para <- "parallel"
+#
+##
+if(!missing(cpus)){
+	if(!is.numeric(cpus)) stop('The number of cpu-s "cpus" must be numeric!', call. = F)
+	.run.para <- (cpus > 1)
+} else .run.para <- F
+
 
 ## BRUKER "#i#" TIL AA KOMMENTERE VEKK DET SOM GIR ADVARSEL MED R CMD check, SIDEN DE RETTE PAKKENE IKKE ER INSTALLERT
 
@@ -69,7 +78,7 @@ cat("\n")
 	cat("Running Haplin on Window '", .names[i], "' (", i, "/", .nres, ")...:  ", sep = "")
 	args_ <- .args
 	#
-	if(cpus > 1){
+	if(.run.para){
 		## HAPLIN MUST BE MADE AVAILABLE IN EACH RUN
 		suppressPackageStartupMessages({
 			require(Haplin, quietly = T)
@@ -95,21 +104,21 @@ cat("\n")
 	}
 		#
 		## RUN HAPLIN
-		.res <- try(do.call("haplin", args_), silent = T)
+			.res <- try(do.call("haplin", args_), silent = T)
 		#
-		## CHECK IF ERRORS
-		if(class(.res) == "try-error") cat("RUN FAILED\n")
-		else{
-			cat("done\n")
-			if(table.output) .res <- haptable(.res)
-		}		
+			## CHECK IF ERRORS
+			if(class(.res) == "try-error") cat("RUN FAILED\n")
+			else{
+				cat("done\n")
+				if(table.output) .res <- haptable(.res)
+			}
 		return(.res)
 }
 #
 ## DO THE RUN
 ## EITHER IN SEQUENCE (SINGLE CPU) 
 ## OR IN PARALLEL (MULTIPLE CPUs)
-if(cpus == 1){
+if(!.run.para){
 	.res.list <- lapply(seq(length.out = .nres), .f.run)
 	names(.res.list) <- .names
 	#
@@ -117,13 +126,17 @@ if(cpus == 1){
 	.errs <- sapply(.res.list, class) == "try-error"
 }else{
 	#
-	if(!is.numeric(cpus)) stop('The number of cpu-s "cpus" must be numeric!', call. = F)
 	#
 	#	## INITIALIZE CPUS
 	if(.para == "snowfall"){
 		## SNOWFALL
-		sfInit(parallel = T, slaveOutfile = slaveOutfile, cpus = cpus)
-		on.exit(sfStop())
+#i#		sfInit(parallel = T, slaveOutfile = slaveOutfile, cpus = cpus)
+#i#		on.exit(sfStop())
+	}
+	if(.para == "parallel"){
+		## parallel
+		w <- makeCluster(spec = cpus, outfile = slaveOutfile)
+		on.exit(stopCluster(w))
 	}
 	if(.para == "doSMP"){
 		## doSMP BACKEND TO foreach
@@ -139,14 +152,19 @@ if(cpus == 1){
 	}
 	#
 	## RUN BY SPLITTING ON CPUS
-	cat("Run Haplin using ", cpus, " cpu's\n", sep = "")
-	if(.para == "snowfall")	.res.list <- sfLapply(seq(length.out = .nres), .f.run)
+		cat("Run Haplin using ", cpus, " cpu's\n", sep = "")
+#i#	if(.para == "snowfall")	.res.list <- sfLapply(seq(length.out = .nres), .f.run)
+	if(.para == "parallel") .res.list <- parLapply(w, seq(length.out = .nres), .f.run)
 #i#	if(.para == "snow") .res.list <- parLapply(w, seq(length.out = .nres), .f.run)
 #i#	if(.para == "doSMP") .res.list <- foreach(i = seq(length.out = .nres)) %dopar% .f.run(i)
 	names(.res.list) <- .names
 	#
 	## CHECK FOR HAPLIN FAILURES
-	if(.para == "snowfall") .errs <- sfSapply(.res.list, class) == "try-error"
+	.ftest <- function(x){
+		return(identical(class(x), "try-error"))
+	}
+#i#	if(.para == "snowfall") .errs <- sfSapply(.res.list, .ftest)
+	if(.para == "parallel") .errs <- unlist(parLapply(w, .res.list, .ftest))
 #i#	if(.para == "snow") .errs <- parLapply(w, .res.list, class) == "try-error"
 #i#	if(.para == "doSMP") .errs <- foreach(i = seq(along = .res.list)) %dopar% class(.res.list[[i]]) == "try-error"
 }

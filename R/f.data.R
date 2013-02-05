@@ -48,22 +48,10 @@ if(.rows.with.na == 0){
 if(verbose) cat("\nPreparing data for analysis...  ")
 .data <- f.prep.data(.data.read, info = .info)	
 if(verbose) cat("Done\n")
-
-
-
-#
-## DETTE ER EN AD-HOC REPARASJON AV KODINGEN AV KJONNSVARIABEL
-if(.info$model$xchrom && !is.null(.info$variables$sel.sex) && (.info$variables$sel.sex == 2)){
-	if(any(.data[, .info$variables$sex] != 1)) stop()
-		.data[, .info$variables$sex] <- 2
-}
-
-
-
-
 #
 ## EXTRACT ALLELE INFORMATION:
 .info$haplos$alleles <- attr(.data, "alleles")
+.info$haplos$alleles.nas <- attr(.data, "alleles.nas") # NUMBER OF MISSING
 #
 ## CHANGE CASE: UPPER-CASE IS MOST FREQUENT	
 .f.change.case <- function(allele){
@@ -73,6 +61,27 @@ if(.info$model$xchrom && !is.null(.info$variables$sel.sex) && (.info$variables$s
 	allele
 }
 .info$haplos$alleles <- lapply(.info$haplos$alleles, .f.change.case) # IS THIS A GOOD IDEA?
+#
+## IF XCHROM, CODE SEX VARIABLE BACK TO ORIGINAL CODING
+if(.info$model$xchrom){
+	.sexcodes <- as.numeric(names(attr(.data, "variables")[[.info$variables$sex]]))
+	.data[, .info$variables$sex] <- .sexcodes[.data[, .info$variables$sex]]
+}
+
+###
+### SKAL GI KODINGEN TIL KJONNSVARIABEL
+
+#
+## DETTE ER EN AD-HOC REPARASJON AV KODINGEN AV KJONNSVARIABEL
+if(F & .info$model$xchrom && !is.null(.info$variables$sel.sex) && (.info$variables$sel.sex == 2)){
+	if(any(.data[, .info$variables$sex] != 1)) stop()
+		.data[, .info$variables$sex] <- 2
+}
+
+
+
+
+
 #
 ## RETURN DATA BEFORE "HEAVY" PREPARATION
 if(quick){
@@ -99,31 +108,22 @@ if(!xchrom){
 	for(i in seq(along = .info$haplos$alleles)) if(any(.info$haplos$alleles[[i]]  != .HWE.res[[i]]$freq)) warning("Something's strange with the frequency count in HWE test!")
 }
 #
-##
-if(design == "triad" | design == "cc.triad"){
-	#
-	## REPORT MENDELIAN INCONSISTENCIES:
-	.rows.with.Mendelian.inconsistency <- attr(.data.gen, "rows.with.Mendelian.inconsistency") # LINE NUMBERS REFER TO DATA AFTER POSSIBLE REMOVAL OF MISSING 
-	#
-	if(length(.rows.with.Mendelian.inconsistency) == 0){
-		.ind.Mend <- numeric()
-		.ntri.seq[3] <- .ntri.seq[2]
-		.orig.lines.seq[[3]] <- .orig.lines.seq[[2]]
-		if(!use.missing & .rows.with.na > 0)
-			if(verbose) cat("None of the retained lines contained Mendelian inconsistencies\n")
-		else
-			if(verbose) cat("No lines contained Mendelian inconsistencies\n")
-	}else{
-		.ind.Mend <- .orig.lines.seq[[2]][.rows.with.Mendelian.inconsistency] ## WILL REFER TO LINE NUMBERS (WITH POSS. MEND. INCONS.) IN ORIGINAL FILE
-		if(verbose) cat("The following", length(.ind.Mend), "data lines were dropped due to Mendelian inconsistencies:\n", .ind.Mend, "\n")	
-		.orig.lines.seq[[3]] <- .orig.lines.seq[[2]][-.rows.with.Mendelian.inconsistency]
-		.ntri.seq[3] <- length(.orig.lines.seq[[3]])
-	}
-}
-if(design == "cc"){
+## REPORT MENDELIAN INCONSISTENCIES:
+.rows.with.Mendelian.inconsistency <- attr(.data.gen, "rows.with.Mendelian.inconsistency") # LINE NUMBERS REFER TO DATA AFTER POSSIBLE REMOVAL OF MISSING 
+#
+if(length(.rows.with.Mendelian.inconsistency) == 0){
 	.ind.Mend <- numeric()
-	.ntri.seq[3] <- .ntri.seq[2] # CC CANNOT DETECT MEND. INCONS...
+	.ntri.seq[3] <- .ntri.seq[2]
 	.orig.lines.seq[[3]] <- .orig.lines.seq[[2]]
+	if(!use.missing & .rows.with.na > 0)
+		if(verbose) cat("None of the retained lines contained Mendelian inconsistencies\n")
+	else
+		if(verbose) cat("No lines contained Mendelian inconsistencies\n")
+}else{
+	.ind.Mend <- .orig.lines.seq[[2]][.rows.with.Mendelian.inconsistency] ## WILL REFER TO LINE NUMBERS (WITH POSS. MEND. INCONS.) IN ORIGINAL FILE
+	if(verbose) cat("The following", length(.ind.Mend), "data lines were dropped due to Mendelian inconsistencies:\n", .ind.Mend, "\n")	
+	.orig.lines.seq[[3]] <- .orig.lines.seq[[2]][-.rows.with.Mendelian.inconsistency]
+	.ntri.seq[3] <- length(.orig.lines.seq[[3]])
 }
 #
 ##
@@ -152,8 +152,14 @@ if(design == "triad" | design == "cc.triad"){
 }
 ##
 if(design == "cc"){
-	.data.gen <- cbind(.data.gen[.ind,1:3], ind.aux = .ind.aux, .orig.lines)
-	names(.data.gen) <- c("c1", "c2", "ind.unique.line", "ind.aux", "orig.lines")
+	if(!xchrom){
+		.data.gen <- cbind(.data.gen[.ind,1:3], ind.aux = .ind.aux, .orig.lines)
+		names(.data.gen) <- c("c1", "c2", "ind.unique.line", "ind.aux", "orig.lines")
+	}
+	if(xchrom){
+		.data.gen <- cbind(.data.gen[.ind,1:4], ind.aux = .ind.aux, .orig.lines)
+		names(.data.gen) <- c("c1", "c2", "sex", "ind.unique.line", "ind.aux", "orig.lines")
+	}
 }
 ###if(.n.vars > 0){
 ###    .data.vars <- .data.vars[.ind, , drop = F]

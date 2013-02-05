@@ -4,30 +4,32 @@ function(x, digits = 2, haplos, ...)
 # PRINTS THE RESULT FROM summary.tri.glm
 #
 #### PREPARE: #####################################
-	.n.all <- x$n.all
-	.effects <- x$effects	#
-	design <- x$design
-	if(missing(haplos)) haplos <- paste("h", 1:.n.all, sep = "")
-	.sel.sex <- x$info$variables$sel.sex
-	.comb.sex <- x$info$variables$comb.sex
-	.response <- x$info$haplos$response
-	.xchrom <- x$info$model$xchrom
+.n.all <- x$n.all
+.effects <- x$effects	#
+design <- x$design
+.fn <- function(x) paste(x, 1:.n.all, sep = "")
+if(missing(haplos)) haplos <- .fn("h")
+.sel.sex <- x$info$variables$sel.sex
+.comb.sex <- x$info$model$comb.sex
+.response <- x$info$haplos$response
+.xchrom <- x$info$model$xchrom
+.poo <- x$info$model$poo
 #
 #### PRINT GENERAL INFORMATION: ####################
-	cat("\nDate of call:\n")
-	cat(x$date, "\n")	
-	cat("\nNumber of triads: ", round(x$n.tri), "\n", sep = "")
-	cat("\nNumber of haplotypes: ", round(x$n.all), "\n", sep = "")	#
+cat("\nDate of call:\n")
+cat(x$date, "\n")	
+cat("\nNumber of triads: ", round(x$n.tri), "\n", sep = "")
+cat("\nNumber of haplotypes: ", round(x$n.all), "\n", sep = "")	#
 #
 # 
 #### PRINT ALLELE FREQUENCIES: #####################
 if(!x$conf.int){
 	cat("\nHaplotype frequencies (%):\n")
-	.printout <- 100*round(.effects[1:.n.all, 1], digits)
+	.printout <- 100*round(.effects[.fn("p"), 1], digits)
 	names(.printout) <- haplos
 	print(.printout, quote = F)	#
 }else{
-	.printout <- format(100*.effects[1:.n.all, 1:3], digits = digits + 0, width = digits + 2 )
+	.printout <- format(100*.effects[.fn("p"), 1:3], digits = digits + 0, width = digits + 2 )
 	dimnames(.printout)[[2]][1] <- "Frequency(%)"
 	.printout <- cbind(Haplotype = haplos, .printout)
 	dimnames(.printout)[[1]][] <- ""		
@@ -36,32 +38,53 @@ if(!x$conf.int){
 } #
 #
 #### PRINT RELATIVE RISKS: #######################
-.printout <- formatC(.effects[ - c(1:.n.all), , drop = F], flag = "-", digits = digits, width = max(digits + 2, 10) )
+.printout <- .effects[!is.element(rownames(.effects), .fn("p")), , drop = F]
+.printout <- formatC(.printout, flag = "-", digits = digits, width = max(digits + 2, 10) )
 #
-if(x$reference.method == "ref.cat"){
-	## REMOVE PRINTOUT FOR REFERENCE CATEGORY	
-	if(x$maternal){
-		if(.n.all == 2)
-			.ind.strikeout <- x$ref.cat + c(0, 2, 4, 6)
-		else
-			.ind.strikeout <- x$ref.cat + .n.all * c(0,2)
+if(.poo){
+	if(x$reference.method == "ref.cat"){
+		## REMOVE PRINTOUT FOR REFERENCE CATEGORY	
+		.nam.strikeout <- c("RRcm", "RRcf", "RRcm_RRcf")
+		if(.n.all == 2){
+			.nam.strikeout <- c(.nam.strikeout, "RRcdd")
+		}
+		if(x$maternal){
+			.nam.strikeout <- c(.nam.strikeout, "RRm")
+			if(.n.all == 2){
+				.nam.strikeout <- c(.nam.strikeout, "RRmdd")
+			}
+		}
+		.nam.strikeout <- paste(.nam.strikeout, x$ref.cat, sep = "")
+	} else{
+		.nam.strikeout <- NULL
 	}
-	else { 
-		if(.n.all == 2)
-			.ind.strikeout <- x$ref.cat + c(0, 2)
-		else
-			.ind.strikeout <- x$ref.cat
+}else{
+	if(x$reference.method == "ref.cat"){
+		## REMOVE PRINTOUT FOR REFERENCE CATEGORY	
+		.nam.strikeout <- "RRc"
+		if(.n.all == 2){
+			.nam.strikeout <- c(.nam.strikeout, "RRcdd")
+		}
+		if(x$maternal){
+			.nam.strikeout <- c(.nam.strikeout, "RRm")
+			if(.n.all == 2){
+				.nam.strikeout <- c(.nam.strikeout, "RRmdd")
+			}
+		}
+		.nam.strikeout <- paste(.nam.strikeout, x$ref.cat, sep = "")
+	} else{
+		.nam.strikeout <- NULL
 	}
-} else .ind.strikeout <- NULL
+}
 #
 #
 if(!x$conf.int){
 	cat("\nSingle- and double dose effects (Relativ Risk):\n")
-	.printout[.ind.strikeout,] <- "REF"
+	.printout[.nam.strikeout,] <- "REF"
 }
 else {
 	cat("\nSingle- and double dose effects (Relativ Risk) with ", 100 * x$level, "% confidence intervals:\n", sep = "")
-	if(design == "triad") for (i in seq(along = .ind.strikeout)) .printout[.ind.strikeout[i],] <- c("REF", "", "", "")
+	for (i in seq(along = .nam.strikeout)) .printout[.nam.strikeout[i],] <- c("REF", "", "", "")
 }
 #
 ## PRINT REFERENCE METHOD/CATEGORY
@@ -83,8 +106,6 @@ if(.xchrom){
 	}
 }
 
-
-
 cat("\n")
 
 if(!x$conf.int){
@@ -93,62 +114,48 @@ if(!x$conf.int){
 else {
 	dimnames(.printout)[[2]] <- c("Relative Risk", "Lower CI", "Upper CI", "P-value")
 }
-	.printout <- cbind(Haplotype = haplos, .printout)
-
-.flett <- T
-
-if(!.flett){
-	## GAMMEL VARIANT, LENGE SIDEN OPPDATERING
-	cat("Child single dose:\n")
-	print(.printout[1:.n.all,], quote = F)
-	cat("\n")
-	
-	cat("Child double dose:\n")
-	print(.printout[(.n.all+1):(2*.n.all),], quote = F)
-	cat("\n")
-	
-	if(x$maternal){
-		cat("Maternal single dose:\n")
-		print(.printout[(2*.n.all + 1):(3*.n.all),], quote = F)
-		cat("\n")
-		
-		cat("Maternal double dose:\n")
-		print(.printout[(3*.n.all + 1):(4*.n.all),], quote = F)
-		cat("\n")
-	} # END IF MATERNAL
-} # END IF NOT FLETT
+.printout <- cbind(Haplotype = haplos, .printout)
 #
-else{
+## RE-ARRANGE SEQUENCE, JUXTAPOSE SINGLE- AND DOUBLE DOSE
+if(.poo){
+	.ind.child <- as.vector(outer(c("RRcm", "RRcf", "RRcdd", "RRcm_RRcf", "insertNA"), 1:.n.all, paste, sep = ""))	
+}else{
+	.ind.child <- as.vector(outer(c("RRc", "RRcdd", "insertNA"), 1:.n.all, paste, sep = ""))
+}
+.ind.child <- match(.ind.child, rownames(.printout)) # COULD INDEX DIRECTLY, BUT NEED THE PLACEHOLDER
+#
+if(.poo){
+	.printout.child <- cbind(Haplotype = .printout[.ind.child, 1], Dose = c("S-mat", "S-pat", "D    ", "ratio", ""), .printout[.ind.child,-1, drop = F])
+}else{
+	.printout.child <- cbind(Haplotype = .printout[.ind.child, 1], Dose = c("S  ", "D  ", ""), .printout[.ind.child,-1, drop = F])
+}
+.printout.child[is.na(.printout.child)] <- ""
+dimnames(.printout.child)[[1]][] <- ""
+if(!is.null(.sel.sex) && .sel.sex == 1){
+	## REMOVE SINGLE OR DOUBLE DOSE FOR BOYS IN CASE X-CHROM AND SELECTED ONLY BOYS
+	.kill <- grep("D", .printout.child[, "Dose"])
+	.printout.child <- .printout.child[-.kill, , drop = F]
+}
+#
+## PRINT
+cat("----Child haplotypes----\n")
+print(.printout.child, quote = F)
+#
+##	
+if(x$maternal){
 	#
 	## RE-ARRANGE SEQUENCE, JUXTAPOSE SINGLE- AND DOUBLE DOSE
-	.ind.child <- as.numeric(t(cbind(matrix(1:(2*.n.all), ncol = 2), NA)))
-	.printout.child <- cbind(Haplotype = .printout[.ind.child, 1], Dose = c("S  ", "D  ", ""), .printout[.ind.child,-1, drop = F])
-	.printout.child[is.na(.printout.child)] <- ""
-	dimnames(.printout.child)[[1]][] <- ""
-	if(!is.null(.sel.sex) && .sel.sex == 1){
-		## REMOVE SINGLE OR DOUBLE DOSE FOR BOYS IN CASE X-CHROM AND SELECTED ONLY BOYS
-		.kill <- grep("D", .printout.child[, "Dose"])
-		.printout.child <- .printout.child[-.kill, , drop = F]
-	}
+	.ind.maternal <- as.vector(outer(c("RRm", "RRmdd", "insertNA"), 1:.n.all, paste, sep = ""))
+	.ind.maternal <- match(.ind.maternal, rownames(.printout)) # COULD INDEX DIRECTLY, BUT NEED THE PLACEHOLDER
+	#
+	.printout.maternal <- cbind(Haplotype = .printout[.ind.maternal, 1], Dose = c("S  ", "D  ", ""), .printout[.ind.maternal,-1, drop = F])
+	.printout.maternal[is.na(.printout.maternal)] <- ""
+	dimnames(.printout.maternal)[[1]][] <- ""
 	#
 	## PRINT
-	cat("----Child haplotypes----\n")
-	print(.printout.child, quote = F)
-	#
-	##	
-	if(x$maternal){
-		#
-		## RE-ARRANGE SEQUENCE, JUXTAPOSE SINGLE- AND DOUBLE DOSE
-		.ind.maternal <- as.numeric(t(cbind(matrix((2*.n.all + 1):(4*.n.all), ncol = 2), NA)))
-		.printout.maternal <- cbind(Haplotype = .printout[.ind.maternal, 1], Dose = c("S  ", "D  ", ""), .printout[.ind.maternal,-1, drop = F])
-		.printout.maternal[is.na(.printout.maternal)] <- ""
-		dimnames(.printout.maternal)[[1]][] <- ""
-		#
-		## PRINT
-		cat("----Maternal haplotypes----\n")
-		print(.printout.maternal, quote = F)
-	} # END IF MATERNAL
-}# END ELSE FLETT
+	cat("----Maternal haplotypes----\n")
+	print(.printout.maternal, quote = F)
+} # END IF MATERNAL
 #
 #### END: #################################
 invisible(x)

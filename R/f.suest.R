@@ -49,8 +49,8 @@ for (i in 1:.l){
 ## LIST OF EXPECTED VARIANCE-COVARIANCE MATRICES
 .vcov.list <- vector(.l, mode = "list")
 for (i in 1:.l){
-	if(F & length(.kill[[i]]) > 0){## LITT I TVIL HER: MEN .kill BØR VEL HÅNDTERES SOM DE ANDRE NUISANCE-PARAMETRENE?
-		## SVARET SER MEGET LIKT UT I NOEN SMÅ TESTER
+	if(F & length(.kill[[i]]) > 0){## LITT I TVIL HER: MEN .kill BOR VEL HAANDTERES SOM DE ANDRE NUISANCE-PARAMETRENE?
+		## SVARET SER MEGET LIKT UT I NOEN SMAA TESTER
 		.tempinf <- solve(reslist[[i]]$temp)
 		.tempinf <- .tempinf[-(.npars[i] + .kill[[i]]), -(.npars[i] + .kill[[i]]), drop = F]
 		.temp <- solve(.tempinf)
@@ -215,7 +215,7 @@ if(!.err){
 		if(.ant <= 30) {
 			par(mfrow = c(1,1))
 			pairs(.normtest[1:200,], main = main)
-			par(mfrow = rep(min(.dimplot, 5), 2))# cat("Forhindrer crash når mange plot!\n")
+			par(mfrow = rep(min(.dimplot, 5), 2))# cat("Forhindrer crash naar mange plot!\n")
 			apply(.normtest[1:1000,], 2, hist, main = main, nclass = 50)
 		}
 	}

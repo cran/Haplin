@@ -13,8 +13,8 @@ params[names(mcall)] <- mcall
 .info <- list(filename = 
 	params[["filename"]], 
 	filespecs = params[c("markers", "n.vars", "sep", "allele.sep", "na.strings", "subset", "filehash")], 
-	model = params[c("design", "use.missing", "xchrom", "maternal", "test.maternal", "scoretest")], 
-	variables = params[c("ccvar", "covar", "sex", "comb.sex")],
+	model = params[c("design", "use.missing", "xchrom", "comb.sex", "maternal", "poo", "test.maternal", "scoretest")], 
+	variables = params[c("ccvar", "covar", "sex")],
 	haplos = params[c("reference", "response", "threshold", "max.haplos", "haplo.file")],
 	control = params[c("resampling", "max.EM.iter", "data.out", "verbose", "printout")]
 	)
@@ -32,7 +32,7 @@ class(.info) <- "info"
 .allowed$haplos$response <-  c("mult", "free")
 .allowed$control$data.out <-  c("no", "basic", "prelim", "null", "full")
 .allowed$control$resampling <- c("no", "jackknife")
-.allowed$variables$comb.sex <-  c("males", "females", "single", "double")
+.allowed$model$comb.sex <-  c("males", "females", "single", "double")
 #
 for(i in seq(along = .info)[-1]){# NO CHECK FOR filename
 	for(j in seq(along = .info[[i]])){
@@ -107,10 +107,23 @@ if(class(mcall$data) == "gwaa.data"){
 }
 
 #
-## ONLY USE response = "mult" FOR MALES ONLY IN xchrom
-if(.xchrom && !is.null(.info$variables$comb.sex) && .info$variables$comb.sex == "males" && !is.element(.info$haplos$response, c("mult"))){
-	warning('Can only use response = "mult" with comb.sex = "males". Has been changed to "mult".', call. = F)
-	.info$haplos$response <- "mult"
+## ONLY USE response = "mult", AND DISALLOW poo, FOR MALES ONLY IN xchrom
+if(.xchrom && !is.null(.info$model$comb.sex) && .info$model$comb.sex == "males"){
+	if(.info$haplos$response != "mult"){
+		warning('Can only use response = "mult" with comb.sex = "males". Has been changed to "mult".', call. = F)
+		.info$haplos$response <- "mult"
+	}
+	if(.info$model$poo){
+		stop('parent-of-origin estimation not possible when comb.sex = "males".', call. = F)
+	}
+}
+## FURTHER RESTRICT USE OF PARENT-OF-ORIGIN
+if(.info$model$poo){
+	if(.info$model$design == "cc") stop('parent-of-origin effects not available when design = "cc"', call. = F)
+	if(!is.element(.info$haplos$reference, c("ref.cat", "population"))){
+		warning('Can only (for the time being) use reference = "ref.cat" or "population" when poo == TRUE. Has been changed to "ref.cat".', call. = F)
+		.info$haplos$reference <- "ref.cat"
+	}
 }
 #
 ## TEST FOR CC VARIABLE SPECIFICATION
@@ -124,20 +137,23 @@ if(.ccdesign){
 #
 ## MAKE SURE sex COLUMN IS SPECIFIED IF ON THE xchrom
 if(!is.logical(.xchrom))stop('Argument "xchrom" must be a logical (either "TRUE" or "FALSE")', call. = F)
-if(.xchrom & (.info$filespecs$n.vars == 0)) stop('Argument "n.vars" must be at least 1 to allow for a sex variable when "xchrom = TRUE"', call. = F)
-if(.xchrom & !is.numeric(.info$variables$sex)) stop('Argument "sex" should be a numeric value (the column number of the sex variable) when "xchrom = TRUE"', call. = F)
-if(.xchrom & (.info$model$design == "cc")) stop('The "cc" design is not (yet) implemented for x-chromosomes', call. = F)
-#if(.xchrom & .info$model$maternal) stop('"xchrom = TRUE" cannot currently be used with "maternal = TRUE"', call. = F)
-#if(!.xchrom & (.info$haplos$response == "xinact")) stop('Response "xinact" is only intended for the X-chromosome!', call. = F)
+if(.xchrom){
+	if(.info$filespecs$n.vars == 0) stop('Argument "n.vars" must be at least 1 to allow for a sex variable when "xchrom = TRUE"', call. = F)
+	if(!is.numeric(.info$variables$sex)) stop('Argument "sex" should be a numeric value (the column number of the sex variable) when "xchrom = TRUE"', call. = F)
+	if(.info$variables$sex > .info$filespecs$n.vars) stop('Argument "sex" cannot be larger than "n.vars"', call. = F)
+	#if(.info$model$design == "cc") stop('The "cc" design is not (yet) implemented for x-chromosomes', call. = F)
+	#if(.info$model$maternal) stop('"xchrom = TRUE" cannot currently be used with "maternal = TRUE"', call. = F)
+	#if(.info$haplos$response == "xinact") stop('Response "xinact" is only intended for the X-chromosome!', call. = F)
+}
 #
 if(F){
 	## CHECK THAT comb.sex IS NOT SPECIFIED UNLESS xchrom = T
-	if(!.xchrom & !is.null(.info$variables$comb.sex)) warning('Argument "comb.sex" is only implemented for models where "xchrom = TRUE"', call. = F)
+	if(!.xchrom & !is.null(.info$model$comb.sex)) warning('Argument "comb.sex" is only implemented for models where "xchrom = TRUE"', call. = F)
 }
 #
 ## SET VARIABLE sel.sex SO THAT DON'T HAVE TO REPLACE WITH comb.sex ALL THE WAY THROUGH
-if(identical(.info$variables$comb.sex, "males")) .info$variables$sel.sex <- 1
-if(identical(.info$variables$comb.sex, "females")) .info$variables$sel.sex <- 2
+if(identical(.info$model$comb.sex, "males")) .info$variables$sel.sex <- 1
+if(identical(.info$model$comb.sex, "females")) .info$variables$sel.sex <- 2
 #
 ## MAKE SURE FULL DATA'S NOT DUMPED WHEN scoretest = "only"
 if(.info$model$scoretest == "only" & (.info$control$data.out == "full")){

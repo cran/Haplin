@@ -23,8 +23,10 @@ f.make.design <- function(maternal, response, info, test = F, ret.characteristic
 .ref.cat <- info$haplos$ref.cat
 .xchrom <- info$model$xchrom
 .design <- info$model$design
+.poo <- info$model$poo
 .sel.sex <- info$variables$sel.sex
 .sel.sex.yes <- !is.null(.sel.sex)
+.comb.sex <- info$model$comb.sex
 .covar.yes <- !is.null(info$variables$covar)
 .A <- sum(info$haplos$selected.haplotypes) ## NUMBER OF ALLELES (HAPLOTYPES)
 #
@@ -52,16 +54,14 @@ if(!.cond.sex) .mf.tmp[["sex"]] <- NULL
 if(!.cond.cc) .mf.tmp[["cc"]] <- NULL
 #
 ##
-if((.design == "cc") & .xchrom) stop("Not implemented")## MERK: DE OVENSTÅENDE SELEKSJONENE SKAL FUNGERE FOR DENNE SITUASJONEN OGSÅ!
-
-
+#if((.design == "cc") & .xchrom) stop("Not implemented")## MERK: DE OVENSTAAENDE SELEKSJONENE SKAL FUNGERE FOR DENNE SITUASJONEN OGSAA!
+if(.poo & (.design == "cc"))stop("Not implemented")## DETTE BLIR DET OGSAA SJEKKET FOR I f.check.pars
 
 if(.covar.yes) .mf.tmp$covar <- factor(seq(along = info$variables$covar.codes))
 
-
 if(ret.characteristics){
 	.char <- sapply(.mf.tmp, length)
-	## LITT AD-HOC, HÅPER DET IKKE TRENGS ANDRE STEDER:
+	## LITT AD-HOC, HAAPER DET IKKE TRENGS ANDRE STEDER:
 	if(.design == "cc"){
 		names(.char)[names(.char) == "m2"] <- "c1"
 		names(.char)[names(.char) == "f2"] <- "c2"
@@ -90,6 +90,7 @@ if(.cond.f1){
 ## MOTHER
 if(.cond.triad){
 	.m.dumsum <- .m1.dum + .m2.dum
+	dimnames(.m.dumsum)[[2]] <- paste("m", 1:.A, sep = "")
 }else{
 	.m.dumsum <- .m2.dum
 }
@@ -102,9 +103,10 @@ if(.cond.f1){
 #
 ## PARENTS COMBINED, FOR ESTIMATING ALLELE FREQUENCIES
 .parents.dumsum <- .m.dumsum + .f.dumsum
+dimnames(.parents.dumsum)[[2]] <- paste("mf", 1:.A, sep = "")
 #
 ## CHILD, DEFINE .c.dumsum:
-if(.cond.triad & .xchrom){
+if(.xchrom){
 	## X-INACTIVATION(comb.sex == "double"): BOYS GET TWICE THE EFFECT. GIRLS GET ONE OR TWO.
 	## MEANS THAT SINGLE DOSE IN BOYS CORRESPONDS TO DOUBLE DOSE IN GIRLS,
 	## SINGLE DOSE IN GIRLS IS SQUARE ROOT OF DOUBLE DOSE (WHEN response = "mult")
@@ -117,75 +119,41 @@ if(.cond.triad & .xchrom){
 	## BOYS: 1, RR, GIRLS: 1, RR, RR^2 (response = "mult")
 	## BOYS: 1, RR1, GIRLS: 1, RR1, RR1^2*RR2 (response = "free")
 	#
-	## DUMMIES FOR GIRLS
-	.girls.dumsum <- .m2.dum + .f2.dum
-	## DUMMIES FOR BOYS
-	if(info$variables$comb.sex == "double"){
-		## BOYS ARE COUNTED AS DOUBLE DOSE
-		.boys.dumsum <- 2 * .m2.dum
-		## WHEN BOTH BOYS AND GIRLS ARE INCLUDED, COMBINE
-		.c.dumsum <- .boys.dumsum * (1- .mf$sex) + .girls.dumsum * .mf$sex
+	## RECALL THAT sex IS NOT PART OF .mf IF ONLY ONE SEX IS SELECTED
+	if(.comb.sex %in% c("single", "double")){
+		.sex <- .mf$sex
 	}
-	if(info$variables$comb.sex == "single"){
-		## BOYS ARE COUNTED AS SINGLE DOSE
-		.boys.dumsum <- .m2.dum
-		## WHEN BOTH BOYS AND GIRLS ARE INCLUDED, COMBINE
-		.c.dumsum <- .boys.dumsum * (1- .mf$sex) + .girls.dumsum * .mf$sex
+	if(.comb.sex == "males"){
+		.sex <- rep(0, nrow(.mf))
 	}
-	if(info$variables$comb.sex == "males"){
-		## BOYS ONLY. COUNTED AS SINGLE DOSE
-		.boys.dumsum <- .m2.dum
-		.c.dumsum <- .boys.dumsum
+	if(.comb.sex == "females"){
+		.sex <- rep(1, nrow(.mf))
 	}
-	if(info$variables$comb.sex == "females"){
-		## GIRLS ONLY
-		.c.dumsum <- .girls.dumsum
+	.m2.girls.dum <- .m2.dum * .sex # ALLELE FROM MOTHER, IN GIRLS
+	.f2.girls.dum <- .f2.dum * .sex # ALLELE FROM FATHER, IN GIRLS
+	.m2.boys.dum <- .m2.dum * (1 - .sex) # ALLELE FROM MOTHER, IN BOYS
+	#
+	## DEFINE COMBINATION
+	if(.comb.sex == "double"){
+		.c.dumsum <- .m2.girls.dum + .f2.girls.dum + 2 * .m2.boys.dum
+	}else{
+		.c.dumsum <- .m2.girls.dum + .f2.girls.dum + 1 * .m2.boys.dum
 	}
 }else{
 	## CHILD, STANDARD AUTOSOMAL MODEL
 	.c.dumsum <- .m2.dum + .f2.dum
 }
-#
-## SET APPROPRIATE COLUMN NAMES:
-if(.cond.triad){
-	dimnames(.m.dumsum)[[2]] <- paste("m", 1:.A, sep = "")
-	dimnames(.f.dumsum)[[2]] <- paste("f", 1:.A, sep = "")
-}
 dimnames(.c.dumsum)[[2]] <- paste("c", 1:.A, sep = "")
-dimnames(.parents.dumsum)[[2]] <- paste("mf", 1:.A, sep = "")
 #
-## LET THE FORMULA APPLY ONLY FOR CASES.
-## (WARNING! RARE DISEASE ASSUMPTION HERE!)
-if(.cond.cc){
-	.c.dumsum <- .c.dumsum * .mf$cc
-}
-if(.design == "cc.triad"){
-	.m.dumsum <- .m.dumsum * .mf$cc
-	.f.dumsum <- .f.dumsum * .mf$cc
-}
-
-#warning("lklsdkjfoeifjoe")
-#.mf$sex <- .mf$sex * .mf$cc
-#.mf$sex <- 0
-
-
-
-#
-## THE FOLLOWING IS ONLY NECESSARY IF RESPONSE IS FREE
+## WHEN RESPONSE IS FREE, ADD STAR TERM
 if(response == "free"){
 	## SPECIAL CODING FOR HOMOZYGOTES:
 	.c.dd <- (.c.dumsum == 2) + 0	# MODEL: R^2*Rstar
-	if(.design == "cc.triad"){
-		.c.dd <- .c.dd * .mf$cc
-	}
 	# SET APPROPRIATE COLUMN NAMES:
 	dimnames(.c.dd)[[2]] <- paste("cdd", 1:.A, sep = "")	#
 	#
 	if(maternal){
 		.m.dd <- (.m.dumsum == 2) + 0	# MODEL: R^2*Rstar FOR MAT. EFF
-		if(.design == "cc.triad"){
-			.m.dd <- .m.dd * .mf$cc			
-		}
 		# SET APPROPRIATE COLUMN NAMES:
 		dimnames(.m.dd)[[2]] <- paste("mdd", 1:.A, sep = "")	
 	}# END if(maternal)
@@ -197,31 +165,12 @@ if(response == "free"){
 ##
 if(F){
 ## DETTE KAN JO KANSKJE KOMME INN SOM DOBBELTDOSE FOR "cc",
-## HVIS ANT. HAPLOTYPER ER STØRRE ENN 2 (ELLER HVA SOM TRENGS?)
+## HVIS ANT. HAPLOTYPER ER STORRE ENN 2 (ELLER HVA SOM TRENGS?)
 	.cc <- NULL # BARE TULL, MEN FOR AA UNNGAA FEILMELDING I R CMD check
 	.mm.c.dobbeldose <- (.c.dumsum == 2) + 0	# MODEL: R^2*Rstar
 	.mm.c.dobbeldose <- .mm.c.dobbeldose * .cc$cc
 	dimnames(.mm.c.dobbeldose)[[2]] <- paste("cdd", 1:.A, sep = "")	
 }
-
-
-
-
-
-
-
-
-
-
-
-# SET UP FINAL DESIGN MATRIX, REMOVING REDUNDANT .ref.cat-ROW.
-# NOTE: DIALLELIC SITUATION REQUIRES THE REMOVAL OF ONE DOUBLE DOSE PARAMETER:
-
-
-
-
-.design.matrix <- cbind(sex = .mf$sex, cc = .mf$cc)
-
 
 if(.covar.yes){
 	.tmpmat <- cbind(.parents.dumsum, .mf[, c("covar"), drop = F])
@@ -242,67 +191,86 @@ if(.covar.yes){
 
 
 
+# SET UP FINAL DESIGN MATRIX, REMOVING REDUNDANT .ref.cat-ROW.
+# NOTE: DIALLELIC SITUATION REQUIRES THE REMOVAL OF ONE DOUBLE DOSE PARAMETER:
 #
+## START WITH sex AND cc (WHICH ARE NULL IF NOT RELEVANT)
+.design.matrix0 <- cbind(sex = .mf$sex, cc = .mf$cc)
 ## ADD .parents.dumsum, FOR ESTIMATING HAPLOTYPE FREQUENCIES
-.design.matrix <- cbind(.design.matrix, .parents.dumsum)
+.design.matrix0 <- cbind(.design.matrix0, .parents.dumsum)
+## KEEP THE EFFECTS PART SEPARATE TO BEGIN WITH, IN CASE DESIGN INCLUDES cc
+.design.matrix1 <- NULL
 #
 ## IF response IS MORE THAN simple, ADD THE NECESSARY DESIGN VARIABLES
-
-
-
 if(response != "simple"){
-	.c.dumsum <- .c.dumsum[,  - .ref.cat, drop = F]
-	.design.matrix <- cbind(.design.matrix, .c.dumsum)
+	if(.poo){
+		if(.xchrom){
+			if(.comb.sex == "single"){
+				## A (SINGLE) DOSE IN MALES CORRESPONDS TO A SINGLE, MATERNALLY INHERITED, DOSE IN FEMALES
+				.mat <- .m2.girls.dum + 1 * .m2.boys.dum
+				.pat <- .f2.girls.dum
+			}
+			if(.comb.sex == "double"){
+				## A (SINGLE) DOSE IN MALES CORRESPONDS TO A DOUBLE DOSE IN FEMALES, I.E. A SINGLE MATERNALLY INHERITED + A SINGLE PATERNALLY INHERITED + THE Rstar DOUBLE DOSE
+				## SO THAT A (SINGLE) DOSE IN MALES CORRESPONDS TO THE "FULL PACKAGE" IN FEMALES
+				.mat <- .m2.girls.dum + 1 * .m2.boys.dum
+				.pat <- .f2.girls.dum + 1 * .m2.boys.dum
+			}
+			if(.comb.sex == "males"){
+				.mat <- .m2.boys.dum
+				.pat <- NULL
+			}
+			if(.comb.sex == "females"){
+				.mat <- .m2.girls.dum
+				.pat <- .f2.girls.dum
+			}
+			## RENAME COLUMNS AND DROP REF CAT
+			colnames(.mat) <- sub("m2", "cm", colnames(.mat))
+			.mat <- .mat[,  - .ref.cat, drop = F]
+			if(.comb.sex != "males"){
+				colnames(.pat) <- sub("f2", "cf", colnames(.pat))
+				.pat <- .pat[,  - .ref.cat, drop = F]
+			}
+			.design.matrix1 <- cbind(.design.matrix1, .mat, .pat)
+		}else{
+			## RENAME COLUMNS
+			colnames(.m2.dum) <- sub("m2", "cm", colnames(.m2.dum))
+			colnames(.f2.dum) <- sub("f2", "cf", colnames(.f2.dum))
+			## DROP REF CAT
+			.m2.dum <- .m2.dum[,  - .ref.cat, drop = F]
+			.f2.dum <- .f2.dum[,  - .ref.cat, drop = F]
+			.design.matrix1 <- cbind(.design.matrix1, .m2.dum, .f2.dum)
+		}
+	}else{
+		.c.dumsum <- .c.dumsum[,  - .ref.cat, drop = F]
+		.design.matrix1 <- cbind(.design.matrix1, .c.dumsum)
+	}
+
+
+
 	if(response == "free"){
 		if(.A == 2) .c.dd <- .c.dd[,  - .ref.cat, drop = F]
-		.design.matrix <- cbind(.design.matrix, .c.dd)
+		.design.matrix1 <- cbind(.design.matrix1, .c.dd)
 	}
 	if(maternal){
 		.m.dumsum <- .m.dumsum[,  - .ref.cat, drop = F]
-		.design.matrix <- cbind(.design.matrix, .m.dumsum)
+		.design.matrix1 <- cbind(.design.matrix1, .m.dumsum)
 		if(response == "free"){
 			if(.A == 2) .m.dd <- .m.dd[,  - .ref.cat, drop = F]
-			.design.matrix <- cbind(.design.matrix, .m.dd)
+			.design.matrix1 <- cbind(.design.matrix1, .m.dd)
 		}
 	}
 }
-
-.design.matrix <- as.data.frame(.design.matrix)
-
-if(test & (response == "mult")){
-
-	# DETTE ER EN EGEN TEST FOR AA PROEVE AA MATCHE RESULTATET FRA XLRT,
-	# VED EN KJOERING
-	# jj <- haplin(testdX1, .xchrom = T, sex = 1, n.vars = 2, markers = 1, verbose = T, printout = F, response = "mult", reference = 2, use.missing = T)
-	# OG DERETTER SE PAA  exp(jj$result$result$coef)
-	# MERK AT f.tri.glm KALLER f.make.design MED test = T
-
-	.sex <- .design.matrix$sex
-	.c1 <- .design.matrix$c1
-	#
-	.a1 <- (.c1 == 1) & (.sex == 0)
-	.a2 <- (.c1 == 0) & (.sex == 1)
-	.a3 <- (.c1 == 1) & (.sex == 1)
-	.a4 <- (.c1 == 2) & (.sex == 1)
-	#
-	.design.matrix$a1 <- .a1 + 0
-	.design.matrix$a2 <- .a2 + 0
-	.design.matrix$a3 <- .a3 + 0
-	.design.matrix$a4 <- .a4 + 0
-	#
-	.design.matrix$sex <- .design.matrix$c1 <- NULL
-	#
-	.msum <- .m1.dum[,2] + .m2.dum[,2]
-	.fsum <- .f2.dum[,2]
-	.mu <- paste(.msum, .fsum, sep = "-")
-	.mu <- model.matrix(~ -1 + factor(.mu))
-	colnames(.mu) <- paste("mu", seq(length.out = dim(.mu)[2]), sep = "")
-	.design.matrix$mf1 <- .design.matrix$mf2 <- NULL
-	.design.matrix <- cbind(.mu, .design.matrix)
-
+#
+## LET THE FORMULA PART APPLY ONLY FOR CASES.
+## (WARNING! RARE DISEASE ASSUMPTION HERE!)
+if(.cond.cc){
+	.design.matrix1 <- .design.matrix1 * .mf$cc
 }
+#
+## JOIN AND CONVERT TO DATA FRAME
+.design.matrix <- as.data.frame(cbind(.design.matrix0, .design.matrix1))
 #
 ##
 return(.design.matrix)
-
 }

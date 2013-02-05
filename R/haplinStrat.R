@@ -74,13 +74,14 @@ write.table(haptable(.ut.list[["all"]]), file = .tmphaplofile, quote = F)
 #
 ## RUN HAPLIN FOR EACH STRATUM
 for(i in seq(along = .strata.list)){
-	if(.verbose) cat('\nRunning Haplin for stratum "', .strata.list[i], '"...', sep = "")
+	.mess <- paste('\nRunning Haplin for stratum "', .strata.list[i], '"...', sep = "")
+	if(.verbose) cat(.mess)
 	.tmpd <- .data.read[.strata == .strata.list[i], ]
 	## WRITE TEMPORARY HAPLIN DATA FILE
 	write.table(.tmpd, file = .tmpfilename, sep = "\t", col.names = F, row.names = F, quote = F)
 	## RUN HAPLIN
 	.ut.list[[i + 1]] <- try(do.call("haplin", .argstmp))
-	cat("Done\n")
+	if(.verbose) cat("Done\n")
 }
 
 class(.ut.list) <- "haplinStrat"
