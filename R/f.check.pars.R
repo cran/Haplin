@@ -9,12 +9,11 @@ params <- defaults
 params[names(mcall)] <- mcall
 #
 ## COLLECT IN LIST
-#.info <- list(filename = info$filename, filespecs = .filespecs, model = .model, variables = .variables, haplos = .haplos, control = .control)
 .info <- list(filename = 
 	params[["filename"]], 
 	filespecs = params[c("markers", "n.vars", "sep", "allele.sep", "na.strings", "subset", "filehash")], 
 	model = params[c("design", "use.missing", "xchrom", "comb.sex", "maternal", "poo", "test.maternal", "scoretest")], 
-	variables = params[c("ccvar", "covar", "sex")],
+	variables = params[c("ccvar", "covar", "strata", "sex")],
 	haplos = params[c("reference", "response", "threshold", "max.haplos", "haplo.file")],
 	control = params[c("resampling", "max.EM.iter", "data.out", "verbose", "printout")]
 	)
@@ -183,7 +182,10 @@ if((.info$haplos$response %in% c("mult")) & is.element(.info$haplos$reference, c
 if(.info$model$test.maternal) .info$model$maternal <- TRUE
 
 
-## TEST OM covar, ccvar etc ER MINDRE ENN ELLER LIK n.vars, om de er heltall etc.
+## TEST OM covar, ccvar etc ER MINDRE ENN ELLER LIK n.vars, om de er heltall etc.?
+#
+# DENNE TESTEN KUNNE IKKE VARE MED, SIDEN f.check.pars OGSAA KALLES AV haplinSlide og haplinStrat:
+#if(!is.null(.info$variables$covar)) stop('Argument "covar" not currently implemented in "haplin", \nonly in "haplinStrat" and in "haplinSlide". \n(The latter needs "strat = TRUE")', call. = F)
 
 return(.info)
 

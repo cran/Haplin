@@ -1,7 +1,7 @@
 haplin <- function(filename, data, pedIndex,
 markers = "ALL", n.vars = 0, sep = " ", allele.sep = ";", na.strings = "NA",
 design = "triad", use.missing = FALSE, xchrom = FALSE, maternal = FALSE, test.maternal = FALSE, poo = FALSE, scoretest = "no",
-ccvar = NULL, covar = NULL, sex = NULL, comb.sex = "double",
+ccvar = NULL, strata = NULL, sex = NULL, comb.sex = "double",
 reference = "reciprocal", response = "free", threshold = 0.01, max.haplos = NULL, haplo.file = NULL,
 resampling = "no", max.EM.iter = 50, data.out = "no", verbose = TRUE, printout = TRUE
 )
@@ -35,7 +35,7 @@ printout <- .info$control$printout
 #require(MASS)
 #
 ## START 
-if(verbose)cat("\n## HAPLIN, VERSION 5.0 ##\n")
+if(verbose)cat("\n## HAPLIN, VERSION 5.0.1 ##\n")
 #
 ##
 

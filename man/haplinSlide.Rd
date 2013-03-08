@@ -1,32 +1,33 @@
 \name{haplinSlide}
 \alias{haplinSlide}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Fitting a sliding window of log-linear models to case-parent triad and/or case-control data}
+\title{Fit \code{haplin} in a series of sliding windows over a sequence of markers/SNPs}
 \description{
- Produces a list, each element of which is an object of class \code{haplin}, which is the result of fitting the log-linear models to the data one "window" at a time. 
+ Produces a list, each element of which is an object of class \code{haplin}, which is the result of fitting the log-linear \code{haplin} models to the data one "window" at a time. 
 }
 \usage{
-haplinSlide(filename, data, pedIndex, markers = "ALL", winlength = 1, printout, 
-verbose, cpus = 1, table.output = FALSE, slaveOutfile = "", ...)
+haplinSlide(filename, data, pedIndex, markers = "ALL", winlength = 1, 
+strata = NULL, table.output = TRUE, cpus = 1, slaveOutfile = "", 
+printout = FALSE, verbose = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 	\item{filename}{A character string giving the name and path of the ASCII data file to be read. The file should be in the Haplin data format. }
 	\item{data}{An R-object which is the result of using \code{load.gwaa.data} to load data into R. See the web page for a description of how to convert a ped file into a file that can be loaded. The conversion uses \code{prepPed} and \code{convert.snp.ped}.}
 	\item{pedIndex}{A file of family indexes constructed by using \code{prepPed} on the original ped file. This file is used by Haplin to extract and store family information.}
-	\item{markers}{Default is "ALL", which means haplinSlide uses all available markers in the data set in the analysis. Alternatively, the relevant markers can be specified by, for instance, \code{markers = c(1, 3:10)}, which would use the 10 first markers except marker 2. \code{haplinSlide} will then run haplin on a series of windows selected from the supplied \code{markers}. The \code{winlength} argument decides the length of the windows. See details.
-}
+	\item{markers}{Default is "ALL", which means haplinSlide uses all available markers in the data set in the analysis. Alternatively, the relevant markers can be specified by, for instance, \code{markers = c(1, 3:10)}, which would use the 10 first markers except marker 2. \code{haplinSlide} will then run haplin on a series of windows selected from the supplied \code{markers}. The \code{winlength} argument decides the length of the windows. See details.}
 	\item{winlength}{Length of the sliding, overlapping windows to be run along the markers. See details.}
+	\item{strata}{A single numeric value specifying which data column contains the stratification variable.}
+	\item{table.output}{If \code{TRUE}, the \code{haptable} function will be applied to each result after estimation, greatly reducing the size of the output. If \code{FALSE}, each element of the output list is a standard \code{haplin} object. To preserve memory, default is set to TRUE.}
+	\item{cpus}{\code{haplinSlide} allows parallel processing of its analyses. The \code{cpus} argument should preferably be set to the number of available cpu's. If set lower, it will save some capacity for other processes to run. Setting it too high should not cause any serious problems.}
+	\item{slaveOutfile}{Character. To be used when \code{cpus > 1}. If \code{slaveOutfile = ""} (default), output from all running cores will be printed in the standard R session window. Alternatively, the output can be saved to a file by specifying the file path and name.}
 	\item{printout}{Default is FALSE. If TRUE, provides a full summary of each \code{haplin} result during the run of \code{haplinSlide}.}
 	\item{verbose}{Same as for \code{haplin}, but defaults to FALSE to reduce output size.}
-	\item{cpus}{\code{haplinSlide} allows parallel processing of its analyses. The \code{cpus} argument should preferably be set to the number of available cpu's. If set lower, it will save some capacity for other processes to run. Setting it too high should not cause any serious problems.}
-	\item{table.output}{If \code{TRUE}, the \code{haptable} function will be applied to each result after estimation, greatly reducing the size of the output. }
-	\item{slaveOutfile}{Character. To be used when \code{cpus > 1}. If \code{slaveOutfile = ""} (default), output from all running cores will be printed in the standard R session window. Alternatively, the output can be saved to a file by specifying the file path and name.}
 	\item{...}{Remaining arguments to be used by \code{\link{haplin}} in each run.}
 }
 \details{
 	\code{haplinSlide} runs \code{haplin} on a series of overlapping windows of the chosen markers. Except for the \code{markers} and \code{winlength} arguments, all arguments are used exactly as in \code{haplin} itself. For instance, if \code{markers = c(1, 3, 4, 5, 7, 8)} and \code{winlength = 4}, \code{haplinSlide} will run \code{haplin} on first the markers \code{c(1, 3, 4, 5)}, then on \code{c(3, 4, 5, 7)}, and finally on \code{c(4, 5, 7, 8)}. The results are returned in a list. The elements are named "1-3-4-5" etc., and can be extracted with, say, \code{summary(res[["1-3-4-5"]])} etc., where \code{res} is the saved result. Or the output can be examined by, for instance, using \code{lapply(res, summary)} and \code{lapply(res, plot)}.\cr
-	When running \code{haplinSlide} on a large number of markers, the output can become prohibitively large. In that case \code{table.output} should be set to \code{TRUE}, and \code{haplinSlide} will return a list of summary "haptables". This list can then be stacked into a single dataframe using \code{toDataFrame}.\cr
+	When running \code{haplinSlide} on a large number of markers, the output can become prohibitively large. In that case \code{table.output} should be set to \code{TRUE}, and \code{haplinSlide} will return a list of summary "haptables". This list can then be stacked into a single dataframe using \code{toDataFrame}. To avoid exessive memory use, the default is \code{table.output = TRUE}.\cr
 	When multiple cores are available, set the \code{cpus} to the number of cores that should be used. This will run \code{haplinSlide} in parallel on the chosen number of cores. Note that feedback is provided by each of the cores separately, and some cores may start working on markers far out in the sequence.
 }
 \value{

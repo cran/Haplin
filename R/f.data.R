@@ -226,6 +226,7 @@ if(design == "cc" | design == "cc.triad"){
 #
 ## ADD ON COVARIATE INFORMATION IF REQUESTED
 if(!is.null(.info$variables$covar)){
+	stop('The "covar" argument is not available in "haplin" and "haplinSlide", only in "haplinStrat"!', call. = F)
 	.covar <- .info$variables$covar ## COLUMN NUMBER
 	.tmpind <- match(.data$orig.lines, .orig.lines.seq[[2]])## WARNING: .data.vars SHOULD STILL HAVE THE SAME ORDERING AS .data.read, AND .orig.lines.seq[[2]] SHOULD REFER TO THIS ORDERING!
 	.co <- .data.vars[.tmpind, .covar] ## INTEGER VALUES FROM RECODED DATA FILE

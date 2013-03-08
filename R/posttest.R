@@ -1,7 +1,7 @@
-posttest <- function(object.list)
+postTest <- function(object.list)
 {
 # TEST FOR DIFFERENCE IN PARAMETER ESTIMATES OVER A SERIES OF HAPLIN OBJECTS
-# WARNING: THE SET OF HAPLOTYPES USED IN EACH ESTIMATION *MUST* BE THE SAME!
+# WARNING: THE SET OF HAPLOTYPES USED IN EACH ESTIMATION _MUST_ BE THE SAME!
 # object.list IS A LIST OF HAPLIN OBJECTS. 
 # test.haplo CAN INCLUDE ANY OF "haplo.freq", "single", "double"
 #
@@ -10,38 +10,37 @@ posttest <- function(object.list)
 #### PREPARE: ###################
 .vis <- F
 #
-##
+## PRELIMINARY CHECKS
+if(any(is.na(object.list))) return(object.list)# JUST PASS RIGHT THROUGH IF AT LEAST ONE NA 
 if(class(object.list) != "haplinStrat") stop("Argument 'object.list' should be the result from running 'haplinStrat'", call. = F)
 #
-## REMOVE OVERALL RESULT
-
-
-#.object.list <- object.list
+## REMOVE OVERALL RESULT, ONLY DO TESTING ON SUBSTRATA, OF COURSE
 .object.list <- object.list[-1]
-
-
-
-
 if(length(.object.list) <= 1) stop("Need at least two strata")
 #
 ## STRATA NAMES, TO BE USED IN PRINTOUT
 .stratnavn <- names(.object.list)
 if(is.null(.stratnavn)) .stratnavn <- as.character(seq(along = .object.list)) ## TRENGS IKKE
 #
-## EXTRACT MISC INFO, TEST FOR (SOME) CONSISTENCY AMONG ELEMENTS OF LIST
+## EXTRACT MISC INFO
 .info <- lapply(.object.list, function(x) x$info)
 .response <- .info[[1]]$haplos$response
 .maternal <- .info[[1]]$model$maternal
+.poo <- .info[[1]]$model$poo
+
 #
+## CONSISTENCY CHECK OF HAPLOTYPES AMONG ELEMENTS OF LIST
 .tmp.selected.haplotypes <- lapply(.info, function(x)x$haplos$selected.haplotypes)
 .sel.haps <- .tmp.selected.haplotypes[[1]]
 .sjekk <- sapply(.tmp.selected.haplotypes[-1], function(x) identical(tolower(x), tolower(.sel.haps)))
 if(any(!.sjekk)) stop("Different haplotypes selected in different strata!")
 #
+## CONSISTENCY CHECK OF ref.cat AMONG ELEMENTS OF LIST
 .tmp.ref.cat <- lapply(.info, function(x)x$haplos$ref.cat)
 .ref.cat <- .tmp.ref.cat[[1]]
 .sjekk <- sapply(.tmp.ref.cat[-1], function(x) identical(x, .ref.cat))
 if(any(!.sjekk)) stop()
+
 #
 ## EXTRACT SEPARATE RESULTS, COEFFICIENTS, AND COVAR-MATRICES
 .params <- lapply(.object.list, coef)
@@ -56,21 +55,24 @@ if(any(!.sjekk)) stop()
 #
 .names <- rownames(.coef[[1]])
 #
-## FIND NAMES/POSITIONS OF RELEVANT PARAMETERS
-.mf <- grep("mf", .names, value = T)
-.c <- grep("c[[:digit:]]", .names, value = T)
-.cdd <- grep("cdd[[:digit:]]", .names, value = T)
-.m <- grep("m[[:digit:]]", .names, value = T)
-.mdd <- grep("mdd[[:digit:]]", .names, value = T)
+## FIND NAMES/POSITIONS OF RELEVANT PARAMETERS. NOTE: \\< INSISTS ON START OF WORD, SO THAT, FOR INSTANCE, "cm1" ISN'T PICKED UP BY "m"
+.mf <- grep("\\<mf", .names, value = T)
+.c <- grep("\\<c[[:digit:]]", .names, value = T)
+.cm <- grep("\\<cm[[:digit:]]", .names, value = T)
+.cf <- grep("\\<cf[[:digit:]]", .names, value = T)
+.cdd <- grep("\\<cdd[[:digit:]]", .names, value = T)
+.m <- grep("\\<m[[:digit:]]", .names, value = T)
+.mdd <- grep("\\<mdd[[:digit:]]", .names, value = T)
 # SOME AD HOC TESTING
-if((length(.mf) == 0) | (length(.c) == 0)) stop("Something's wrong with the coefficient names")
-if((length(.cdd) == 0) & (.response == "free")) stop("Something's wrong with the coefficient names")
-if(.maternal && (length(.m) == 0)) stop("Something's wrong with the coefficient names")
-if(.maternal && (.response == "free") && (length(.mdd) == 0)) stop("Something's wrong with the coefficient names")
+.flag <- (length(.mf) == 0) |
+	(!.poo & (length(.c) == 0)) |
+	(.poo & ((length(.cm) == 0) | (length(.cf) == 0))) |
+	((length(.cdd) == 0) & (.response == "free")) |
+	(.maternal && (length(.m) == 0)) |
+	(.maternal && (.response == "free") && (length(.mdd) == 0))
+if(.flag) stop("Something's wrong with the coefficient names", call. = F)
 #
 ## 
-
-
 standard.tests <- F
 if(standard.tests){
 	#
@@ -144,13 +146,24 @@ if(standard.tests){
 .chisq.res <- vector(2, mode = "list")
 names(.chisq.res) <- c("haplo.freq", "child")
 #
-.chisq.res[["haplo.freq"]] <- f.posttest(coef = .coef, cov = .cov, mf = .mf, c = .c, cdd = .cdd, m = .m, mdd = .mdd, test = "haplo.freq")
-.chisq.res[["child"]] <- f.posttest(coef = .coef, cov = .cov, mf = .mf, c = .c, cdd = .cdd, m = .m, mdd = .mdd, test = "child")
-#
-if(.maternal){
-	.chisq.res[["maternal"]] <- f.posttest(coef = .coef, cov = .cov, mf = .mf, c = .c, cdd = .cdd, m = .m, mdd = .mdd, test = "maternal")
-	.chisq.res[["chi.and.mat"]] <- f.posttest(coef = .coef, cov = .cov, mf = .mf, c = .c, cdd = .cdd, m = .m, mdd = .mdd, test = c("child", "maternal"))
+.chisq.res[["haplo.freq"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "haplo.freq")
+if(.poo){
+	.chisq.res[["poo"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "poo")
+	#
+	if(.maternal){
+		.chisq.res[["maternal"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "maternal")
+		.chisq.res[["poo.and.mat"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = c("poo", "maternal"))
+	}
+}else{
+	.chisq.res[["child"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "child")
+	#
+	if(.maternal){
+		.chisq.res[["maternal"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "maternal")
+		.chisq.res[["chi.and.mat"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = c("child", "maternal"))
+	}
 }
+
+
 
 .ut <- lapply(.chisq.res, function(x) {
 	x$y <- NULL

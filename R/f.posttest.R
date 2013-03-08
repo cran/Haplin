@@ -1,13 +1,12 @@
-"f.posttest"<-
-function(coef, cov, mf, c, cdd, m, mdd, test)
+f.posttest <- function(coef_, cov_, mf, c_, cm_ , cf, cdd, m, mdd, test)
 {
 .vis <- F
-.coef <- coef
-.cov <- cov
+.coef <- coef_
+.cov <- cov_
 ## SELECT PARAMETERS TO BE TESTED
 ## test <- c("child.single", "child.double", "maternal.single", "maternal.double")
 
-.names.list <- list(haplo.freq = mf, child = c(c, cdd), maternal = c(m, mdd))
+.names.list <- list(haplo.freq = mf, child = c(c_, cdd), poo = c(cm_, cf), maternal = c(m, mdd))
 .nam <- names(.names.list)
 if(!all(test %in% .nam)) stop('Invalid input in argument "test"')
 f.vis(.velg <- unlist(.names.list[.nam %in% test]), vis = .vis) # MAKE SURE SELECTION IS IN CORRECT ORDER

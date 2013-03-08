@@ -1,47 +1,37 @@
-haplinSlide <- function(filename, data, pedIndex, markers = "ALL", winlength = 1, printout = FALSE, verbose = FALSE, cpus = 1, table.output = FALSE, slaveOutfile = "", ...)
+haplinSlide <- function(filename, data, pedIndex, markers = "ALL", winlength = 1, strata = NULL, table.output = TRUE, cpus = 1, slaveOutfile = "", printout = FALSE, verbose = FALSE, ...)
 {
 ##
 ## RUN HAPLIN ON SLIDING WINDOWS
 ##
+## MERK: BRUKER "#i#" TIL AA KOMMENTERE VEKK DET SOM GIR ADVARSEL MED R CMD check, SIDEN DE RETTE PAKKENE IKKE ER INSTALLERT
+#
+## SELECT PARALLEL MECHANISM (SOME MAY BE DISABLED)
 #.para <- "snow"
 #.para <- "snowfall"
 #.para <- "doSMP"
-#if(!missing(makeClusterArgs))
 .para <- "parallel"
 #
-##
+## RUNS IN PARALLEL ONLY IF cpus IS NUMERIC > 1
 if(!missing(cpus)){
 	if(!is.numeric(cpus)) stop('The number of cpu-s "cpus" must be numeric!', call. = F)
 	.run.para <- (cpus > 1)
 } else .run.para <- F
-
-
-## BRUKER "#i#" TIL AA KOMMENTERE VEKK DET SOM GIR ADVARSEL MED R CMD check, SIDEN DE RETTE PAKKENE IKKE ER INSTALLERT
-
-
 #
 ## GET HAPLIN DEFAULTS, OVERRIDE DEFAULTS FOR SPECIFIED ARGUMENTS
 .info <- f.catch(match.call(), formals())
 #
 ##
 if(winlength > 1) cat("\nImportant: Remember that SNPs must be in correct physical ordering\nfor a sliding window approach to be meaningful!\n")
-
+#
+## CHECK IF DATA DERIVE FROM AN R OBJECT OR FROM FILE
 .missdata <- missing(data)
 .misspedIndex <- missing(pedIndex)
-
+#
 ## IMPORTANT: DO NOT REMOVE MISSING YET, EVEN IF use.missing = F (I.E. REMOVE WINDOW-WISE, NOT LISTWISE)
 .use.missing <- .info$model$use.missing ## SAVE OLD VALUE
 .info$model$use.missing <- T ## ENFORCE
-
-
-
-
-
-
 #
-##
-
-
+## WITH A gwaa.data OBJECT, DELAY CONVERSION, ELSE READ AND CONVERT
 if(!.missdata && (class(data) == "gwaa.data")){
 	## ONLY REDUCE NUMBER OF MARKERS, BUT DO NOT CONVERT YET
 	.data.read <- data[, .info$filespecs$markers]
@@ -50,12 +40,9 @@ if(!.missdata && (class(data) == "gwaa.data")){
 	.data.read <- f.get.data(data, pedIndex, .info)
 	.info <- attr(.data.read, "info")
 }
-
-
+#
+##
 .info$model$use.missing <- .use.missing ## REVERT TO ORIGINAL VALUE
-
-
-
 #
 ## FIND MARKERS INCLUDED IN EACH WINDOW. NB: THEY NOW REFER TO MARKERS IN THE _REDUCED_ FILE, NOT THE ORIGINAL ONE
 .slides <- f.windows(markers = seq(along = .info$filespecs$markers), winlength = winlength)
@@ -80,9 +67,7 @@ cat("\n")
 	#
 	if(.run.para){
 		## HAPLIN MUST BE MADE AVAILABLE IN EACH RUN
-		suppressPackageStartupMessages({
-			require(Haplin, quietly = T)
-		})
+		suppressPackageStartupMessages(require(Haplin, quietly = T))
 	}
 	#
 	##
@@ -104,14 +89,24 @@ cat("\n")
 	}
 		#
 		## RUN HAPLIN
+		if(is.null(strata)){
 			.res <- try(do.call("haplin", args_), silent = T)
-		#
+			#
 			## CHECK IF ERRORS
 			if(class(.res) == "try-error") cat("RUN FAILED\n")
 			else{
 				cat("done\n")
 				if(table.output) .res <- haptable(.res)
-			}
+			}		
+		}else{
+			.res <- try(do.call("haplinStrat", args_), silent = T)
+			## CHECK IF ERRORS
+			if(class(.res) == "try-error") cat("RUN FAILED\n")
+			else{
+				cat("done\n")
+				#.res <- posttest(.res)
+			}		
+		}
 		return(.res)
 }
 #
@@ -119,7 +114,9 @@ cat("\n")
 ## EITHER IN SEQUENCE (SINGLE CPU) 
 ## OR IN PARALLEL (MULTIPLE CPUs)
 if(!.run.para){
+    if(!missing(slaveOutfile)) sink(file = slaveOutfile)
 	.res.list <- lapply(seq(length.out = .nres), .f.run)
+    if(!missing(slaveOutfile)) sink()
 	names(.res.list) <- .names
 	#
 	## CHECK FOR HAPLIN FAILURES

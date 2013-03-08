@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Extract family and phenotype information from a ped-format file, to prepare for use in Haplin}
 \description{
- Creates a pedIndex file containing family information, a phenotype file, and optionally an ``dummy'' map file. The files are used by GenABEL when loading data into R, and by Haplin when converting from a GenABEL file to a Haplin file. 
+ Creates a pedIndex file containing family information, a phenotype file, and optionally a ``dummy'' map file. The files are used by GenABEL when loading data into R, and by Haplin when converting from a GenABEL file to a Haplin file. 
 }
 \usage{
 prepPed(pedfile, outdir, create.map = F)
@@ -19,12 +19,12 @@ prepPed(pedfile, outdir, create.map = F)
 
 The format of the ped file should be something like this:
 \preformatted{
-1104  1104-1  1104-2  1104-3  1  1  A  B  B  B
-1104  1104-2       0       0  1  1  B  B  A  B
-1104  1104-3       0       0  2  1  A  B  A  B
-1105  1105-1  1105-2  1105-3  2  2  B  B  A  A
-1105  1105-2       0       0  1  2  B  B  A  A
-1105  1105-3       0       0  2  2  0  0  A  A
+1104  1104-1  1104-2  1104-3  1  0  A  B  B  B
+1104  1104-2       0       0  1  0  B  B  A  B
+1104  1104-3       0       0  2  0  A  B  A  B
+1105  1105-1  1105-2  1105-3  2  1  B  B  A  A
+1105  1105-2       0       0  1  1  B  B  A  A
+1105  1105-3       0       0  2  1  0  0  A  A
 }
 The column values are: Family id, Individual id, Father's id, Mother's id, Sex (1 = male, 2 = female), and Case-control status (0 = controls, 1 = cases).\cr
 
