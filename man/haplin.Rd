@@ -10,7 +10,7 @@ haplin(filename, data, pedIndex,
 markers = "ALL", n.vars = 0, sep = " ", allele.sep = ";", 
 na.strings = "NA", design = "triad", use.missing = FALSE, 
 xchrom = FALSE, maternal = FALSE, test.maternal = FALSE, 
-poo = FALSE, scoretest = "no", ccvar = NULL, covar = NULL, 
+poo = FALSE, scoretest = "no", ccvar = NULL, strata = NULL, 
 sex = NULL, comb.sex = "double",
 reference = "reciprocal", response = "free", 
 threshold = 0.01, max.haplos = NULL, haplo.file = NULL, 
@@ -36,7 +36,7 @@ verbose = TRUE, printout = TRUE)
 	\item{poo}{If TRUE, \code{haplin} will split single-dose effects into two separate effect estimates, one for the maternally inherited haplotype, and one for the paternally inherited haplotype. Double dose will be estimated as before.}
 	\item{scoretest}{Special interest only. If "no", no score test is computed. If "yes", an overall score p-value is included in the output, and the individual score values are returned in the \code{haplin} object. If "only", \code{haplin} is only run under the null hypothesis, and a simple score object is returned instead of the full \code{haplin} object. Useful if only score testing is needed.}
 	\item{ccvar}{Numeric. Should give the column number for the column containing the case-control indicator in the data file. Needed for the "cc" and "cc.triad" designs. The column should contain two numeric values, of which the largest one is always used to denote cases.}
-	\item{covar}{Not yet implemented.}
+	\item{strata}{Not yet implemented.}
 	\item{sex}{To be used with \code{xchrom = TRUE}. A numeric value specifying which of the data columns that contains the sex variable. The variable should be coded 1 for males and 2 for females.}
 	\item{comb.sex}{To be used with \code{xchrom = TRUE}. A character value that specifies how to handle gender differences on the X-chromosome. If set to "males" or "females", analyses are done either for just males or just females, respectively. If set to "single" or "double", males and females are used in a combined analysis. Specifically, when "single", the effect of a (single) allele in males is assumed to equal the effect of a single allele dose in females, and similarly, when "double", a single allele in males is assumed to have the same effect as a double allele dose in females. Default is "double", which corresponds to X-inactivation. Se separate description for more details.}
 	\item{reference}{Decides how \code{haplin} chooses its reference category for the effect estimates. Default value is "reciprocal". With the reciprocal reference the effect of a single or double dose of each haplotype is measured relative to the remaining haplotypes. This means that a new reference category is used for each single haplotype. Other possible values are "population" (which is similar to reciprocal, but where the reference category is always the total population), and "ref.cat", where a single haplotype is used as reference for all the rest. For ref.cat, the default is to choose the most frequent haplotype as the reference haplotype. The reference haplotype can be set explicitly by giving a numeric value for the reference argument. Note that the numeric value refers to the haplotype's position among the haplotypes selected for analysis by \code{haplin}. This means that one should run \code{haplin} once first to see what haplotypes are used before giving a numeric value to reference. }

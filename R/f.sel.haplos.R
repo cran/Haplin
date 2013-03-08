@@ -17,6 +17,7 @@ if(.flag.file){
 	.haplos.use <- try(read.table(file = info$haplos$haplo.file, header = T, stringsAsFactors = F), silent = T)
 	if(inherits(.haplos.use, "try-error")) stop('Problems reading file specified in "haplo.file" argument', call. = F)
 	.haplos.use <- .haplos.use[,"haplos"]
+	#.haplos.use <- .haplos.use[!is.na(.haplos.use)] ## IN THE RARE CASE OF FEW HAPLOTYPES. ONLY NEEDED IF FILE WAS A haptable RESULT
 	.tmp.use <- tolower(.haplos.use)
 	.tmp.all <- tolower(.haplotypes)
 	.miss <- setdiff(.tmp.use, .tmp.all)
