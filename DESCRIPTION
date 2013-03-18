@@ -2,8 +2,8 @@ Package: Haplin
 Type: Package
 Title: Analyzing case-parent triad and/or case-control data with SNP
         haplotypes
-Version: 5.0.1
-Date: 2013-03-08
+Version: 5.0.2
+Date: 2013-03-18
 Author: Hakon K. Gjessing
 Maintainer: Hakon K. Gjessing <hakon.gjessing@fhi.no>
 Depends: MASS, mgcv, parallel, GenABEL, DatABEL, tools, filehash
@@ -24,7 +24,7 @@ Description: Haplin performs a genetic association analysis of
         X-inactivation, to be fitted on the X-chromosome.
 License: GPL (>= 2)
 URL: http://www.uib.no/smis/gjessing/genetics/software/haplin/
-Packaged: 2013-03-08 16:10:54 UTC; hkgjess
+Packaged: 2013-03-18 13:34:58 UTC; hkgjess
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-03-08 17:44:01
+Date/Publication: 2013-03-18 15:49:44

@@ -214,9 +214,13 @@ if(design == "cc" | design == "cc.triad"){
 	###.cc <- .data.vars[.data$orig.lines, .ccvar]
 	.tmpind <- match(.data$orig.lines, .orig.lines.seq[[2]])## WARNING: .data.vars SHOULD STILL HAVE THE SAME ORDERING AS .data.read, AND .orig.lines.seq[[2]] SHOULD REFER TO THIS ORDERING!
 	.cc <- .data.vars[.tmpind, .ccvar]
-	if(any(is.na(.cc))) stop(paste(sum(is.na(.cc)), " missing values found in case-control variable! Must be removed from file before analysis.\n", sep = ""))
+	if(any(is.na(.cc))) stop(paste(sum(is.na(.cc)), " missing values found in
+    case-control variable! Must be removed from file before analysis.\n", sep =
+    ""), call. = F)
 	.codes <- names(attr(.data.vars, "variables")[[.ccvar]])
-	if(length(.codes) != 2) stop(paste('Case-control variable "ccvar" is coded with ', paste(.codes, collapse = ", "), '. It should have exactly two different values!', sep = ""))	
+	if(length(.codes) != 2) stop(paste('Case-control variable "ccvar" is coded
+    with ', paste(.codes, collapse = ", "), '. It should have exactly two
+    different values!', sep = ""), call. = F)	
 	if(!identical(sort(unique(.cc)), c(1,2))) stop("Something's wrong with the case-control variable!") # SHOULDN'T BE NECESS.
 	if(verbose) cat("\nNote: The following case/control coding has been assumed:\ncontrols = ", .codes[1], ", cases = ", .codes[2], "\n", sep = "")
 	# if(!identical(.codes, c("0","1"))) stop("Case-control variable must be coded as 0 (control) and 1 (case)!")
@@ -230,13 +234,18 @@ if(!is.null(.info$variables$covar)){
 	.covar <- .info$variables$covar ## COLUMN NUMBER
 	.tmpind <- match(.data$orig.lines, .orig.lines.seq[[2]])## WARNING: .data.vars SHOULD STILL HAVE THE SAME ORDERING AS .data.read, AND .orig.lines.seq[[2]] SHOULD REFER TO THIS ORDERING!
 	.co <- .data.vars[.tmpind, .covar] ## INTEGER VALUES FROM RECODED DATA FILE
-	if(any(is.na(.co))) stop(paste(sum(is.na(.co)), " missing values found in covariate! Must be removed from file before analysis.\n", sep = ""))
+	if(any(is.na(.co))) stop(paste(sum(is.na(.co)), " missing values found in
+    covariate! Must be removed from file before analysis.\n", sep = ""), call. =
+    F)
 	## COVAR TABLE
 	.covar.tab <- attr(.data.vars, "variables")[[.covar]]
-	if(length(.covar.tab) == 1) stop(paste('Covariate variable "covar" has only a single value ', paste(.codes, collapse = ", "), '. It should have two or more different values!', sep = ""))
+	if(length(.covar.tab) == 1) stop(paste('Covariate variable "covar" has only
+    a single value ', paste(.codes, collapse = ", "), '. It should have two or
+    more different values!', sep = ""), call. = F)
 	## (A PROBABLY UNNECESSARY) QUICK CHECK:
 	.tmpco <- sort(unique(.co))
-	if(any(.tmpco != seq(along = .tmpco))) stop('Something\'s wrong with the "covar" variable!') # SHOULDN'T BE NECESS.
+	if(any(.tmpco != seq(along = .tmpco))) stop('Something\'s wrong with the
+    "covar" variable!', call. = F) # SHOULDN'T BE NECESS.
 	#
 	if(verbose){### THIS SHOULD RATHER BE PART OF STANDARD OUTPUT...
 		cat("\nDistribution of the covariate variable:", sep = "")

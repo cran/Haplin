@@ -2,7 +2,7 @@ output <- function(object, dirname = ".", ask = T){
 ##
 ## WRITES SUMMARY RESULTS OF haplin object TO A DIRECTORY SPECIFIED BY DIRNAME
 ##
-if(class(object) != "haplin") stop("Intended only for haplin objects")
+if(class(object) != "haplin") stop("Intended only for haplin objects", call. = F)
 #
 ##
 .table <- haptable(object)
@@ -27,9 +27,7 @@ f.vis(.reply.summary, vis = F)
 f.vis(.reply.plot, vis = F)
 
 if(.reply.table){
-	sink(file = .file.table)
-		print(.table)
-	sink()
+	dumpTab(.table, file = .file.table)
 }
 if(.reply.summary){
 	cat(.summary, file = .file.summary, sep = "\n")

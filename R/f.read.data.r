@@ -18,7 +18,9 @@ f.read.data <- function(info){
 .subset <- .info$filespecs$subset
 #
 ## CHECK THAT na.strings ARE DIFFERENT FROM MAIN SEPARATOR, AND ALSO FROM THE allele.sep, UNLESS allele.sep == "", WHICH SHOULD BE TOLERATED
-if((.na.strings == .sep) | ((.na.strings != "") & (.na.strings == .allele.sep))) stop('The "na.strings" argument should be different from "sep" and "allele.sep" arguments!')
+if((.na.strings == .sep) | ((.na.strings != "") & (.na.strings == .allele.sep)))
+stop('The "na.strings" argument should be different from "sep" and "allele.sep"
+arguments!', call. = F)
 #
 ## DETERMINE WHETHER ALLELES ARE SPLIT ALREADY (.split == T) OR NOT
 if(.sep == .allele.sep) .split <- T
@@ -68,7 +70,8 @@ if((!.split) & .allele.sep == ";"){
 
 if(!is.null(.subset)){
 	.ind.sub <- (.data[, .subset[[1]]] %in% .subset[[2]])
-	if(sum(.ind.sub) == 0) stop('It seems the "subset" argument is too restrictive: no data lines selected!')
+	if(sum(.ind.sub) == 0) stop('It seems the "subset" argument is too
+    restrictive: no data lines selected!', call. = F)
 }else .ind.sub <- T
 
 
@@ -78,9 +81,13 @@ if(!is.null(.subset)){
 ## IF ON X-CHROM, AND ONLY ONE SEX IS SELECTED
 if(.info$model$xchrom & !is.null(.info$variables$sel.sex)){
 	.sex <- .data[, .info$variables$sex]
-	if(any(is.na(.sex))) stop(paste(sum(is.na(.sex)), " missing values found in sex variable! Must be removed from file before analysis.\n", sep = ""))
+	if(any(is.na(.sex))) stop(paste(sum(is.na(.sex)), " missing values found in
+    sex variable! Must be removed from file before analysis.\n", sep = ""),
+    call. = F)
 	.tmp <- sort(unique(.sex))
-	if(any(!is.element(.tmp, c("1", "2")))) stop(paste("The sex variable is coded ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2 (females). Missing values are not allowed.", sep = ""))
+	if(any(!is.element(.tmp, c("1", "2")))) stop(paste("The sex variable is
+    coded ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2
+    (females). Missing values are not allowed.", sep = ""), call. = F)
 	##
 	.ind.sub <- .ind.sub & (.sex == .info$variables$sel.sex)
 	#

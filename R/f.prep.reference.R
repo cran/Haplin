@@ -12,7 +12,9 @@ f.prep.reference <- function(info){
 if(is.numeric(.reference)){
 	.reference.method <- "ref.cat"
 	.ref.cat <- .reference
-	if(all(.ref.cat != 1:.n.sel.haplos)) stop (paste("Invalid reference category selected!\nValid categories are: ", paste(1:.n.sel.haplos, collapse = " "), sep = ""))
+	if(all(.ref.cat != 1:.n.sel.haplos)) stop (paste("Invalid reference category
+    selected!\nValid categories are: ", paste(1:.n.sel.haplos, collapse = " "),
+    sep = ""), call. = F)
 } else
 if(.reference == "ref.cat"){
 	.reference.method <- "ref.cat"
@@ -26,7 +28,7 @@ if(.reference == "reciprocal"){
 	.reference.method <- "reciprocal"
 	.ref.cat <- .max.prelim.freq
 } else
-stop("Invalid reference")
+stop("Invalid reference", call. = F)
 #
 ## CHECK THAT ONLY REFCAT IS USED WHEN ONLY TWO HAPLOTYPES/ALLELES	
 if(.n.sel.haplos == 2 & .reference.method != "ref.cat"){

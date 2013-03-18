@@ -13,7 +13,18 @@ suest(reslist)
 	\item{reslist}{A list whose elements are different haplin runs on the same data file, typically the output of \code{\link{haplinSlide}}.}
 }
 \details{
-	\code{\link{haplinSlide}} runs \code{haplin} on a series of overlapping windows of markers from the same data file, typically within the same gene. Since each run produces a separate overall p-value, \code{suest} computes a joint overall p-value for the gene (or region) that has been scanned. It corrects the overall p-value for multiple testing, also taking into account the fact that the sequence of estimates produced by \code{haplinSlide} will be dependent, both because they are computed on the same data set and also since the windows are overlapping (if the window length is larger than 1). If the \code{suest} estimation fails (which doesn't happen very often), a standard Bonferroni correction is used instead. 
+	\code{\link{haplinSlide}} runs \code{haplin} on a series of overlapping
+    windows of markers from the same data file, typically within the same gene.
+    Since each run produces a separate overall p-value, \code{suest} computes a
+    joint overall p-value for the gene (or region) that has been scanned. It
+    corrects the overall p-value for multiple testing, also taking into account
+    the fact that the sequence of estimates produced by \code{haplinSlide} will
+    be dependent, both because they are computed on the same data set and also
+    since the windows are overlapping (if the window length is larger than 1).
+    If the \code{suest} estimation fails (which doesn't happen very often), a
+    standard Bonferroni correction is used instead. Important:
+    \code{haplinSlide} must be run with the option \code{table.output = FALSE}
+    to provide \code{suest} with enough information.
 }
 \value{
 	A list is returned, the most important elements of which are:

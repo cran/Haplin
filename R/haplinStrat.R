@@ -22,7 +22,9 @@ if(.verbose){
 #
 ### DEFINE STRATA VARIABLE AND DISPLAY FREQUENCY DISTRIBUTION
 .strata <- .data.read[, .info$variables$strata]
-if(any((.strata == "NA") | is.na(.strata))) stop("Missing values found in stratification variable.\n\ \ Should be removed from file before running haplinStrat.")
+if(any((.strata == "NA") | is.na(.strata))) stop("Missing values found in
+stratification variable.\n\ \ Should be removed from file before running
+haplinStrat.", call. = F)
 ### MERK, MERK: I f.read.data BLIR MISSING KONVERTERT TIL NA OG DERETTER "NA". BURDE KANSKJE BARE VAERT NA?
 if(.verbose){
 	cat("\nFrequency distribution of selected stratification variable:\n")

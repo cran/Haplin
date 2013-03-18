@@ -1,5 +1,5 @@
-export(haplin, haplinSlide, suest, haptable, pedToHaplin, haplinTDT, pQQ, gwaaToHaplin, prepPed, toDataFrame)
-#export(haplinStrat, output, postTest, f.triad.to.transmit, f.transmit.to.triad, f.LD)
+export(haplin, haplinSlide, suest, haptable, pedToHaplin, haplinTDT, pQQ, gwaaToHaplin, prepPed, toDataFrame, output)
+#export(haplinStrat, postTest, f.triad.to.transmit, f.transmit.to.triad, f.LD)
 S3method(plot, haplin)
 S3method(print, haplin)
 S3method(summary, haplin)

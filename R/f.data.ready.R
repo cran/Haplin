@@ -24,7 +24,8 @@ if(F & (.n.vars > 0)){
 ## DISSE SELEKSJONENE KUNNE KANSKJE VAERT GJORT SAMLET FOR f.read.data og f.data.ready?
 if(!is.null(.subset)){
 	.ind.sub <- (data[, .subset[[1]]] %in% .subset[[2]])
-	if(sum(.ind.sub) == 0) stop('It seems the "subset" argument is too restrictive: no data lines selected!')
+	if(sum(.ind.sub) == 0) stop('It seems the "subset" argument is too
+    restrictive: no data lines selected!', call. = F)
 }else .ind.sub <- T
 
 
@@ -32,9 +33,13 @@ if(info$model$xchrom & !is.null(info$variables$sel.sex)){
 	##
 	## IF ON X-CHROM, AND ONLY ONE SEX IS SELECTED
 	.sex <- data[, info$variables$sex]
-	if(any(is.na(.sex))) stop(paste(sum(is.na(.sex)), " missing values found in sex variable! Must be removed from file before analysis.\n", sep = ""))
+	if(any(is.na(.sex))) stop(paste(sum(is.na(.sex)), " missing values found in
+    sex variable! Must be removed from file before analysis.\n", sep = ""),
+    call. = F)
 	.tmp <- sort(unique(.sex))
-	if(any(!is.element(.tmp, c("1", "2")))) stop(paste("The sex variable is coded ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2 (females). Missing values are not allowed.", sep = ""))
+	if(any(!is.element(.tmp, c("1", "2")))) stop(paste("The sex variable is
+    coded ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2
+    (females). Missing values are not allowed.", sep = ""), call. = F)
 	##
 	.ind.sub <- .ind.sub & (.sex == info$variables$sel.sex)
 }

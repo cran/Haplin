@@ -29,9 +29,9 @@ if(F){
 	##
 	.run <- rep(1:batchsize, each = slice)
 	.run <- rep(.run, length.out = n)
-	.reg <- data.frame(col = seq(length.out = n), slice = .slice, batch = .batch, run = .run)
+	.reg <- dframe(col = seq(length.out = n), slice = .slice, batch = .batch, run = .run)
 }else{
-	.reg <- data.frame(col = seq(length.out = n), slice = .slice, batch = .batch)
+	.reg <- dframe(col = seq(length.out = n), slice = .slice, batch = .batch)
 }
 #
 ##

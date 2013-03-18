@@ -2,7 +2,8 @@ f.sort.alleles.new <- function(data, xchrom = F, sex)
 {
 ## 
 ##
-if(xchrom & missing(sex)) stop("Sex variable must be specified for X-chromosome analyses!\n")
+if(xchrom & missing(sex)) stop("Sex variable must be specified for X-chromosome
+analyses!\n", call. = F)
 ## PREPARATIONS:
 .alleles <- attr(data, "alleles")
 .nalleles <- sapply(.alleles, length)
@@ -28,9 +29,13 @@ if(xchrom){# STORE SEX VARIABLE SEPARATELY
 	.sex <- .data.agg$sex
 	.data.agg$sex <- NULL
 	#
-	if(any(is.na(.sex))) stop(paste(sum(.data.agg$freq[is.na(.sex)]), " missing values found in sex variable! Must be removed from file before analysis.\n", sep = ""))
+	if(any(is.na(.sex))) stop(paste(sum(.data.agg$freq[is.na(.sex)]), " missing
+    values found in sex variable! Must be removed from file before analysis.\n",
+    sep = ""), call. = F)
 	   .tmp <- sort(unique(.sex))
-	   if(!all(is.element(.tmp, c(1,2)))) stop(paste("The sex variable is coded ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2 (females).", sep = "")) #
+	   if(!all(is.element(.tmp, c(1,2)))) stop(paste("The sex variable is coded
+       ", paste(.tmp, collapse = " "), ". It should be coded 1 (males) and 2
+       (females).", sep = ""), call. = F) #
 	#if(verbose) cat("\nNote: The following sex variable coding has been assumed: males = 1, females = 2")
 }
 .lines <- attr(.data.agg, "orig.lines")
@@ -97,7 +102,7 @@ if(xchrom){
 }# END if(xchrom)
 #	
 
-.valid.markers <- tapply(.valid, as.data.frame(.data.long[,c("ind.unique.line", "ind.marker")]), any)
+.valid.markers <- tapply(.valid, as.dframe(.data.long[,c("ind.unique.line", "ind.marker")]), any)
 .valid.unique.lines <- apply(.valid.markers, 1, all) # NOTE: ASSUMES COMPLETE LIST OF INTEGERS FOR ind.unique.line, AND SORTED..
 .rows.with.Mendelian.inconsistency <- unlist(.lines[!.valid.unique.lines])	
 #
@@ -171,7 +176,7 @@ if(xchrom){
 ## SET MARKERS SIDE BY SIDE, WITH ALL POSSIBLE COMBINATIONS:
 .line.long <- 1:(dim(.data.long)[1])
 # MATRIX OF LINE NUMBERS CORRESPONDING TO EACH COMB OF UNIQUE LINES AND MARKERS:
-.line.bits <- tapply(.line.long, as.data.frame(.data.long[,c("ind.unique.line", "ind.marker"), drop = F]), function(x)x, simplify = F)
+.line.bits <- tapply(.line.long, as.dframe(.data.long[,c("ind.unique.line", "ind.marker"), drop = F]), function(x)x, simplify = F)
 # CREATE ALL POSSIBLE COMBINATIONS OF MARKER GENOTYPES WITH OTHER MARKER GENOTYPES:
 .line.seq <- apply(.line.bits, 1, function(x) as.numeric(t(as.matrix(do.call("expand.grid", x))))) # WARNING: IF ALL EXPANSIONS HAVE SAME LENGTH, THIS IS A MATRIX, NOT A VECTOR OF MODE LIST.
 .line.seq <- as.numeric(unlist(.line.seq)) # as.numeric ALSO HANDLES .line.seq WHEN A MATRIX
@@ -219,7 +224,7 @@ colnames(.haplo.comb) <- c("m1", "m2", "f1", "f2")
 ##
 if(!xchrom) .ut <- cbind(comb = .haplo.comb, ind.unique.line = .data.long[,"ind.unique.line"], freq = .data.agg$freq[.data.long[,"ind.unique.line"]])
 if(xchrom) .ut <- cbind(comb = .haplo.comb, sex = .data.long[,"sex"], ind.unique.line = .data.long[,"ind.unique.line"], freq = .data.agg$freq[.data.long[,"ind.unique.line"]])
-.ut <- as.data.frame(.ut)
+.ut <- as.dframe(.ut)
 #
 attr(.ut, "alleles") <- .alleles
 attr(.ut, "rows.with.Mendelian.inconsistency") <- .rows.with.Mendelian.inconsistency

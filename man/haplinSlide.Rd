@@ -58,7 +58,7 @@ Norwegian Institute of Public Health\cr
 # markers are used. To make longer windows, winlength can be increased
 # correspondingly:
 result.1 <- haplinSlide("C:/work/data.dat", use.missing = T, response = "mult",
-reference = "ref.cat", winlength = 1)
+reference = "ref.cat", winlength = 1, table.output = F)
 # Provide summary of separate results:
 lapply(result.1, summary)
 # Plot results:

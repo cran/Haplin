@@ -23,12 +23,13 @@ f.Rplot <- function(lwd, ylim, L, U, len, pos, est, est.in, use, pch, ...){
 #
 ## PLOTTING RELATIVE RISKS
 # WITH CIs AND LINE-ENDS
-#
-## EFFECT
-points(pos[est.in], est[est.in], pch = pch, font = 2)
 ## VERTICAL BAR
 .f.segments.rest(pos, L, pos, U, use = .use.log, ...)
 ## HORIZONTAL TOP AND BOTTOM BARS
 .f.segments.rest(pos - len, U, pos + len, U, use = .use.log, ...)
 .f.segments.rest(pos - len, L, pos + len, L, use = .use.log, ...)
+#
+## EFFECT
+points(pos[est.in], est[est.in], pch = 22, cex = 2, bg = "white", col = "white")
+points(pos[est.in], est[est.in], pch = pch, font = 2)
 }

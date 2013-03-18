@@ -11,7 +11,8 @@ haptable.haplin <- function(object){
 .rem.dd <- FALSE
 if(!is.null(.comb.sex) && (.comb.sex == "males")) .rem.dd <- TRUE
 #
-if(.info$model$scoretest == "only") stop('Sorry, haptable is not very helpful when haplin was run with scoretest = "only"')
+if(.info$model$scoretest == "only") stop('Sorry, haptable is not very helpful
+when haplin was run with scoretest = "only"', call. = F)
 #
 ## NUMBER OF TRIADS USED IN ANALYSIS
 .ntri.seq <- object$ntri.seq
