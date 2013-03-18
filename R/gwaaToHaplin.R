@@ -31,7 +31,8 @@ if(!missing(pedIndex)){
 }
 #
 if(design %in% c("triad", "cc.triad")){
-	if(missing(pedIndex)) stop('pedIndex must be supplied (except for the "cc" design)')
+	if(missing(pedIndex)) stop('pedIndex must be supplied (except for the "cc"
+    design)', call. = F)
 	#
 	## IDENTIFY FAMILIES USING THE .pedIndex. CONVERT TO FORMAT MOTHER-FATHER-CHILD 
 	.data <- f.ped.to.mfc(data = .data, pedIndex = .pedIndex, design = design)

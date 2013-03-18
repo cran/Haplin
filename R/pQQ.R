@@ -9,7 +9,7 @@ pQQ <- function(pvals, nlabs = 6, conf = 0.95, lim, mark = 0.05, ...){
 ## mark: SPECIFY MARKING OF "SIGNIFICANT" GENES (CAN BE FALSE, I.E. NO MARKING)
 ## ...: OTHER PARAMETERS TO plot, LIKE main, OR WHATEVER
 ##
-if(any(is.na(pvals))) stop("Missing p-values not allowed")
+if(any(is.na(pvals))) stop("Missing p-values not allowed", call. = F)
 sim <- F
 #
 ##

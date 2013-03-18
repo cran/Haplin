@@ -37,7 +37,7 @@ if(any(.aux != seq(along = .aux))) stop("Wrong data type for HWE testing!", call
 .tab[lower.tri(.tab)] <- NA
 ## SET IN LONG FORMAT
 .A <- expand.grid(a1 = .aux, a2 = .aux)
-.grid <- data.frame(.A, freq = as.numeric(.tab))
+.grid <- dframe(.A, freq = as.numeric(.tab))
 .grid <- .grid[!lower.tri(.tab),] # REMOVES REDUNDANT GENOTYPES
 #
 ## COMPUTE EXPECTED FREQS

@@ -9,7 +9,8 @@ plot.haplin <- function(x, reference, separate.plots = F, filename, filetype = "
 .poo <- .info$model$poo
 .haplos <- names(x$selected.haplotypes)[x$selected.haplotypes]
 .verbose <- .info$control$verbose
-if(.info$model$scoretest == "only") stop('Sorry, plotting of effect estimates not available when haplin was run with scoretest = "only"')
+if(.info$model$scoretest == "only") stop('Sorry, plotting of effect estimates
+not available when haplin was run with scoretest = "only"', call. = F)
 if(!is.null(.sel.sex) && (.sel.sex == 1)){
 	## IF SELECT ONLY BOYS, SHOW ONLY SINGLE DOSE
 	.use.single <- 1:.n.sel.haplo

@@ -119,7 +119,7 @@ if(.xchrom && !is.null(.info$model$comb.sex) && .info$model$comb.sex == "males")
 ## FURTHER RESTRICT USE OF PARENT-OF-ORIGIN
 if(.info$model$poo){
 	if(.info$model$design == "cc") stop('parent-of-origin effects not available when design = "cc"', call. = F)
-	if(!is.element(.info$haplos$reference, c("ref.cat", "population"))){
+	if(.info$haplos$reference == "reciprocal"){
 		warning('Can only (for the time being) use reference = "ref.cat" or "population" when poo == TRUE. Has been changed to "ref.cat".', call. = F)
 		.info$haplos$reference <- "ref.cat"
 	}

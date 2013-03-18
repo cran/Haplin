@@ -199,7 +199,7 @@ for (i in seq(along = .score)){
 .obs.pval.alt <- .f.test(tullsc, vcov.list = .vcov.list)
 
 if(!.err){
-	.min.normtest <- do.call("pmin", as.data.frame(.normtest))
+	.min.normtest <- do.call("pmin", as.dframe(.normtest))
 	
 	.obs.pval.corr <- sum(.min.normtest < min(.obs.pval))/length(.min.normtest)
 	.obs.pval.alt.corr <- sum(.min.normtest < min(.obs.pval.alt))/length(.min.normtest)

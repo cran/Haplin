@@ -90,6 +90,7 @@ else {
 ## PRINT REFERENCE METHOD/CATEGORY
 cat("Reference method: ", x$reference.method, "\n", sep = "")
 if(x$reference.method == "ref.cat") cat("Reference category: ", x$ref.cat, "\n", sep = "")
+cat("Response model: ", .response, "\n", sep = "")
 if(.xchrom){
 	cat("Assuming X-chromosome data:\n")
 	if(.comb.sex == "males"){
@@ -125,15 +126,15 @@ if(.poo){
 .ind.child <- match(.ind.child, rownames(.printout)) # COULD INDEX DIRECTLY, BUT NEED THE PLACEHOLDER
 #
 if(.poo){
-	.printout.child <- cbind(Haplotype = .printout[.ind.child, 1], Dose = c("S-mat", "S-pat", "D    ", "ratio", ""), .printout[.ind.child,-1, drop = F])
+	.printout.child <- cbind(Haplotype = .printout[.ind.child, 1], Dose = c("Single-mat", "Single-pat", "Double    ", "Ratio m/p ", ""), .printout[.ind.child,-1, drop = F])
 }else{
-	.printout.child <- cbind(Haplotype = .printout[.ind.child, 1], Dose = c("S  ", "D  ", ""), .printout[.ind.child,-1, drop = F])
+	.printout.child <- cbind(Haplotype = .printout[.ind.child, 1], Dose = c("Single  ", "Double  ", ""), .printout[.ind.child,-1, drop = F])
 }
 .printout.child[is.na(.printout.child)] <- ""
 dimnames(.printout.child)[[1]][] <- ""
 if(!is.null(.sel.sex) && .sel.sex == 1){
 	## REMOVE SINGLE OR DOUBLE DOSE FOR BOYS IN CASE X-CHROM AND SELECTED ONLY BOYS
-	.kill <- grep("D", .printout.child[, "Dose"])
+	.kill <- grep("Double", .printout.child[, "Dose"])
 	.printout.child <- .printout.child[-.kill, , drop = F]
 }
 #

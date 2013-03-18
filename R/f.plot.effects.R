@@ -42,7 +42,8 @@ if(type == 2){# MOTHER ALONE
 	.ylab <- "Relative risk (log scale)"
 	.sel <- "m"
 	if(.las == 2) .mar[1] <- .mar[1] + 1 # EXTEND LOWER MARGIN A LITTLE TO ACCOMMODATE LONG HAPLOTYPE NAMES
-	if(!maternal) stop("Maternal effects must be estimated before they can be plotted!\n")	#
+	if(!maternal) stop("Maternal effects must be estimated before they can be
+    plotted!\n", call. = F)	#
 }
 if(type == 3){# CHILD, TOP HALF
 	.main <- "Relative risks for haplotypes (log scale)"
@@ -57,7 +58,8 @@ if(type == 4){# MOTHER, BOTTOM HALF
 	.ylab <- "Mother"
 	.sel <- "m"
 	.mar[3] <- .space
-	if(!maternal) stop("Maternal effects must be estimated before they can be plotted!\n")	#
+	if(!maternal) stop("Maternal effects must be estimated before they can be
+    plotted!\n", call. = F)	#
 	.top <- F
 	.bottom <- T
 }
@@ -81,11 +83,20 @@ if(.print.haplos){
 	if(.bottom) axis(side = 1, at = 1:.nall, tick = F, font = 2, lwd = lwd)
 }
 ## ADD MESSAGE ABOUT REFERENCE
-if(poo){
-	.mtext <- paste('Single dose = "m", "p", or "x", Double dose = "o", ', .ref.message)
+if(!poo){
+	.mtext <- '"s"'
 }else{
-	.mtext <- paste("Single dose = \"x\", Double dose = \"o\", ", .ref.message)
+	if(type == 1){# CHILD ALONE
+		.mtext <- '"m" or "p"'
+	}
+	if(type == 2){# MOTHER ALONE
+		.mtext <- '"s"'
+	}
+	if(type %in% 3:4){# CHILD TOP (OR MOTHER BOTTOM, NOT NEEDED)
+		.mtext <- '"m", "p", or "s"'
+	}
 }
+.mtext <- paste('Single dose = ', .mtext, '.  Double dose = "d".   ', .ref.message, '.', sep = "")
 if(.top) mtext(.mtext, font = 2, cex = 0.8, line = 0.3)
 #
 ## HORIZONTAL REFERENCE LINE
@@ -132,7 +143,7 @@ if(.sel == "m" | !poo){
 	.U <- coeff[.names, "upper"]
 	#
 	## BASIC PLOTTING OF SINGLE DOSE EFFECTS AND CIs
-	f.Rplot(lwd = lwd, ylim = ylim, L = .L, U = .U, len = .len, pos = .pos, est = .est, est.in = .est.in, use = use.single, pch = "x")
+	f.Rplot(lwd = lwd, ylim = ylim, L = .L, U = .U, len = .len, pos = .pos, est = .est, est.in = .est.in, use = use.single, pch = "s")
 }
 if(.sel == "c" & poo){
 	#
@@ -176,7 +187,7 @@ if(reference.method == "ref.cat" & .nall == 2) .ddnames <- .ddnames[ - ref.cat] 
 .U.dd <- coeff[.ddnames, "upper"]
 #
 ## BASIC PLOTTING OF DOUBLE DOSE EFFECTS AND CIs
-f.Rplot(lwd = lwd, ylim = ylim, L = .L.dd, U = .U.dd, len = .len, pos = .ddpos, est = .est.dd, est.in = .est.dd.in, use = use.dd, pch = "o")
+f.Rplot(lwd = lwd, ylim = ylim, L = .L.dd, U = .U.dd, len = .len, pos = .ddpos, est = .est.dd, est.in = .est.dd.in, use = use.dd, pch = "d")
 #
 ## REMARK ABOUT PLOTTING RANGE
 if(any(!.est.in) | any(!.est.dd.in)) {

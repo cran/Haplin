@@ -13,9 +13,9 @@ f.make.index <- function(vardata, output = "line numbers"){
 
 ## CHECK family VARIABLE
 cat("\nChecking family and id variables...\n")
-if(any(table(vardata$family, exclude = NULL) > 3)) warning("Found family size larger than 3!  Will extract trios from general pedigree.")
-if(any(vardata$family == "0") | any(vardata$id == "0")) stop('Cannot use "0" in family or id code!')
-if(any(is.na(vardata$family)) | any(is.na(vardata$id))) stop('Cannot have missing values in family or id variable')
+if(any(table(vardata$family, exclude = NULL) > 3)) warning("Found family size larger than 3!  Will extract trios from general pedigree.", call. = F)
+if(.test <- (any(vardata$family == "0") | any(vardata$id == "0"))) stop(paste('Cannot use "0" in family or id code!\n', 'Found on line(s): ', paste(which(.test), collapse = " "), sep = ""), call. = F)
+if(.test <- (any(is.na(vardata$family)) | any(is.na(vardata$id)))) stop(paste('Cannot have missing values in family or id variable\n', 'Found on line(s): ', paste(which(.test), collapse = " "), sep = ""), call. = F)
 #
 ## RECODE ZEROES TO MISSING
 vardata$mother[vardata$mother == "0"] <- NA
@@ -35,7 +35,7 @@ vardata$father[vardata$father == "0"] <- NA
 if(any(.dupl)) {
 	cat("\n")
 	.mess <- paste("Individual id appears several times within one family!\nFor instance, family ", vardata$family[.dupl][1], " contains more than one of individual ", vardata$id[.dupl][1], ".", sep = "")
-	stop(.mess)
+	stop(.mess, call. = F)
 }
 #
 ## IDENTIFY MOTHERS AND FATHERS
@@ -51,7 +51,7 @@ if(any(.dupl)) {
 if(.sm + .sf > 0){
 	.tag.mother[.rem.mother] <- .tag.father[.rem.father] <- NA
 	.mess <- paste(.sm, " mother code(s) and ", .sf, " father code(s) refer to non-existing individuals and have been set to missing", sep = "")
-	warning(.mess)
+	warning(.mess, call. = F)
 }
 #
 ## DEFINE AND IDENTIFY "CHILD"
@@ -63,8 +63,8 @@ if(.sm + .sf > 0){
 .is.child <- .is.child.1 | .is.child.2
 #  
 ## SOME CHECKING
-if(any(.is.father & .is.mother)){
-	stop("Sorry, father and mother cannot have the same id!")
+if(any(.test <- .is.father & .is.mother)){
+	stop(paste("Sorry, the same individual cannot be both father and mother!\n", "Found on line(s): ", paste(which(.test), collapse = " "), sep = ""), call. = F)
 }
 #
 ## FIND LINE NUMBER OF CHILD AND OF ITS PARENTS
@@ -83,7 +83,7 @@ if(output == "line numbers"){
 }else if(output == "ids"){
 	## USES SAME IDS AS IN FILE. REQUIRES IDS TO BE UNIQUE!
 	## CAN BE USED WITH GenABEL SINCE THEY INSIST THAT IDS SHOULD BE UNIQUE.
-	if(any(duplicated(vardata$id))) stop("Duplicated individual id")
+	if(any(duplicated(vardata$id))) stop("Duplicated individual id", call. = F)
 	.fam.child <- vardata$family[.line.child]
 	.fam.mother <- vardata$family[.line.mother]
 	.fam.father <- vardata$family[.line.father]
@@ -92,7 +92,7 @@ if(output == "line numbers"){
 	.id.mother <- vardata$id[.line.mother]
 	.id.father <- vardata$id[.line.father]
 	#
-	if(any(.fam.child != .fam.mother, na.rm = T) | any(.fam.child != .fam.father, na.rm = T)) stop("Problem with family identification!")
+	if(any(.fam.child != .fam.mother, na.rm = T) | any(.fam.child != .fam.father, na.rm = T)) stop("Problem with family identification!", call. = F)
 	#
 	## JOIN FAMILY ID, CHILD ID, MOTHER ID, FATHER ID INTO MATRIX
 	.ut <- cbind(family = .fam.child, id.child = .id.child, id.mother = .id.mother, id.father = .id.father)
@@ -108,7 +108,7 @@ if(output == "line numbers"){
 	.id.mother <- .tag[.line.mother]
 	.id.father <- .tag[.line.father]
 	#
-	if(any(.fam.child != .fam.mother, na.rm = T) | any(.fam.child != .fam.father, na.rm = T)) stop("Problem with family identification!")
+	if(any(.fam.child != .fam.mother, na.rm = T) | any(.fam.child != .fam.father, na.rm = T)) stop("Problem with family identification!", call. = F)
 	#
 	## JOIN FAMILY ID, CHILD ID, MOTHER ID, FATHER ID INTO MATRIX
 	.ut <- cbind(family = .fam.child, id.child = .id.child, id.mother = .id.mother, id.father = .id.father)

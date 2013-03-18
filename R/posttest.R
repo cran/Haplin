@@ -16,7 +16,7 @@ if(class(object.list) != "haplinStrat") stop("Argument 'object.list' should be t
 #
 ## REMOVE OVERALL RESULT, ONLY DO TESTING ON SUBSTRATA, OF COURSE
 .object.list <- object.list[-1]
-if(length(.object.list) <= 1) stop("Need at least two strata")
+if(length(.object.list) <= 1) stop("Need at least two strata", call. = F)
 #
 ## STRATA NAMES, TO BE USED IN PRINTOUT
 .stratnavn <- names(.object.list)
@@ -33,7 +33,8 @@ if(is.null(.stratnavn)) .stratnavn <- as.character(seq(along = .object.list)) ##
 .tmp.selected.haplotypes <- lapply(.info, function(x)x$haplos$selected.haplotypes)
 .sel.haps <- .tmp.selected.haplotypes[[1]]
 .sjekk <- sapply(.tmp.selected.haplotypes[-1], function(x) identical(tolower(x), tolower(.sel.haps)))
-if(any(!.sjekk)) stop("Different haplotypes selected in different strata!")
+if(any(!.sjekk)) stop("Different haplotypes selected in different strata!",
+call. = F)
 #
 ## CONSISTENCY CHECK OF ref.cat AMONG ELEMENTS OF LIST
 .tmp.ref.cat <- lapply(.info, function(x)x$haplos$ref.cat)
@@ -171,7 +172,7 @@ if(.poo){
 })
 
 .ut <- do.call("rbind", .ut)
-.ut <- data.frame(test = rownames(.ut), .ut)
+.ut <- dframe(test = rownames(.ut), .ut)
 rownames(.ut) <- NULL
 
 return(.ut)
