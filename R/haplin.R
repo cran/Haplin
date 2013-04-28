@@ -35,7 +35,7 @@ printout <- .info$control$printout
 #require(MASS)
 #
 ## START 
-if(verbose)cat("\n## HAPLIN, VERSION 5.0.2 ##\n")
+if(verbose)cat("\n## HAPLIN, VERSION 5.2 ##\n")
 #
 ##
 

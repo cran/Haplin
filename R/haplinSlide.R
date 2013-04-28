@@ -133,7 +133,27 @@ if(!.run.para){
 	if(.para == "parallel"){
 		## parallel
 		w <- makeCluster(spec = cpus, outfile = slaveOutfile)
-		on.exit(stopCluster(w))
+		#on.exit(stopCluster(w))
+		#
+		## shut down nodes explicitly
+		.plat <- .Platform$OS.type
+		if(.plat == "windows") .cmds <- "taskkill /pid "
+		if(.plat == "unix") .cmds <- "kill "
+		# get process id's
+		.pids <- sapply(w, function(x){
+			parallel:::sendCall(x, eval, list(quote(Sys.getpid())))
+			parallel:::recvResult(x)
+		})
+		.cmds <- paste(.cmds, .pids, sep = "")
+		on.exit({
+			if(!missing(slaveOutfile)) sink(file = slaveOutfile, append = T)
+				sapply(.cmds, system)
+				for(.w in w){
+					try(parallel:::postNode(.w, "DONE"), silent = T)
+					try(parallel:::closeNode(.w), silent = T)
+				}
+			if(!missing(slaveOutfile)) sink()
+		})
 	}
 	if(.para == "doSMP"){
 		## doSMP BACKEND TO foreach
@@ -149,7 +169,9 @@ if(!.run.para){
 	}
 	#
 	## RUN BY SPLITTING ON CPUS
-		cat("Run Haplin using ", cpus, " cpu's\n", sep = "")
+	if(!missing(slaveOutfile)) sink(file = slaveOutfile, append = T)
+		cat("\n--- Running haplinSlide using ", cpus, " cpu's ---\n\n", sep = "")
+	if(!missing(slaveOutfile)) sink()
 #i#	if(.para == "snowfall")	.res.list <- sfLapply(seq(length.out = .nres), .f.run)
 	if(.para == "parallel") .res.list <- parLapply(w, seq(length.out = .nres), .f.run)
 #i#	if(.para == "snow") .res.list <- parLapply(w, seq(length.out = .nres), .f.run)
@@ -178,6 +200,9 @@ if(any(.errs)){
 	})
 	.res.list[.errs] <- .err.res
 }
+if(!missing(slaveOutfile)) sink(file = slaveOutfile, append = T)
+	cat("\n --- haplinSlide has completed ---\n")
+if(!missing(slaveOutfile)) sink()
 #
 ## SET CLASS
 if(!table.output) class(.res.list) <- "haplinSlide"

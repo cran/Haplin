@@ -158,19 +158,8 @@ if(response == "free"){
 		dimnames(.m.dd)[[2]] <- paste("mdd", 1:.A, sep = "")	
 	}# END if(maternal)
 }# END if(response == "free")
-
-
-
 #
 ##
-if(F){
-## DETTE KAN JO KANSKJE KOMME INN SOM DOBBELTDOSE FOR "cc",
-## HVIS ANT. HAPLOTYPER ER STORRE ENN 2 (ELLER HVA SOM TRENGS?)
-	.cc <- NULL # BARE TULL, MEN FOR AA UNNGAA FEILMELDING I R CMD check
-	.mm.c.dobbeldose <- (.c.dumsum == 2) + 0	# MODEL: R^2*Rstar
-	.mm.c.dobbeldose <- .mm.c.dobbeldose * .cc$cc
-	dimnames(.mm.c.dobbeldose)[[2]] <- paste("cdd", 1:.A, sep = "")	
-}
 
 if(.covar.yes){
 	.tmpmat <- cbind(.parents.dumsum, .mf[, c("covar"), drop = F])
@@ -269,7 +258,7 @@ if(.cond.cc){
 }
 #
 ## JOIN AND CONVERT TO DATA FRAME
-.design.matrix <- as.data.frame(cbind(.design.matrix0, .design.matrix1))
+.design.matrix <- as.dframe(cbind(.design.matrix0, .design.matrix1))
 #
 ##
 return(.design.matrix)
