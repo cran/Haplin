@@ -149,7 +149,7 @@ if(x$maternal){
 	.ind.maternal <- as.vector(outer(c("RRm", "RRmdd", "insertNA"), 1:.n.all, paste, sep = ""))
 	.ind.maternal <- match(.ind.maternal, rownames(.printout)) # COULD INDEX DIRECTLY, BUT NEED THE PLACEHOLDER
 	#
-	.printout.maternal <- cbind(Haplotype = .printout[.ind.maternal, 1], Dose = c("S  ", "D  ", ""), .printout[.ind.maternal,-1, drop = F])
+	.printout.maternal <- cbind(Haplotype = .printout[.ind.maternal, 1], Dose = c("Single  ", "Double  ", ""), .printout[.ind.maternal,-1, drop = F])
 	.printout.maternal[is.na(.printout.maternal)] <- ""
 	dimnames(.printout.maternal)[[1]][] <- ""
 	#
