@@ -189,7 +189,7 @@ if(!.use.missing){
 }
 #
 ## CONSTRUCT A NAME VECTOR FOR GENETIC DATA:
-.ll <- paste("l", .markers, sep = "")
+.ll <- paste("l", .markers, sep = "_")
 if(.family == "mfc") .mfc <- c("m", "f", "c")
 if(.family == "c") .mfc <- "c"
 .namevector <- as.vector(t(outer(.mfc, 1:2, function(x,y) paste(x,y, sep = ""))))

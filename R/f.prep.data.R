@@ -62,11 +62,11 @@ if(variables > 0){
 	.f.table(.data[,(1+(i-1)*.t):(.t*i)])
 })
 names(.tmp1) <- markers
-.frequency <- lapply(.tmp1, function(x) x$tab)
+.alleles <- lapply(.tmp1, function(x) x$tab)
 .nas <- sapply(.tmp1, function(x) x$nas)
 #
 ## RETRIEVE UNIQUE CODES AT EACH MARKER
-.unique <- lapply(.frequency, names)
+.unique <- lapply(.alleles, names)
 names(.unique) <- markers
 #
 ## RECODE GENETIC DATA, REPLACES ACTUAL CODES WITH 1, 2, 3 ETC, ACCORDING TO .unique :
@@ -88,7 +88,7 @@ if(variables > 0){
 	attr(.data, "variables.nas") <- .nas.x
 }			
 #
-attr(.data, "alleles") <- .frequency
+attr(.data, "alleles") <- .alleles
 attr(.data, "alleles.nas") <- .nas
 attr(.data,"rows.with.na")  <- attr(data,"rows.with.na")
 ## RETURNS WHICH ROWS DROPPED:

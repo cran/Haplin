@@ -30,6 +30,6 @@ f.Rplot <- function(lwd, ylim, L, U, len, pos, est, est.in, use, pch, ...){
 .f.segments.rest(pos - len, L, pos + len, L, use = .use.log, ...)
 #
 ## EFFECT
-points(pos[est.in], est[est.in], pch = 22, cex = 2, bg = "white", col = "white")
-points(pos[est.in], est[est.in], pch = pch, font = 2)
+points(pos[est.in], est[est.in], pch = 22, cex = 2, bg = "white", col = "white") # PROVIDES WHITE BACKGROUND FOR PLOTTING CHARACTER
+points(pos[est.in], est[est.in], pch = pch, font = 2) # PLOTTING CHARACTER, SUCH AS "s", "d" ETC.
 }

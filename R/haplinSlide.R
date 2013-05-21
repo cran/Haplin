@@ -32,14 +32,17 @@ if(winlength > 1) cat("\nImportant: Remember that SNPs must be in correct physic
 .info$model$use.missing <- T ## ENFORCE
 #
 ## WITH A gwaa.data OBJECT, DELAY CONVERSION, ELSE READ AND CONVERT
-if(!.missdata && (class(data) == "gwaa.data")){
-	## ONLY REDUCE NUMBER OF MARKERS, BUT DO NOT CONVERT YET
+.is.gwaa <- !.missdata && (class(data) == "gwaa.data")
+if(.is.gwaa){
+	## ONLY REDUCE NUMBER OF MARKERS, BUT DO NOT CONVERT YET (SKAL IKKE DETTE OGSAA GJELDE HAPLIN-DATABASE??)
 	.data.read <- data[, .info$filespecs$markers]
 }else{
 	## READ AND CONVERT DATA
 	.data.read <- f.get.data(data, pedIndex, .info)
 	.info <- attr(.data.read, "info")
 }
+.marker.names <- f.get.marker.names(.data.read, n.vars = .info$filespecs$n.vars)
+if(length(.marker.names) != length(.info$filespecs$markers)) warning("Something's wrong with the marker names...", call. = F)
 #
 ##
 .info$model$use.missing <- .use.missing ## REVERT TO ORIGINAL VALUE
@@ -47,7 +50,8 @@ if(!.missdata && (class(data) == "gwaa.data")){
 ## FIND MARKERS INCLUDED IN EACH WINDOW. NB: THEY NOW REFER TO MARKERS IN THE _REDUCED_ FILE, NOT THE ORIGINAL ONE
 .slides <- f.windows(markers = seq(along = .info$filespecs$markers), winlength = winlength)
 ## USE ORIGINAL MARKER SPECIFICATION AS NAMES
-.names <- .info$filespecs$markers[.slides]
+###.names <- .info$filespecs$markers[.slides]
+.names <- .marker.names[.slides]
 .names <- matrix(.names, ncol = ncol(.slides))
 .names <- f.create.tag(.names, sep = "-")
 #
@@ -71,21 +75,17 @@ cat("\n")
 	}
 	#
 	##
-	if(.missdata){
-		if(!.info$filespecs$database){
-			args_$markers <- .slides[i,]
-			args_$filename <- NULL
-			args_$data <- .data.read
-		}else{
-			args_$markers <- .info$filespecs$markers[.slides[i,]]
-		}
+	if(.info$filespecs$database){
+		## HAPLIN DATABASE
+		args_$markers <- .info$filespecs$markers[.slides[i,]]
 	}else{
+		## FILE, DATA MATRIX, AND GWAA
+		args_$filename <- NULL
 		args_$markers <- .slides[i,]
-		if((class(data) == "gwaa.data") & !.misspedIndex){
+		args_$data <- .data.read
+		if(.is.gwaa & !.misspedIndex){
 			args_$pedIndex <- pedIndex
 		}
-		args_$filename <- NULL
-		args_$data <- .data.read
 	}
 		#
 		## RUN HAPLIN
@@ -205,7 +205,8 @@ if(!missing(slaveOutfile)) sink(file = slaveOutfile, append = T)
 if(!missing(slaveOutfile)) sink()
 #
 ## SET CLASS
-if(!table.output) class(.res.list) <- "haplinSlide"
+###if(!table.output) 
+class(.res.list) <- "haplinSlide"
 #
 ## RETURN RESULT LIST
 return(.res.list)

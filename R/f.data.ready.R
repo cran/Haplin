@@ -71,7 +71,8 @@ if(!.use.missing){
 	.data <- .data[.ind,]
 	.rows.dropped <- which(!.ind)
 }else .rows.dropped <- numeric()
-
+#
+## ADD ATTRIBUTES
 attr(.data, "rows.with.na") <- sum(!.ind)
 attr(.data, "rows.dropped") <- .rows.dropped
 .info <- info
@@ -79,11 +80,5 @@ attr(.data, "rows.dropped") <- .rows.dropped
 attr(.data, "info") <- .info
 
 return(.data)
-
-return(info)
-
-
-
-
 
 }

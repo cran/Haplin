@@ -35,24 +35,21 @@ printout <- .info$control$printout
 #require(MASS)
 #
 ## START 
-if(verbose)cat("\n## HAPLIN, VERSION 5.2 ##\n")
+if(verbose)cat("\n## HAPLIN, VERSION 5.3 ##\n")
 #
-##
-
+## LOAD DATA, EITHER FROM FILE OR FROM DATA OBJECT
 .data.read <- f.get.data(data, pedIndex, .info)
-
-
 #
 ## DATA OUT, IF REQUESTED
 if(data.out == "basic"){
-	.tmp <- f.data(data = .data.read, quick = T)
+	.tmp <- f.data(data.read = .data.read, quick = T)
 	return(.tmp)
 	#.data <- .tmp$data
 	#.info <- .tmp$info
 }
 #
-## READ AND PREPARE DATA, RETURN HERE
-.tmp <- f.data(data = .data.read)
+## PREPARE DATA, RETURN HERE
+.tmp <- f.data(data.read = .data.read)
 .data <- .tmp$data
 .info <- .tmp$info
 #
@@ -65,7 +62,6 @@ if(data.out == "prelim"){
 ## DISSE BLIR NAA DEFINERT BARE I f.data OG MAA DERFOR GJORES EKSPLISITTE:
 .ntri.seq <- .info$data$ntri.seq
 ref.cat <- .info$haplos$ref.cat
-
 #
 ## DECIDE TEST SEQUENCE (NEED ONLY SPECIFY ARGUMENTS THAT CHANGE OVER TEST SEQUENCE)
 .testseq.standard <- list(list(maternal = F, response = "simple", x = F), list(maternal = maternal, response = response, x = T))

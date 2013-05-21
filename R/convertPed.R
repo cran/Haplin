@@ -62,7 +62,7 @@ cat(paste("Created map file for", length(snp.select), "SNPs \n", sep = " "))
 cat("Starting line-by-line conversion of ped file \n")
 #
 ## Convert ped file using the function lineByLine
-lineByLine(infile = ped.infile, outfile = ped.outfile, linefunk = lineConvert, choose.lines = choose.lines, ask = ask, blank.lines.skip = blank.lines.skip, verbose = verbose, create.unique.id = create.unique.id, convert = convert, snp.select.num = .snp.select.num)
+lineByLine(infile = ped.infile, outfile = ped.outfile, linefunc = lineConvert, choose.lines = choose.lines, ask = ask, blank.lines.skip = blank.lines.skip, verbose = verbose, create.unique.id = create.unique.id, convert = convert, snp.select.num = .snp.select.num)
 #
 ## Return empty
 return(invisible())

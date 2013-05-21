@@ -21,7 +21,7 @@ when haplin was run with scoretest = "only"', call. = F)
 #
 ## EXTRACT AND COMPUTE ALLELE-RELATED RESULTS
 .alls <- t(sapply(object$alleles, function(x) c(alleles = paste(names(x), collapse = "/"), counts = paste(x, collapse = "/"))))
-.alls <- dframe(.alls, HWE.pv = sapply(object$HWE.res, function(x) x$p.value))
+.alls <- dframe(marker = names(object$alleles), .alls, HWE.pv = sapply(object$HWE.res, function(x) x$p.value))
 #
 ## EXTRACT HAPLOTYPES USED
 .selected.haplotypes <- object$selected.haplotypes
@@ -84,7 +84,7 @@ if(object$result$maternal){
 }
 #
 ## JOIN RESULTS INTO DATA FRAME
-.tab <- dframe(haplos = .selected.haplotypes, pv.overall = rep(object$loglike["p.value.overall"], dim(.tab)[1]), .tab)
+.tab <- dframe(pv.overall = rep(object$loglike["p.value.overall"], dim(.tab)[1]), haplos = .selected.haplotypes, .tab)
 .tab$haplofreq.p.value <- NULL
 
 
@@ -96,7 +96,8 @@ if(.diff < 0) .tab <- as.dframe(lapply(.tab, function(x) c(x, rep(NA, -.diff))))
 ##
 .ntri.mat <- matrix(.ntri.seq, nrow = dim(.tab)[1], ncol = 4, byrow = T, dimnames = list(NULL, names(.ntri.seq)))
 
-.tab <- dframe(.ntri.mat, .alls, .tab)
+###.tab <- dframe(.ntri.mat, .alls, .tab)
+.tab <- dframe(.alls, .ntri.mat, .tab)
 
 names(.tab)[names(.tab) == "haplofreq.est."] <- "haplofreq"
 names(.tab)[names(.tab) == "After.rem.Mend..inc."] <- "After.rem.Mend.inc."

@@ -1,4 +1,4 @@
-f.split.matrix <- function(mat, split){
+f.split.matrix <- function(mat, split, tag.sep = "_"){
 ##
 ## EFFECTIVE SPLIT OF (EACH COLUMN OF) GENOTYPE MATRIX mat INTO TWO 
 ## COLUMNS SIDE BY SIDE IN MATRIX, SPLIT BY SEPARATOR split
@@ -27,7 +27,7 @@ f.split.matrix <- function(mat, split){
 #
 ## ADD CORRECT NAMES
 row.names(.ut) <- rownames(mat)
-.colnames <- outer(colnames(mat), 1:2, paste, sep = "_")
+.colnames <- outer(colnames(mat), 1:2, paste, sep = tag.sep)
 .colnames <- as.vector(t(.colnames))
 colnames(.ut) <- .colnames
 #

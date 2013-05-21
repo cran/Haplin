@@ -1,4 +1,4 @@
-prepPed <- function(pedfile, outdir, create.map = F){
+prepPed <- function(pedfile, outdir, create.map = F, ask = T){
 ##
 ## EXTRACT PED-INFORMATION, CREATE INDEX FILE AND PHENOTYPE FILE
 ##
@@ -9,6 +9,17 @@ prepPed <- function(pedfile, outdir, create.map = F){
 .index.name <- paste(outdir, "/", .basename, ".pedIndex", sep = "")
 .pheno.name <- paste(outdir, "/", .basename, ".ph", sep = "")
 .map.name <- paste(outdir, "/", .basename, ".map", sep = "")
+#
+##
+.test <- file.exists(.index.name, .pheno.name, .map.name)
+if(any(.test) & ask){
+	cat("The following file(s) already exist(s):", c(.index.name, .pheno.name, .map.name)[.test], sep = "\n")
+	.answer <- readline(paste('Overwrite file(s)? (y/n)', sep = ""))
+	if(.answer != "y"){
+		cat("Stopped without overwriting\n")
+		return(invisible())
+	}
+}
 #
 ## EXTRACT FAMILY INFORMATION FROM PED FILE
 cat("Extracting family, sex and case/control information from ped file...\n")
@@ -22,8 +33,8 @@ names(.fam) <- c("family", "id", "father", "mother", "sex", "cc")
 ##
 .sex.u <- sort(unique(.pheno$sex))
 if(length(.sex.u) > 2) stop("More than 2 different codes in the sex column (column 5)", call. = F)
-if(!identical(.sex.u, c("0", "1"))){
-	if(identical(.sex.u, c("1", "2"))){
+if(any(!is.element(.sex.u, c("0", "1")))){
+	if(all(is.element(.sex.u, c("1", "2")))){
 		.pheno$sex[.pheno$sex == "2"] <- "0" ## RECODE FEMALES
 	}else stop("Invalid codes in the sex column (column 5)", call. = F)
 }

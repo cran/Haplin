@@ -165,11 +165,13 @@ if(!is.numeric(.info$filespecs$markers) & !identical(.info$filespecs$markers, "A
 #
 ##
 #
-## ONLY USE response = "mult" FOR cc (FOR NOW), AND NO MATERNAL EFFECTS
-if((.info$model$design == "cc") & (.info$haplos$response != "mult")){
-	warning('Can only use response = "mult" with design = "cc" (for now...). Has been changed to "mult".', call. = F)
-	.info$haplos$response <- "mult"
-}
+## ONLY USE response = "mult" FOR cc (FOR NOW) (HUSKER IKKE HVORFOR??)
+#if((.info$model$design == "cc") & (.info$haplos$response != "mult")){
+#	warning('Can only use response = "mult" with design = "cc" (for now...). Has been changed to "mult".', call. = F)
+#	.info$haplos$response <- "mult"
+#}
+#
+## NO MATERNAL EFFECTS WITH PURE cc
 if((.info$model$design == "cc") & (.info$model$maternal)) stop('Cannot use maternal = TRUE with design = "cc"', call. = F)
 #
 ## CHECK THAT response IS RESTRICTED
