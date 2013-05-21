@@ -1,13 +1,13 @@
-lineByLine <- function(infile, outfile, linefunk = identity , choose.lines = NULL, choose.columns = NULL, ask = TRUE, blank.lines.skip = TRUE, verbose = TRUE, ...){
+lineByLine <- function(infile, outfile, linefunc = identity , choose.lines = NULL, choose.columns = NULL, ask = TRUE, blank.lines.skip = TRUE, verbose = TRUE, ...){
 ##
-## Reads file line by line, modifies each line using the argument linefunk, and then writes to outfile.
+## Reads file line by line, modifies each line using the argument linefunc, and then writes to outfile.
 ##
 ## By default, linfunk returns its argument.
 ## Default sets ask = TRUE. No file is overwritten unless specified by user.
 ## choose.lines and choose.columns enable the selection of certain lines and/or columns of the infile. 
 ## Both are set to NULL as default, which means that all lines and/or columns are selected. If not set to NULL, must be numeric vectors with values > 0.
 ## blank.lines.skip ignores blank lines in the input if TRUE.
-## If TRUE, verbose displays the line number for each iteration, in addition to output from linefunk.
+## If TRUE, verbose displays the line number for each iteration, in addition to output from linefunc.
 ##
 #
 ## Error in lineByLine if outfile == infile
@@ -84,14 +84,14 @@ repeat{
 		.line <- .line[choose.columns[which(choose.columns <= length(.line) & choose.columns > 0)]]
 	}	
 	#
-	## Display line number (and output from linefunk) 
+	## Display line number (and output from linefunc) 
  	if(verbose) cat(.i, " --- ", sep = "")
 	#
 	## Convert line
-	if("verbose" %in% names(formals(linefunk))){
-		.line <- linefunk(x = .line, verbose = verbose, ...)
+	if("verbose" %in% names(formals(linefunc))){
+		.line <- linefunc(x = .line, verbose = verbose, ...)
 	}else{
-		.line <- linefunk(x = .line, ...)
+		.line <- linefunc(x = .line, ...)
 	}
 	#
 	## Newline

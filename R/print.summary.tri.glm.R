@@ -79,11 +79,11 @@ if(.poo){
 #
 #
 if(!x$conf.int){
-	cat("\nSingle- and double dose effects (Relativ Risk):\n")
+	cat("\nSingle- and double dose effects (Relative Risk):\n")
 	.printout[.nam.strikeout,] <- "REF"
 }
 else {
-	cat("\nSingle- and double dose effects (Relativ Risk) with ", 100 * x$level, "% confidence intervals:\n", sep = "")
+	cat("\nSingle- and double dose effects (Relative Risk) with ", 100 * x$level, "% confidence intervals:\n", sep = "")
 	for (i in seq(along = .nam.strikeout)) .printout[.nam.strikeout[i],] <- c("REF", "", "", "")
 }
 #

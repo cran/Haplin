@@ -6,13 +6,14 @@
  Creates a pedIndex file containing family information, a phenotype file, and optionally a ``dummy'' map file. The files are used by GenABEL when loading data into R, and by Haplin when converting from a GenABEL file to a Haplin file. 
 }
 \usage{
-prepPed(pedfile, outdir, create.map = F)
+prepPed(pedfile, outdir, create.map = F, ask = T)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 	\item{pedfile}{A character string giving the name and path of the ped-format file to be used. }
 	\item{outdir}{The directory where the pedIndex file, phenotype file, and optionally the map file should be saved.}
 	\item{create.map}{Logical. If "TRUE", \code{prepPed} creates a dummy map file which can be used by GenABEL when loading data into R. Can be used if no map file is available.}
+	\item{ask}{Logical. Default is "TRUE". If set to "FALSE", already existing output files will be overwritten without asking.}
 }
 \details{
   To use Haplin on a large ped-format file, it should first be converted to a GenABEL raw file and loaded into R. Since GenABEL does not retain family information available in the ped file, \code{prepPed} should first be run on the file to extract the necessary family and phenotype information. \code{prepPed} stores family information in a .pedIndex file with the same name as the ped file, and saves it in the \code{outdir} directory. Similarly, it creates a phenotype file (.ph), which contains the individual ID, the sex variable, and the case-control status. Optionally, it can construct a simple .map file, which can be used in situations where no real map file (corresponding to the ped file) is available.\cr

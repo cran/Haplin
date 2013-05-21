@@ -123,7 +123,8 @@ if(reference.method == "ref.cat"){
 }
 #
 ## MARK REFERENCE CATEGORY
-if(reference.method == "ref.cat") text(.ref.pos - .shift, 1 - 0.08, "REF", cex = 0.7, font = 2)	#
+if(reference.method == "ref.cat") textlabel(x = .ref.pos - .shift, y = 1, labels = "REF", cex = 0.7, font = 2)
+### if(reference.method == "ref.cat") text(.ref.pos - .shift, 1 - 0.08, "REF", cex = 0.7, font = 2)	#
 #
 ##
 .f.in <- function(x, yl) {(x >= yl[1]) & (x <= yl[2])}

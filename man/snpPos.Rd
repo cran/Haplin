@@ -1,7 +1,7 @@
 \name{snpPos}
 \alias{snpPos}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Finding the column numbers of SNP identifiers/SNP numbers in a ped file}
+\title{Find the column numbers of SNP identifiers/SNP numbers in a ped file}
 \description{
  Gives the column numbers of SNP identifiers or SNP numbers in a standard ped file, calculated from the SNP's positions in the corresponding map file. The column numbers are sorted in the same order as \code{snp.select}.
  These positions may be useful when extracting a selection of SNPs from a ped file.
@@ -62,7 +62,8 @@ Norwegian Institute of Public Health\cr
 
 \dontrun{
 
-# Find the column numbers of the SNP identifiers "RS9629043" and "RS12565286" in a standard ped file
+# Find the column numbers of the SNP identifiers "RS9629043" and "RS12565286" in 
+# a standard ped file
 snpPos(snp.select = c("RS9629043", "RS12565286"), map.file = "mygwas.map")
 }
 

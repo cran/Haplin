@@ -8,6 +8,8 @@ gwaaToHaplin <- function(data, pedIndex, design = "triad"){
 #
 ## EXTRACT CHARACTER DATA. RESULT IS SEPARATED BY "/"
 .data <- as.character(data)
+## LET ALL MARKER NAMES START WITH AN "l_":
+colnames(.data) <- paste("l", colnames(.data), sep = "_")
 #
 ## EXTRACT PHENOTYPE DATA
 .phdata <- phdata(data)
@@ -54,7 +56,7 @@ if(design == "cc"){
 .data[,1:.nvars][is.na(.data[,1:.nvars])] <- "NA"
 #
 ## SPLIT COLUMNS OF  genetic data INTO TWO SEPARATE ALLELES
-.data <- cbind(.data[, 1:.nvars, drop = F], f.split.matrix(.data[, -(1:.nvars), drop = F], split = "/"))
+.data <- cbind(.data[, 1:.nvars, drop = F], f.split.matrix(.data[, -(1:.nvars), drop = F], split = "/", tag.sep = ""))
 #
 ##
 #.data <- as.dframe(.data)

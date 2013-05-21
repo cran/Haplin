@@ -37,7 +37,8 @@ Norwegian Institute of Public Health\cr
 \examples{
 \dontrun{
 
-# Directly plotting the haplin result. Produce separate plots for child and mother, dump plots to files:
+# Directly plotting the haplin result. Produce separate plots for child and mother, 
+# dump plots to files:
 res <- haplin("data.dat", use.missing = T, maternal = T)
 plot(res, separate.plots = T, filename = "Haplinres.png")
 
@@ -46,7 +47,8 @@ res <- haplin("data.dat", use.missing = T, maternal = T)
 tab <- haptable(res)
 plot(tab)
 
-# Create haptables for the 10 first markers of a data file using haplinSlide. Create plots for each result:
+# Create haptables for the 10 first markers of a data file using haplinSlide. 
+# Create plots for each result:
 res <- haplinSlide("data.dat", markers = 1:10, use.missing = T, maternal = T, table.output = T)
 lapply(res, plot)
 }}

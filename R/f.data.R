@@ -1,11 +1,10 @@
-f.data <- function(data, quick = FALSE){
+f.data <- function(data.read, quick = FALSE){
 ##
 ## MISCELLANEOUS DATA PROCESSING
 ## 
 #
 ##
-.data.read <- data
-.info <- attr(.data.read, "info") ## NEEDS UPDATING IN CASE markers OR allele.sep WERE CHANGED IN f.read.data
+.info <- attr(data.read, "info") ## NEEDS UPDATING IN CASE markers OR allele.sep WERE CHANGED IN f.read.data
 ## SET PARAMETERS, FOR SIMPLICITY
 design <- .info$model$design
 xchrom <- .info$model$xchrom
@@ -14,17 +13,19 @@ verbose <- .info$control$verbose
 .n.vars <-  .info$filespecs$n.vars
 #
 ## COUNT AND REPORT MISSING
-.rows.with.na <- attr(.data.read, "rows.with.na")
-.rows.dropped <- attr(.data.read, "rows.dropped")
+.rows.with.na <- attr(data.read, "rows.with.na")
+.rows.dropped <- attr(data.read, "rows.dropped")
 .info$data$rows.dropped <- .rows.dropped
+#
+.marker.names <- f.get.marker.names(data.read, n.vars = .n.vars)
 #
 .ntri.seq <- rep(NA, 4) # THE NUMBER OF TRIADS AVAILABLE AT EACH STAGE
 .orig.lines.seq <- vector(4, mode = "list") # THE ORIGINAL LINE NUMBERS AVAILABLE AT EACH STAGE
 # NOTE: .ntri.seq[i] SHOULD BE THE SAME AS length(.orig.lines.seq[[i]]) FOR i = 1, 2
-# WARNING: ALSO, .orig.lines.seq[[2]] SHOULD BE IN THE SAME ORDER AS THE CORRESPONDING DATA SET .data.read!
+# WARNING: ALSO, .orig.lines.seq[[2]] SHOULD BE IN THE SAME ORDER AS THE CORRESPONDING DATA SET data.read!
 names(.ntri.seq) <- names(.orig.lines.seq) <- c("Original", "After rem NA", "After rem Mend. inc.", "After rem unused haplos")
 #
-.ntri.seq[2] <- dim(.data.read)[1]
+.ntri.seq[2] <- dim(data.read)[1]
 #
 if(.rows.with.na == 0){
 	.ntri.seq[1] <- .ntri.seq[2]
@@ -46,12 +47,13 @@ if(.rows.with.na == 0){
 #
 ## FREQUENCY COUNT AND ALLELE SORTING:
 if(verbose) cat("\nPreparing data for analysis...  ")
-.data <- f.prep.data(.data.read, info = .info)	
+.data <- f.prep.data(data.read, info = .info)	
 if(verbose) cat("Done\n")
 #
 ## EXTRACT ALLELE INFORMATION:
 .info$haplos$alleles <- attr(.data, "alleles")
-.info$haplos$alleles.nas <- attr(.data, "alleles.nas") # NUMBER OF MISSING
+if(!is.null(.marker.names)) names(.info$haplos$alleles) <- .marker.names
+.info$haplos$alleles.nas <- attr(.data, "alleles.nas") # NUMBER OF MISSING AT EACH LOCUS
 #
 ## CHANGE CASE: UPPER-CASE IS MOST FREQUENT	
 .f.change.case <- function(allele){
@@ -132,7 +134,7 @@ if(length(.rows.with.Mendelian.inconsistency) == 0){
 ##	EXPAND FREQUENCIES AND ADD COUNTER:
 .orig.lines.after.NA <- unlist(.orig.lines.after.NA[.data.gen$ind.unique.line])
 .orig.lines <- .orig.lines.seq[[2]][.orig.lines.after.NA] # CONVERT LINE NUMBERS INTO THE ORIGINAL LINE NUMBERS
-# WARNING: .orig.lines.seq[[2]] SHOULD HAVE THE SAME ORDERING AS .data.read!
+# WARNING: .orig.lines.seq[[2]] SHOULD HAVE THE SAME ORDERING AS data.read!
 if(any(.orig.lines.seq[[3]] != sort(unique(.orig.lines)))) stop("problem!")
 #
 .ind <- 1:(dim(.data.gen)[1])
@@ -212,7 +214,7 @@ ref.cat <- .tmp$ref.cat
 if(design == "cc" | design == "cc.triad"){
 	.ccvar <- .info$variables$ccvar
 	###.cc <- .data.vars[.data$orig.lines, .ccvar]
-	.tmpind <- match(.data$orig.lines, .orig.lines.seq[[2]])## WARNING: .data.vars SHOULD STILL HAVE THE SAME ORDERING AS .data.read, AND .orig.lines.seq[[2]] SHOULD REFER TO THIS ORDERING!
+	.tmpind <- match(.data$orig.lines, .orig.lines.seq[[2]])## WARNING: .data.vars SHOULD STILL HAVE THE SAME ORDERING AS data.read, AND .orig.lines.seq[[2]] SHOULD REFER TO THIS ORDERING!
 	.cc <- .data.vars[.tmpind, .ccvar]
 	if(any(is.na(.cc))) stop(paste(sum(is.na(.cc)), " missing values found in
     case-control variable! Must be removed from file before analysis.\n", sep =
@@ -232,7 +234,7 @@ if(design == "cc" | design == "cc.triad"){
 if(!is.null(.info$variables$covar)){
 	stop('The "covar" argument is not available in "haplin" and "haplinSlide", only in "haplinStrat"!', call. = F)
 	.covar <- .info$variables$covar ## COLUMN NUMBER
-	.tmpind <- match(.data$orig.lines, .orig.lines.seq[[2]])## WARNING: .data.vars SHOULD STILL HAVE THE SAME ORDERING AS .data.read, AND .orig.lines.seq[[2]] SHOULD REFER TO THIS ORDERING!
+	.tmpind <- match(.data$orig.lines, .orig.lines.seq[[2]])## WARNING: .data.vars SHOULD STILL HAVE THE SAME ORDERING AS data.read, AND .orig.lines.seq[[2]] SHOULD REFER TO THIS ORDERING!
 	.co <- .data.vars[.tmpind, .covar] ## INTEGER VALUES FROM RECODED DATA FILE
 	if(any(is.na(.co))) stop(paste(sum(is.na(.co)), " missing values found in
     covariate! Must be removed from file before analysis.\n", sep = ""), call. =

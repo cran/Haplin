@@ -1,10 +1,14 @@
 toDataFrame <- function(x, reduce = F){
 ##
-## STACK A LIST OF DATA FRAMES
+## STACK A LIST OF DATA FRAMES (EFFICIENTLY!)
 .x <- x
 #
 ## PREPARE MARKER NAMES
 .markers <- names(.x)
+if(is.null(.markers)){
+	warning("No marker names available!", call. = F)
+	.markers <- seq(along = .x)
+}
 .markers <- paste(.markers, "-xXx-", sep = "")
 #
 ## FIRST NON-MISSING:
@@ -41,7 +45,7 @@ for(i in 1:.dim[2]){
 .markers.ext <- strsplit(rownames(.ut), split = "-xXx-")
 .markers.ext1 <- sapply(.markers.ext, function(x)x[1])
 .markers.ext2 <- sapply(.markers.ext, function(x)x[2])
-.ut <- cbind(marker = .markers.ext1, row.no = .markers.ext2, .ut)
+.ut <- cbind(element = .markers.ext1, row.no = .markers.ext2, .ut)
 rownames(.ut) <- NULL
 #
 if(reduce){
@@ -50,12 +54,13 @@ if(reduce){
 	## REMOVE LINE NUMBER IN THIS CASE
 	.ut$row.no <- NULL
 	## SELECT RELEVANT
-	.row1 <- .ut[!duplicated(.ut$marker),]
-	.ind.nonref <- is.na(.ut$reference) | .ut$reference != "ref"
+	.row1 <- .ut[!duplicated(.ut$element),]
+	.ind.nonref <- is.na(.ut$reference) | (.ut$reference != "ref")
 	.row.nonref <- .ut[.ind.nonref,]
-	if(any(.row.nonref$marker != .row1$marker)) stop()
-	#c("marker", "Original", "After.rem.NA", "After.rem.Mend.inc.", "After.rem.unused.haplos", "alleles", "counts", "HWE.pv")
-	.ut <- cbind(.row1[, 1:8], .row.nonref[, -(1:8)])
+	if(any(.row.nonref$element != .row1$element)) stop()
+	#c("element", "marker", "alleles", "counts", "HWE.pv", "Original", "After.rem.NA", "After.rem.Mend.inc.", "After.rem.unused.haplos", "pv.overall")
+	.ut <- cbind(.row1[, 1:10], .row.nonref[, -(1:10)])
+	#.ut$marker <- NULL
 }
 #
 ##

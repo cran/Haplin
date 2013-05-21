@@ -18,7 +18,7 @@ ask = TRUE, blank.lines.skip = TRUE, verbose = TRUE)
 	\item{ped.outfile}{A character string of the name and path of the converted ped file.}
 	\item{map.outfile}{A character string giving the name and path of the modified map file.}
 	\item{create.unique.id}{Logical. If "TRUE", the function creates a unique individual ID.}
-	\item{convert}{No default. The option "ACGT_to_1234" recodes the SNP alleles from A,C,G,T to 1,2,3,4, whereas "1234_to_ACGT" converts from 1,2,3,4 to A,C,G,T. If "no_recode", no conversion occurs.}
+	\item{convert}{No default. The option "ACGT_to_1234" recodes the SNP alleles from A,C,G,T to 1,2,3,4, whereas "1234_to_ACGT" converts from 1,2,3,4 to A,C,G,T. If set to "no_recode", no conversion occurs.}
 	\item{snp.select}{A character vector of the SNP identifiers (RS codes) or a numeric vector of the SNP numbers to be extracted. Default is "NULL", which means that all SNPs are selected without reordering among the SNPs. The RS codes or SNP numbers may be listed in any order. Reordering among the selected SNPs will occur in the modified files corresponding to this listing.}
 	\item{choose.lines}{A numeric vector of lines to be selected from the ped file. If "NULL" (default), all lines are selected.}
 	\item{ask}{Logical. Default is "TRUE". If set to "FALSE", an already existing outfile will be overwritten without asking.}

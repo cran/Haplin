@@ -1,5 +1,9 @@
 plot.haplin <- function(x, reference, separate.plots = F, filename, filetype = "png", use.dd, ...)
 {
+##
+## PLOT A haplin OBJECT
+## MERK: DENNE HAR MYE FELLES MED plot.haptable, BURDE KANSKJE VAERT SAMKJOERTE
+##
 #
 .n.sel.haplo <- sum(x$selected.haplotypes)
 .maternal <- x$result$maternal
@@ -8,21 +12,10 @@ plot.haplin <- function(x, reference, separate.plots = F, filename, filetype = "
 .response <- .info$haplos$response
 .poo <- .info$model$poo
 .haplos <- names(x$selected.haplotypes)[x$selected.haplotypes]
+.ref.cat <- .info$haplos$ref.cat
 .verbose <- .info$control$verbose
 if(.info$model$scoretest == "only") stop('Sorry, plotting of effect estimates
 not available when haplin was run with scoretest = "only"', call. = F)
-if(!is.null(.sel.sex) && (.sel.sex == 1)){
-	## IF SELECT ONLY BOYS, SHOW ONLY SINGLE DOSE
-	.use.single <- 1:.n.sel.haplo
-	.use.dd <- numeric(0)
-}else{
-	if(missing(use.dd)) .use.dd <- 1:.n.sel.haplo
-	else .use.dd <- use.dd
-	.use.single <- 1:.n.sel.haplo
-}
-if(missing(use.dd)) .use.dd.mat <- 1:.n.sel.haplo
-else .use.dd.mat <- use.dd
-.use.single.mat <- 1:.n.sel.haplo
 #
 ## USE APPROPRIATE REFERENCE
 if(missing(reference)){
@@ -36,8 +29,25 @@ else .reference.method <- reference
 #
 ## CHECK THAT ONLY REFCAT IS USED WHEN ONLY TWO HAPLOTYPES/ALLELES	
 if(.n.sel.haplo == 2 & .reference.method != "ref.cat"){
-	cat("\nNOTE: ONLY SINGLE REFERENCE CATEGORY METHOD ALLOWED FOR TWO HAPLOTYPES/ALLELES!\n (reference has been set to", x$result$ref.cat, ")\n")
+	cat("\nNOTE: ONLY SINGLE REFERENCE CATEGORY METHOD ALLOWED FOR TWO HAPLOTYPES/ALLELES!\n (reference has been set to", .ref.cat, ")\n")
 	.reference.method <- "ref.cat"
+}
+#
+## DECIDE WHAT DOSES TO PLOT
+.use.single <- .use.single.mat <- 1:.n.sel.haplo
+if(missing(use.dd)){
+	.use.dd <- 1:.n.sel.haplo
+}else{
+	.use.dd <- use.dd
+}
+if((.reference.method == "ref.cat") & (.response == "mult")){
+	## DO NOT PLOT DOUBLE DOSE FOR .ref.cat
+	.use.dd <- .use.dd[.use.dd != .ref.cat]
+}
+.use.dd.mat <- .use.dd
+if(!is.null(.sel.sex) && (.sel.sex == 1)){
+	## IF SELECT ONLY BOYS, SHOW ONLY SINGLE DOSE
+	.use.dd <- numeric(0)
 }
 #
 ## PRODUCE JPEG OR PNG, IF REQUESTED
@@ -45,7 +55,6 @@ if(.n.sel.haplo == 2 & .reference.method != "ref.cat"){
 #
 ## EXTRACT COEFFICIENTS
 .coef <- summary(x$result, reference.method = .reference.method, conf.int = T, info = .info)$effects
-.ref.cat <- x$result$ref.cat
 #
 ## PARAMETERS FOR CHILD PLOT
 .params <- list(coeff = .coef, ref.cat = .ref.cat, reference.method = .reference.method, haplos = .haplos, maternal = .maternal, poo = .poo, use.dd = .use.dd, use.single = .use.single, verbose = .verbose, ...)
