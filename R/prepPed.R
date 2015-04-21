@@ -11,13 +11,21 @@ prepPed <- function(pedfile, outdir, create.map = F, ask = T){
 .map.name <- paste(outdir, "/", .basename, ".map", sep = "")
 #
 ##
-.test <- file.exists(.index.name, .pheno.name, .map.name)
-if(any(.test) & ask){
-	cat("The following file(s) already exist(s):", c(.index.name, .pheno.name, .map.name)[.test], sep = "\n")
-	.answer <- readline(paste('Overwrite file(s)? (y/n)', sep = ""))
-	if(.answer != "y"){
-		cat("Stopped without overwriting\n")
-		return(invisible())
+if(ask){
+	## PREVENT FILES FROM BEING UNINTENTIONALLY OVERWRITTEN
+	if(create.map){
+		.filnavn <- c(.index.name, .pheno.name, .map.name)
+	}else{
+		.filnavn <- c(.index.name, .pheno.name)
+	}
+	.test <- do.call("file.exists", as.list(.filnavn))
+	if(any(.test)){
+		cat("The following file(s) already exist(s):", .filnavn[.test], sep = "\n")
+		.answer <- readline(paste('Overwrite file(s)? (y/n)', sep = ""))
+		if(.answer != "y"){
+			cat("Stopped without overwriting\n")
+			return(invisible())
+		}
 	}
 }
 #

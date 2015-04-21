@@ -35,7 +35,7 @@ printout <- .info$control$printout
 #require(MASS)
 #
 ## START 
-if(verbose)cat("\n## HAPLIN, VERSION 5.3 ##\n")
+if(verbose)cat("\n## HAPLIN, VERSION 5.5 ##\n")
 #
 ## LOAD DATA, EITHER FROM FILE OR FROM DATA OBJECT
 .data.read <- f.get.data(data, pedIndex, .info)

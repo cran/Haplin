@@ -50,30 +50,11 @@ if(.info$model$design %in% c("triad", "cc.triad")) {
 if(.info$model$design == "cc"){
 	.info$model$fam <- "c"
 }
-.info$filespecs$database <- F
 if(!is.name(.info$filename)){
-	## TEST WHETHER filename SPECIFICES A FILE OR A DIRECTORY
+	## TEST WHETHER filename SPECIFICES A FILE
 	.filetest.f <- file_test("-f", .info$filename)
-	.filetest.d <- file_test("-d", .info$filename)
 	#
-	if(!.filetest.f & !.filetest.d) stop(paste(.info$filename, " is not a file nor a directory.", sep = ""), call. = F)
-	if(.filetest.d){
-		## ROUGH CHECK THAT IT IS A VALID DATABASE
-		.info.name <- paste(.info$filename, "/000info.RData", sep = "")
-		.test <- file_test("-f", .info.name)
-		if(!.test) stop(paste(.info$filename, " does not look like a proper Haplin database.", sep = ""), call. = F)
-		.info$filespecs$database <- T
-		#
-		## LOAD OLD INFO-VALUES AND USE THEM, QUIETLY IGNORE THE NEW ONES
-		###.info.old <- local({ ### KOMMENTERT VEKK DETTE FOR AA UNNGAA FEILMELDING I R CMD check. BRUKER DET NEDENFOR I STEDET
-		###		load(.info.name)
-		###		info
-		###})
-		.info.old <- list()
-		.info.old <- within(.info.old, load(.info.name))$info ## HAR IKKE SJEKKET DENNE....
-		.info$filespecs[c("n.vars", "sep", "allele.sep")] <- .info.old$filespecs[c("n.vars", "sep", "allele.sep")]
-		.info$model$design <- .info.old$model$design
-	}
+	if(!.filetest.f) stop(paste(.info$filename, " is not a file.", sep = ""), call. = F)
 }
 #
 ## SET VALUES IN THE gwaa.data CASE

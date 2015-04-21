@@ -89,7 +89,7 @@ else {
 #
 ## PRINT REFERENCE METHOD/CATEGORY
 cat("Reference method: ", x$reference.method, "\n", sep = "")
-if(x$reference.method == "ref.cat") cat("Reference category: ", x$ref.cat, "\n", sep = "")
+if(x$reference.method == "ref.cat") cat("Reference category: ", x$ref.cat, " (Haplotype ", names(x$ref.cat), ")\n", sep = "")
 cat("Response model: ", .response, "\n", sep = "")
 if(.xchrom){
 	cat("Assuming X-chromosome data:\n")

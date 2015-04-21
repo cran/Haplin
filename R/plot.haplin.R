@@ -12,6 +12,8 @@ plot.haplin <- function(x, reference, separate.plots = F, filename, filetype = "
 .response <- .info$haplos$response
 .poo <- .info$model$poo
 .haplos <- names(x$selected.haplotypes)[x$selected.haplotypes]
+.alleles <- .info$haplos$alleles
+.markernames <- names(.alleles)
 .ref.cat <- .info$haplos$ref.cat
 .verbose <- .info$control$verbose
 if(.info$model$scoretest == "only") stop('Sorry, plotting of effect estimates
@@ -20,12 +22,17 @@ not available when haplin was run with scoretest = "only"', call. = F)
 ## USE APPROPRIATE REFERENCE
 if(missing(reference)){
 	.reference.method <- x$reference.method
-} 
-else if (is.numeric(reference)){
+} else
+if(reference == "reciprocal" & .poo){
+	warning(paste('Can only (for the time being) use reference = "ref.cat" or "population" when poo == TRUE. Has been changed to ', x$reference.method, sep = ""), call. = F)
+		.reference.method <- x$reference.method
+} else
+if(reference %in% c("reciprocal", "population", "ref.cat")){	
+	.reference.method <- reference
+} else if (is.numeric(reference)){
 	cat("\nWARNING: REFERENCE CATEGORY CAN ONLY BE SET IN FIRST RUN OF HAPLIN!\nFOR summary AND plot METHODS ONLY REFERENCE METHOD CAN BE CHOSEN, NOT CATEGORY\n\n")
 	.reference.method <- x$reference.method
-}
-else .reference.method <- reference
+} else stop("Invalid reference choice!", call. = F)
 #
 ## CHECK THAT ONLY REFCAT IS USED WHEN ONLY TWO HAPLOTYPES/ALLELES	
 if(.n.sel.haplo == 2 & .reference.method != "ref.cat"){
@@ -57,7 +64,7 @@ if(!is.null(.sel.sex) && (.sel.sex == 1)){
 .coef <- summary(x$result, reference.method = .reference.method, conf.int = T, info = .info)$effects
 #
 ## PARAMETERS FOR CHILD PLOT
-.params <- list(coeff = .coef, ref.cat = .ref.cat, reference.method = .reference.method, haplos = .haplos, maternal = .maternal, poo = .poo, use.dd = .use.dd, use.single = .use.single, verbose = .verbose, ...)
+.params <- list(coeff = .coef, ref.cat = .ref.cat, reference.method = .reference.method, haplos = .haplos, markernames = .markernames, maternal = .maternal, poo = .poo, use.dd = .use.dd, use.single = .use.single, verbose = .verbose, ...)
 #
 ## CHANGE SOME PARAMETERS FOR MATENAL PLOT
 .params.mat <- .params

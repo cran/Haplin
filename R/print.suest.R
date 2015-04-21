@@ -4,9 +4,11 @@ print.suest <- function(x, verbose = F, ...){
 
 
 cat("\nIndividual score p-values:\n")
-print(.suest$pval.obs)
-cat("\nMultiple testing corrected p.value, based on minimum of individual values:\n")
-print(.suest$pval.obs.corr)
+#print(.suest$pval.obs)
+print(.suest$pval.alt)
+cat("\nMultiple testing corrected p-value, based on minimum of individual values:\n")
+#print(.suest$pval.obs.corr)
+print(.suest$pval.alt.corr)
 cat("\nNumber of data lines used in each estimation:\n")
 print(.suest$lines.account)
 
@@ -17,16 +19,13 @@ if(verbose){
 	print(str(.suest[c("bonferroni", "kill", "pval.alt", "pval.alt.corr")]))
 }
 
-.test <- cbind("Individual score p-values:", .suest$pval.obs)
-#.test <- rbind(.test, .test)
+.test <- cbind("Individual score p-values:", .suest$pval.alt)
+#.test <- cbind("Individual score p-values:", .suest$pval.obs)
 
 
 
-#return(.test)
 dimnames(.test) <- list(rep("", dim(.test)[1]), rep("", dim(.test)[2]))
 
-
-#print(.test, quote = F)
 
 return(invisible(.test))
 

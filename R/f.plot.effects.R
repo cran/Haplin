@@ -1,4 +1,4 @@
-f.plot.effects <- function(coeff, ref.cat, reference.method, haplos, maternal, poo, type = 1, ylim = c(0.2, 5), lwd = 2, use.dd, use.single, verbose = T, ...)
+f.plot.effects <- function(coeff, ref.cat, reference.method, haplos, markernames, maternal, poo, type = 1, ylim = c(0.2, 5), lwd = 2, use.dd, use.single, verbose = T, ...)
 {
 ## PLOTS THE RESULT OF ESTIMATED ALLELE EFFECTS
 ##
@@ -25,7 +25,12 @@ if(poo) .shift <- .shift * 2 ## NEED SPACE FOR TWO SINGLE DOSE EFFECTS
 if(missing(use.single)) use.single <- seq(along = .haplos)
 if(missing(use.dd)) use.dd <- seq(along = .haplos)
 
-
+if(!missing(markernames)){
+	if(length(markernames) == 1) .tmp <- "Marker: "
+	else .tmp <- "Markers: "
+	.markernames <- paste(.tmp, paste(markernames, collapse = "-"), sep = "")
+	.width <- strwidth(.markernames, units = "figure")
+}
 #
 ### NB! FOLGENDE BOR VURDERES:
 .yticks <- c(0.25, 0.5, 1, 2, 4)
@@ -67,7 +72,7 @@ if(type == 4){# MOTHER, BOTTOM HALF
 ## PREPARE MESSAGE ABOUT REFERENCE
 if(reference.method == "population") .ref.message <- "Ref = population"
 else if (reference.method == "reciprocal") .ref.message <- "Ref = reciprocal"
-else if(.print.haplos) .ref.message <- paste("Ref = ", .haplos[ref.cat])
+else if(.print.haplos) .ref.message <- paste("Ref = ", names(ref.cat))
 else .ref.message <- paste("Ref = ", ref.cat)
 #
 ## SET MARGINS
@@ -82,6 +87,7 @@ if(.print.haplos){
 	plot(1, 1, ..., xlim = c(0.5, .nall + 0.5), ylim = ylim, type = "n", xlab = .xlab, ylab = .ylab, log = "y", axes = F, main = .main, font = 2, font.lab = 2, cex.main = 1) #
 	if(.bottom) axis(side = 1, at = 1:.nall, tick = F, font = 2, lwd = lwd)
 }
+#
 ## ADD MESSAGE ABOUT REFERENCE
 if(!poo){
 	.mtext <- '"s"'
@@ -98,6 +104,11 @@ if(!poo){
 }
 .mtext <- paste('Single dose = ', .mtext, '.  Double dose = "d".   ', .ref.message, '.', sep = "")
 if(.top) mtext(.mtext, font = 2, cex = 0.8, line = 0.3)
+#if(type == 3) .side <- 4#1
+#if(type %in% 1:2) .side <- 4 
+.at <- 1
+if(type == 3) .at <- ylim[1]
+if((type != 4) & !missing(markernames)) mtext(text = .markernames, side = 4, at = .at, cex = min(1, 0.7/.width), font = 2, col = grey(0.5))
 #
 ## HORIZONTAL REFERENCE LINE
 abline(h = 1, lwd = lwd)	#

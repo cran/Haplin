@@ -40,7 +40,7 @@ for(i in 1:.dim[2]){
 }
 #
 ## SET IN DATA FRAME
-.ut <- do.call("dframe", .ut)
+.ut <- do.call("dframe", .ut)## NB, NB, NAVNENE BLIR FEIL DERSOM SAMME SNP GAAR IGJEN FLERE GANGER!
 #.ut <- as.dframe(.ut)
 .markers.ext <- strsplit(rownames(.ut), split = "-xXx-")
 .markers.ext1 <- sapply(.markers.ext, function(x)x[1])

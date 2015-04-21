@@ -1,18 +1,17 @@
-postTest <- function(object.list)
-{
+postTest <- function(object.list) {
 # TEST FOR DIFFERENCE IN PARAMETER ESTIMATES OVER A SERIES OF HAPLIN OBJECTS
 # WARNING: THE SET OF HAPLOTYPES USED IN EACH ESTIMATION _MUST_ BE THE SAME!
-# object.list IS A LIST OF HAPLIN OBJECTS. 
-# test.haplo CAN INCLUDE ANY OF "haplo.freq", "single", "double"
+# object.list IS A LIST OF HAPLIN OBJECTS.
+# _ASSUMED_ TO COME FROM haplinStrat, SO FIRST ELEMENT IS REMOVED
 #
-# test = c("child.single"), 
-#test = c("c", "cdd")
 #### PREPARE: ###################
-.vis <- F
 #
 ## PRELIMINARY CHECKS
-if(any(is.na(object.list))) return(object.list)# JUST PASS RIGHT THROUGH IF AT LEAST ONE NA 
 if(class(object.list) != "haplinStrat") stop("Argument 'object.list' should be the result from running 'haplinStrat'", call. = F)
+if(any(is.na(object.list))) {
+	warning("NA element in list of estimation results. Interaction test not performed", call. = F)
+	return(object.list) # JUST PASS RIGHT THROUGH IF AT LEAST ONE NA 
+}
 #
 ## REMOVE OVERALL RESULT, ONLY DO TESTING ON SUBSTRATA, OF COURSE
 .object.list <- object.list[-1]
@@ -27,7 +26,6 @@ if(is.null(.stratnavn)) .stratnavn <- as.character(seq(along = .object.list)) ##
 .response <- .info[[1]]$haplos$response
 .maternal <- .info[[1]]$model$maternal
 .poo <- .info[[1]]$model$poo
-
 #
 ## CONSISTENCY CHECK OF HAPLOTYPES AMONG ELEMENTS OF LIST
 .tmp.selected.haplotypes <- lapply(.info, function(x)x$haplos$selected.haplotypes)
@@ -37,11 +35,13 @@ if(any(!.sjekk)) stop("Different haplotypes selected in different strata!",
 call. = F)
 #
 ## CONSISTENCY CHECK OF ref.cat AMONG ELEMENTS OF LIST
-.tmp.ref.cat <- lapply(.info, function(x)x$haplos$ref.cat)
+.tmp.ref.cat <- lapply(.info, function(x){
+	.tmp <- x$haplos$ref.cat
+	names(.tmp) <- tolower(names(.tmp))
+})
 .ref.cat <- .tmp.ref.cat[[1]]
 .sjekk <- sapply(.tmp.ref.cat[-1], function(x) identical(x, .ref.cat))
-if(any(!.sjekk)) stop()
-
+if(any(!.sjekk)) stop("Cannot do interaction test with different reference categories", call. = F)
 #
 ## EXTRACT SEPARATE RESULTS, COEFFICIENTS, AND COVAR-MATRICES
 .params <- lapply(.object.list, coef)
@@ -51,31 +51,41 @@ if(any(!.sjekk)) stop()
 ## FOR THE HAPLOTYPE FREQUENCIES, SUBTRACT FIRST PARAMETER FROM THE REST,
 ## TO "NORMALIZE". 
 .tmp <- f.post.diff(coeff = .coef, covar = .cov)
+#
+## IF PARENT-OF-ORIGIN, ADD DIFFERENCE OF MATERNAL - PATERNAL	
+if(.poo) .tmp <- f.post.poo.diff(coeff = .tmp$coef, covar = .tmp$cov)
+#
 .coef <- .tmp$coeff
 .cov <- .tmp$cov
 #
+## NAMES OF ALL COEFFICIENTS
 .names <- rownames(.coef[[1]])
+## SPLIT IN EFFECT GROUPS
+.effs <- f.coefnames(.names)
+## NAMES OF COEFFICIENTS ASSOCIATED WITH EACH TEST
+.names.tests <- list(haplo.freq = .effs$haplo.freq, child = c(.effs$child.s, .effs$child.d), child.poo = c(.effs$child.poo.m, .effs$child.poo.f, .effs$child.d),  poo = .effs$poo, maternal = c(.effs$maternal.s, .effs$maternal.d))
+# could perhaps be relevant with combined tests, say, child.maternal = c(.effs$child.s, .effs$child.d, .effs$maternal.s, .effs$maternal.d) Had that in some early versions
 #
-## FIND NAMES/POSITIONS OF RELEVANT PARAMETERS. NOTE: \\< INSISTS ON START OF WORD, SO THAT, FOR INSTANCE, "cm1" ISN'T PICKED UP BY "m"
-.mf <- grep("\\<mf", .names, value = T)
-.c <- grep("\\<c[[:digit:]]", .names, value = T)
-.cm <- grep("\\<cm[[:digit:]]", .names, value = T)
-.cf <- grep("\\<cf[[:digit:]]", .names, value = T)
-.cdd <- grep("\\<cdd[[:digit:]]", .names, value = T)
-.m <- grep("\\<m[[:digit:]]", .names, value = T)
-.mdd <- grep("\\<mdd[[:digit:]]", .names, value = T)
-# SOME AD HOC TESTING
-.flag <- (length(.mf) == 0) |
-	(!.poo & (length(.c) == 0)) |
-	(.poo & ((length(.cm) == 0) | (length(.cf) == 0))) |
-	((length(.cdd) == 0) & (.response == "free")) |
-	(.maternal && (length(.m) == 0)) |
-	(.maternal && (.response == "free") && (length(.mdd) == 0))
-if(.flag) stop("Something's wrong with the coefficient names", call. = F)
+## Choose tests to be run
+if(.poo){ # POO
+	if(.maternal){
+		.test <- c("haplo.freq", "child.poo", "poo", "maternal")
+	}else{
+		.test <- c("haplo.freq", "child.poo", "poo")
+	}
+} else { # NOT POO
+	if(.maternal){
+		.test <- c("haplo.freq", "child", "maternal")
+	}else{
+		.test <- c("haplo.freq", "child")
+	}
+}
+
 #
 ## 
 standard.tests <- F
 if(standard.tests){
+	.c <- .cdd <- NULL # kun for aa tilfredsstille cran test
 	#
 	## EXTRACT RELEVANT PARAMETERS
 	.f.extr <- function(co, selpars){
@@ -143,49 +153,23 @@ if(standard.tests){
 
 #####################
 #
-## DO THE INTERACTION TESTING FOR HAPLO FREQUENCIES, CHILD EFFECTS AND, IF RELEVANT, MATERNAL AND CHILD+MATERNAL
-.chisq.res <- vector(2, mode = "list")
-names(.chisq.res) <- c("haplo.freq", "child")
+## Do the actual testing
+.chisq.res <- lapply(.test, function(x) f.posttest(coef_ = .coef, cov_ = .cov, test = .names.tests[[x]]))
+names(.chisq.res) <- .test
 #
-.chisq.res[["haplo.freq"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "haplo.freq")
-if(.poo){
-	.chisq.res[["poo"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "poo")
-	#
-	if(.maternal){
-		.chisq.res[["maternal"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "maternal")
-		.chisq.res[["poo.and.mat"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = c("poo", "maternal"))
-	}
-}else{
-	.chisq.res[["child"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "child")
-	#
-	if(.maternal){
-		.chisq.res[["maternal"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = "maternal")
-		.chisq.res[["chi.and.mat"]] <- f.posttest(coef_ = .coef, cov_ = .cov, mf = .mf, c_ = .c, cm_ = .cm, cf = .cf, cdd = .cdd, m = .m, mdd = .mdd, test = c("child", "maternal"))
-	}
-}
-
-
-
+## Remove unneeded y-vector
 .ut <- lapply(.chisq.res, function(x) {
 	x$y <- NULL
 	return(unlist(x))
 })
-
+#
+## Transform to data frame
 .ut <- do.call("rbind", .ut)
 .ut <- dframe(test = rownames(.ut), .ut)
 rownames(.ut) <- NULL
-
+#
+##
 return(.ut)
-#
-#	return(.chisq.res)
-#
-#
-#	cat("\nWald test of heterogeneity\n")
-#	cat("Tested effects: '", paste(test, collapse = "' '"), "'", sep = "")
-#	.Wald.vis <- cbind(c("Chi-squared value:", "Df's:", "P-value:"), round(c(.chisq.res$chisq, .chisq.res$df, .chisq.res$pval), 5))
-#	dimnames(.Wald.vis) <- list(rep("", dim(.Wald.vis)[1]), rep("", dim(.Wald.vis)[2]))
-#	print(.Wald.vis, quote = F, print.gap = 0)
-
 
 }
 

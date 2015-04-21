@@ -8,7 +8,7 @@ f.post.chisq <- function(coeff, covar, contrast.mat){
 .df <- length(.y)
 .pval <- pchisq(.chisq, df = .df, lower.tail = F)
 
-.ut <- list(chisq = .chisq, df = .df, pval = .pval, y = .y)
+.ut <- list(chisq = .chisq, df = .df, pval = .pval, y = .y) # probably no need for y anymore
 
 
 return(.ut)

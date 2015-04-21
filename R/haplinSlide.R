@@ -34,7 +34,7 @@ if(winlength > 1) cat("\nImportant: Remember that SNPs must be in correct physic
 ## WITH A gwaa.data OBJECT, DELAY CONVERSION, ELSE READ AND CONVERT
 .is.gwaa <- !.missdata && (class(data) == "gwaa.data")
 if(.is.gwaa){
-	## ONLY REDUCE NUMBER OF MARKERS, BUT DO NOT CONVERT YET (SKAL IKKE DETTE OGSAA GJELDE HAPLIN-DATABASE??)
+	## ONLY REDUCE NUMBER OF MARKERS, BUT DO NOT CONVERT YET
 	.data.read <- data[, .info$filespecs$markers]
 }else{
 	## READ AND CONVERT DATA
@@ -75,10 +75,10 @@ cat("\n")
 	}
 	#
 	##
-	if(.info$filespecs$database){
-		## HAPLIN DATABASE
-		args_$markers <- .info$filespecs$markers[.slides[i,]]
-	}else{
+	# if(.info$filespecs$database){
+	# 	## HAPLIN DATABASE
+	# 	args_$markers <- .info$filespecs$markers[.slides[i,]]
+	# }else{
 		## FILE, DATA MATRIX, AND GWAA
 		args_$filename <- NULL
 		args_$markers <- .slides[i,]
@@ -86,7 +86,7 @@ cat("\n")
 		if(.is.gwaa & !.misspedIndex){
 			args_$pedIndex <- pedIndex
 		}
-	}
+	# }
 		#
 		## RUN HAPLIN
 		if(is.null(strata)){
@@ -132,7 +132,7 @@ if(!.run.para){
 	}
 	if(.para == "parallel"){
 		## parallel
-		w <- makeCluster(spec = cpus, outfile = slaveOutfile)
+		w <- parallel::makeCluster(spec = cpus, outfile = slaveOutfile)
 		#on.exit(stopCluster(w))
 		#
 		## shut down nodes explicitly
@@ -141,16 +141,16 @@ if(!.run.para){
 		if(.plat == "unix") .cmds <- "kill "
 		# get process id's
 		.pids <- sapply(w, function(x){
-			parallel:::sendCall(x, eval, list(quote(Sys.getpid())))
-			parallel:::recvResult(x)
+			snow::sendCall(x, eval, list(quote(Sys.getpid())))
+			snow::recvResult(x)
 		})
 		.cmds <- paste(.cmds, .pids, sep = "")
 		on.exit({
 			if(!missing(slaveOutfile)) sink(file = slaveOutfile, append = T)
 				sapply(.cmds, system)
 				for(.w in w){
-					try(parallel:::postNode(.w, "DONE"), silent = T)
-					try(parallel:::closeNode(.w), silent = T)
+					try(snow::postNode(.w, "DONE"), silent = T)
+					try(snow::closeNode(.w), silent = T)
 				}
 			if(!missing(slaveOutfile)) sink()
 		})

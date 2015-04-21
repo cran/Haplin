@@ -1,4 +1,4 @@
-f.pos.match <- function(data, n.sel.haplos, info){
+f.pos.match <- function(data, info){
 ##
 ## FOR data, COMPUTES THE POSITION OF EACH LINE IN A COMPLETE
 ## GRID AS USED IN THE GLM

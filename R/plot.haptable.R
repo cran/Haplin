@@ -15,6 +15,7 @@ plot.haptable <- function(x, separate.plots = F, filename, filetype = "png", use
 ## HAR IKKE INNE ARGUMENTET "reference", SOM LIGGER I plot.haplin
 
 .coef <- coef.haptable(x)
+.markernames <- na.omit(x$marker)
 .info <- attr(.coef, "info")
 .haplos <- attr(.coef, "haplos")
 .n.sel.haplo <- length(.haplos)
@@ -47,7 +48,7 @@ if(identical(.comb.sex, "males")) .use.dd <- F
 ##
 #
 ## PARAMETERS FOR CHILD PLOT
-.params <- list(coeff = .coef, ref.cat = .ref.cat, reference.method = .reference.method, haplos = .haplos, maternal = .maternal, poo = .poo, use.dd = .use.dd, verbose = verbose, ...)
+.params <- list(coeff = .coef, ref.cat = .ref.cat, reference.method = .reference.method, haplos = .haplos, markernames = .markernames, maternal = .maternal, poo = .poo, use.dd = .use.dd, verbose = verbose, ...)
 #
 ## CHANGE SOME PARAMETERS FOR MATENAL PLOT
 .params.mat <- .params

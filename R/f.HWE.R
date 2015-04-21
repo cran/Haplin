@@ -23,7 +23,7 @@ if(nrow(data) == 0){# CAN HAPPEN IF E.G. SELECT comb.sex = "boys" UNDER xchrom =
 .a <- c(.data[,1], .data[,2])
 .aux <- sort(unique(.a))
 if(any(.aux != seq(along = .aux))) stop("Wrong data type for HWE testing!", call. = F)
-.frek <- tabulate(.a)
+.frek <- as.numeric(tabulate(.a))
 .nall <- length(.frek)
 #
 ## FREQUENCY COUNT

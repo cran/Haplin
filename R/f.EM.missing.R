@@ -20,6 +20,8 @@
 .deviance <- numeric(max.EM.iter)	#
 i <- 1	#
 .EM.conv <- F
+#
+## SET UP DESIGN MATRIX, ONE TIME ONLY
 .design.matrix <- f.make.design(maternal = maternal, response = response, info = info)
 #### EM LOOP: ###########################
 repeat{
@@ -34,18 +36,10 @@ repeat{
 	#
 	## PRINT INTERMEDIATE RESULTS (IF REQUESTED):
 	if(verbose) {
-		#	cat("-----------------------------------------------\n")
 			cat("EM iter:", sprintf("%-4.0f", round(i)), "|")	#
-		#	cat("-----------------------------------------------\n")
-		#	cat("GLM deviance:", format(.deviance[[i]], width = 6, scientific = F, digits = 6), "|")
 			cat("GLM deviance:", sprintf("%-12.6g", .deviance[[i]]), "|")
-		#	cat("Coefficients:", format(.coef.new, width = 6, scientific = F, digits = 6), "\n")
 			cat("Coefficients:", sprintf("%-12.6g", .coef.new), "\n")
-		#	cat("-----------------------------------------------\n")
 	}# END if(verbose)
-	else{
-		# cat(".") # SKRUDD AV, MIDLERTIDIG
-	}
 	#
 	## STOP WHEN CONVERGED
 	if(i > 1) {

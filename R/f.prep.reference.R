@@ -4,6 +4,8 @@ f.prep.reference <- function(info){
 ##
 .reference <- info$haplos$reference
 .selected.haplotypes <- info$haplos$selected.haplotypes
+.navn.sel <- names(.selected.haplotypes)[.selected.haplotypes]
+.navn.nonsel <- names(.selected.haplotypes)[!.selected.haplotypes]
 .n.sel.haplos <- sum(.selected.haplotypes)
 #
 ## FIND THE LARGEST SELECTED PRELIM FREQUENCY TO USE AS REFERENCE:
@@ -28,7 +30,17 @@ if(.reference == "reciprocal"){
 	.reference.method <- "reciprocal"
 	.ref.cat <- .max.prelim.freq
 } else
+if(.reference %in% .navn.nonsel){
+	stop(paste("Invalid reference haplotype selected (too rare)!\nValid reference haplotypes are: ", paste(.navn.sel, collapse = ", "), sep = ""), call. = F)
+} else
+if(.reference %in% .navn.sel){
+	.reference.method <- "ref.cat"
+	.ref.cat <- which(.reference == .navn.sel)
+} else
 stop("Invalid reference", call. = F)
+#
+## SET HAPLOTYPE AS NAME FOR ref.cat
+names(.ref.cat) <- .navn.sel[.ref.cat]
 #
 ## CHECK THAT ONLY REFCAT IS USED WHEN ONLY TWO HAPLOTYPES/ALLELES	
 if(.n.sel.haplos == 2 & .reference.method != "ref.cat"){

@@ -9,23 +9,15 @@ f.get.data <- function(data, pedIndex, info){
 #
 ##
 if(missing(data)){
-	if(!info$filespecs$database){
-		## READ DATA FROM FILE, CLASSIC HAPLIN APPROACH
-		## (NOTE THAT info IS UPDATED AND RETURNED AS AN ATTR. TO .data.read)
-		if(info$control$verbose)	cat("\nReading data from file...  ")
-		.data.read <- f.read.data(info) ##
-		.big <- prod(dim(.data.read)) > 10000000 # ROUGHLY 40 Mb(?) object.size
-		if(.big){
-			gc()
-		}
-		if(info$control$verbose)	cat("Done\n")
-	}else{
-		## READ DATA FROM HAPLIN CUSTOM-MADE DATABASE
-		## LITT AD HOC, DETTE HER...
-		.data.read <- as.matrix(loadData(info$filename, markers = info$filespecs$markers))
-		###info$filespecs$markers <- seq(along = info$filespecs$markers)
-		.data.read <- f.data.ready(.data.read, info, sel.markers = F)
+	## READ DATA FROM FILE, CLASSIC HAPLIN APPROACH
+	## (NOTE THAT info IS UPDATED AND RETURNED AS AN ATTR. TO .data.read)
+	if(info$control$verbose)	cat("\nReading data from file...  ")
+	.data.read <- f.read.data(info) ##
+	.big <- prod(dim(.data.read)) > 10000000 # ROUGHLY 40 Mb(?) object.size
+	if(.big){
+		gc()
 	}
+	if(info$control$verbose)	cat("Done\n")
 } else{
 	## PREPARE DATA DIRECTLY FROM R OBJECT
 	##

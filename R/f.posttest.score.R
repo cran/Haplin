@@ -81,6 +81,10 @@ if(F){
 #
 #
 ## FIND POSITIONS OF RELEVANT PARAMETERS
+
+### NOTE! THIS HAS BEEN IMPROVED IN f.coefnames
+
+
 .mf <- grep("mf", .names, value = T)
 .c <- grep("c[[:digit:]]", .names, value = T)
 .cdd <- grep("cdd[[:digit:]]", .names, value = T)

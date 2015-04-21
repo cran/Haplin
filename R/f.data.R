@@ -221,7 +221,7 @@ if(design == "cc" | design == "cc.triad"){
     ""), call. = F)
 	.codes <- names(attr(.data.vars, "variables")[[.ccvar]])
 	if(length(.codes) != 2) stop(paste('Case-control variable "ccvar" is coded
-    with ', paste(.codes, collapse = ", "), '. It should have exactly two
+    as ', paste(.codes, collapse = ", "), '. It should have exactly two
     different values!', sep = ""), call. = F)	
 	if(!identical(sort(unique(.cc)), c(1,2))) stop("Something's wrong with the case-control variable!") # SHOULDN'T BE NECESS.
 	if(verbose) cat("\nNote: The following case/control coding has been assumed:\ncontrols = ", .codes[1], ", cases = ", .codes[2], "\n", sep = "")

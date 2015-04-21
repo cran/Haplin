@@ -1,11 +1,14 @@
-lineByLine <- function(infile, outfile, linefunc = identity , choose.lines = NULL, choose.columns = NULL, ask = TRUE, blank.lines.skip = TRUE, verbose = TRUE, ...){
+lineByLine <- function(infile, outfile, linefunc = identity, choose.lines = NULL, choose.columns = NULL, col.sep = " ", ask = TRUE, blank.lines.skip = TRUE, verbose = TRUE, ...){
 ##
 ## Reads file line by line, modifies each line using the argument linefunc, and then writes to outfile.
 ##
-## By default, linfunk returns its argument.
+## By default, linefunc returns its argument.
 ## Default sets ask = TRUE. No file is overwritten unless specified by user.
 ## choose.lines and choose.columns enable the selection of certain lines and/or columns of the infile. 
-## Both are set to NULL as default, which means that all lines and/or columns are selected. If not set to NULL, must be numeric vectors with values > 0.
+## Both are set to NULL as default, which means that all lines and/or columns are selected. If not set to NULL, must be numeric vectors with all values > 0 or all values < 0.
+## Values > 0 mean that these lines and/or columns are chosen, whereas values < 0 mean that the line modifications are carried out for all lines and/or columns except for those listed in these arguments.
+## col.sep specifies the separator used to split the columns in the file. By default, col.sep = " ". To split at all types of spaces or blank characters, set col.sep = "[[:space:]]" or col.sep = "[[:blank:]]".
+## ask is a logical variable. If "TRUE", lineByLine will ask before overwriting an already existing 'outfile'.
 ## blank.lines.skip ignores blank lines in the input if TRUE.
 ## If TRUE, verbose displays the line number for each iteration, in addition to output from linefunc.
 ##
@@ -13,8 +16,15 @@ lineByLine <- function(infile, outfile, linefunc = identity , choose.lines = NUL
 ## Error in lineByLine if outfile == infile
 if(file.exists(outfile) & outfile == infile) stop("\"outfile\" is equal to \"infile\"", call. = F)
 #
+## Misc errors regarding choose.lines and choose.columns
+if(any(duplicated(choose.lines))) stop("\"choose.lines\" contains duplicated values", call. = F)
+if(!is.null(choose.lines) && !is.numeric(choose.lines)) stop("\"choose.lines\" must have the value \"NULL\" or be numeric", call. = F)
+if(is.numeric(choose.lines) && !(all(choose.lines <= 0) | all(choose.lines >= 0))) stop("Invalid line number(s). \"choose.lines\" cannot consist of both positive and negative values", call. = F)
+if(!is.null(choose.columns) && !is.numeric(choose.columns)) stop("\"choose.columns\" must have the value \"NULL\" or be numeric", call. = F)
+if(is.numeric(choose.columns) && !(all(choose.columns <= 0) | all(choose.columns >= 0))) stop("Invalid column number(s). \"choose.columns\" cannot consist of both positive and negative values", call. = F)
+#
 ## Open infile for reading and writing
-.infile <- file(description = infile, open = "r+")
+.infile <- file(description = infile, open = "r")
 #
 ## Make sure the connection is closed when function exits
 on.exit(close(.infile))
@@ -35,21 +45,18 @@ unlink(outfile)
 ## Make sure the connections are closed when function exits
 on.exit(close(.outfile), add = TRUE)
 #
-## Error if choose.lines has duplicated values
-if(any(duplicated(choose.lines))) stop("\"choose.lines\" contains duplicated values", call. = F)
-#
 ## Loop over lines
 .i <- 0
 #
 .k <- 0 # Equals line number if line does not have enough columns 
 #
+.s <- 0 # Number of lines modified
+#
 repeat{
 	.i <- .i + 1
 	#
 	## Break off at a given number of lines
-	if(!is.null(choose.lines)){
-		if(.i > max(choose.lines) + 0.1) break
-	}
+	if(!is.null(choose.lines) && all(choose.lines >= 0) && (.i > max(choose.lines) + 0.1)) break
 	#
 	## Read a single line. NOTE: Reads numeric as character
 	.line <- readLines(.infile, n = 1) 
@@ -62,64 +69,58 @@ repeat{
 		.i <- .i-1
 		next
 	}
-	if(!nzchar(.line) & !blank.lines.skip){
-		warning(paste("Line ", .i, " is empty", sep = ""), call. = F)
-	}
+	if(!nzchar(.line) & !blank.lines.skip) warning(paste("Line ", .i, " is empty", sep = ""), call. = F)
 	#
 	## Choose lines 
 	if(!is.null(choose.lines)){
-		if(!is.numeric(choose.lines)) stop("\"choose.lines\" must be numeric", call. = F)
-		if(sum(choose.lines < 0) != 0) stop("Invalid line number(s)", call. = F)
-		if(!is.element(.i, choose.lines)) next
+		if(all(choose.lines >= 0) && !is.element(.i, choose.lines)) next
+		else if(all(choose.lines <= 0) && is.element(.i, abs(choose.lines))) next		
 	}	
 	#
-	## Split line into elements	
-	.line <- strsplit(.line, split = " ", fixed = T)[[1]]
+	## Split line into elements
+	if(!(identical(linefunc, identity) & is.null(choose.columns))){
+		.fixed <- TRUE
+		if(col.sep != " " | col.sep != "\t") .fixed <- FALSE
+		.line <- strsplit(.line, split = col.sep, fixed = .fixed)[[1]]
+	}
 	#
 	## Choose columns, allowing reordering
 	if(!is.null(choose.columns)){
-		if(!is.numeric(choose.columns)) stop("\"choose.columns\" must be numeric", call. = F)
-		if(sum(choose.columns > 0) != length(choose.columns)) stop("Invalid column number(s)", call. = F)
-		if(sum(choose.columns <= length(.line)) != length(choose.columns))	.k = .i
-		.line <- .line[choose.columns[which(choose.columns <= length(.line) & choose.columns > 0)]]
+		if(sum(abs(choose.columns) <= length(.line)) != length(choose.columns))	.k <- .i
+		if(all(choose.columns >= 0)) .line <- .line[choose.columns[which(choose.columns <= length(.line) & choose.columns > 0)]]
+		else if(all(choose.columns <= 0)) .line <- .line[choose.columns[which(abs(choose.columns) <= length(.line) & abs(choose.columns) > 0)]]
 	}	
 	#
 	## Display line number (and output from linefunc) 
  	if(verbose) cat(.i, " --- ", sep = "")
 	#
+	.s <- .s + 1
+	#
 	## Convert line
-	if("verbose" %in% names(formals(linefunc))){
-		.line <- linefunc(x = .line, verbose = verbose, ...)
-	}else{
-		.line <- linefunc(x = .line, ...)
-	}
+	if("verbose" %in% names(formals(linefunc))) .line <- linefunc(x = .line, verbose = verbose, ...)
+	else .line <- linefunc(x = .line, ...)
 	#
 	## Newline
 	if(verbose) cat("\n")
 	#
 	## Display invalid column numbers
-	if(.k == .i){
-		if(verbose) cat("Invalid column number(s).\n")
-	}
+	if((.k == .i) & verbose) cat("Invalid column number(s).\n")
 	#
 	## Paste elements, separated by space
-	.line <- paste(.line, collapse = " ")
+	if(!(identical(linefunc, identity) & is.null(choose.columns))) .line <- paste(.line, collapse = " ")
 	#
 	## Skip blank lines in order to delete the requested rows/lines
-	if(nzchar(.line) == FALSE) next
+	if(!nzchar(.line) & blank.lines.skip) next
 	#
 	## Write to new file
 	writeLines(.line, .outfile) 
 }# end repeat
 #
 ## Display number of lines read and converted
-if(is.null(choose.lines)){ 
-	cat("Read and converted information for", .i-1, "line(s).\n", sep = " ")
-}else if(!is.null(choose.lines) & (sum(choose.lines <= .i-1) == length(choose.lines))){
-	cat("Read and converted information for", length(choose.lines), "line(s).\n", sep = " ")
-}else{
-	warning(paste("Invalid line number(s). Read and converted information for", sum(choose.lines <= .i-1), "line(s).\n", sep = " "), call. = F)
-}	
+if(!is.null(choose.lines)){
+	if(!sum(abs(choose.lines) <= .i-1) == length(choose.lines)) warning(paste("Invalid line number(s). Read and converted information for", .s, "line(s).\n", sep = " "), call. = F)
+	else cat("Read and converted information for", .s, "line(s).\n", sep = " ")
+} else cat("Read and converted information for", .s, "line(s).\n", sep = " ")
 #
 ## Warning if choose.column contains invalid column number(s)
 if(.k != 0) warning("\"choose.columns\" contains invalid column number(s).", call. = F)

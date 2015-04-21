@@ -32,6 +32,7 @@ if(identical(.ref, c(" - ", "ref"))){
 ###if((length(.ref) == 2) && all(.ref == c(" - ", "ref"))){
 	.reference.method <- "ref.cat"
 	.ref.cat <- which(.tab$reference == "ref")
+	names(.ref.cat) <- .haplos[.ref.cat]
 } else stop("Could not figure out reference. Something seems to be wrong with
 the haptable.", call. = F)
 #

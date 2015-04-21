@@ -1,20 +1,17 @@
-f.posttest <- function(coef_, cov_, mf, c_, cm_ , cf, cdd, m, mdd, test)
-{
+f.posttest <- function(coef_, cov_, test){
+##
+## EXTRACT COEFFICIENTS TO BE TESTED
+## BUILD CONTRAST MATRIX FOR INTERACTIONS
+## DO THE CHI-SQUARED TEST
+##
 .vis <- F
+#
 .coef <- coef_
 .cov <- cov_
-## SELECT PARAMETERS TO BE TESTED
-## test <- c("child.single", "child.double", "maternal.single", "maternal.double")
-
-.names.list <- list(haplo.freq = mf, child = c(c_, cdd), poo = c(cm_, cf), maternal = c(m, mdd))
-.nam <- names(.names.list)
-if(!all(test %in% .nam)) stop('Invalid input in argument "test"')
-f.vis(.velg <- unlist(.names.list[.nam %in% test]), vis = .vis) # MAKE SURE SELECTION IS IN CORRECT ORDER
-
-
 #
-f.vis(.coef <- lapply(.coef, function(x)x[.velg, , drop = F]), vis = .vis)
-f.vis(.cov <- lapply(.cov, function(x) x[.velg, .velg, drop = F]), vis = .vis)
+## SELECT COEFFICIENTS TO BE TESTED
+f.vis(.coef <- lapply(.coef, function(x)x[test, , drop = F]), vis = .vis)
+f.vis(.cov <- lapply(.cov, function(x) x[test, test, drop = F]), vis = .vis)
 #
 ## RESHAPE COEFFICIENTS AND COVARIANCE MATR. INTO FULL SIZE
 .n.pars <- length(.coef[[1]])
@@ -24,12 +21,10 @@ f.vis(.cov.mat <- f.bdiag(.cov), vis = .vis)
 #
 ## BUILD CONTRAST MATRIX
 .A <- f.post.contrasts(test.type = "interaction", n.res = .l, n.pars = .n.pars)
-
 #
 ## DO CHI-SQUARED TEST
 .chisq.res <- f.post.chisq(coeff = .coef.vec, covar = .cov.mat, contrast.mat = .A)
-
-
+#
+##
 return(.chisq.res)
-
 }

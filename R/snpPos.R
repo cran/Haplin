@@ -10,19 +10,18 @@ snpPos <- function(snp.select, map.file, blank.lines.skip = TRUE){
 ## Read map file
 .map.file = read.table(map.file, header = TRUE, stringsAsFactors = FALSE, blank.lines.skip = blank.lines.skip)
 #
-## Error if snp.select cannot be found in the map file
-if(is.character(snp.select)){
-	if(!all(is.element(snp.select, .map.file[,2]))) stop('"snp.select" contains SNP names(s) that cannot be found in the map file', call. = F)
-} else if(is.numeric(snp.select)){
-	if(max(snp.select) > nrow(.map.file) | min(snp.select)*(-1) >= 0) stop('"snp.select" contains invalid SNP number(s)', call. = F)
-} else stop('"snp.select" must be a numeric vector of SNP numbers or a character vector of SNP names', call. = F)
-#
 ## Error if snp.select has duplicated values
 if(any(duplicated(snp.select))) stop('\"snp.select\" contains duplicated values', call. = F)
 #
 ## Find the corresponding columns in the ped file
-if(is.character(snp.select)) .pos.temp <- which(is.element(.map.file[,2], snp.select))
-if(is.numeric(snp.select)) .pos.temp <- snp.select
+if(is.character(snp.select)){
+	.pos.temp <- match(snp.select, .map.file[,2])
+	if(any(is.na(.pos.temp))) stop('"snp.select" contains SNP names(s) that cannot be found in the map file', call. = F)
+} else if(is.numeric(snp.select)){ 
+	if(max(snp.select) > nrow(.map.file) | min(snp.select)*(-1) >= 0) stop('"snp.select" contains invalid SNP number(s)', call. = F)
+	.pos.temp <- snp.select
+} else stop('"snp.select" must be a numeric vector of SNP numbers or a character vector of SNP names', call. = F)
+#
 .pos <- rep(0,2*length(.pos.temp))
 for(i in 1:length(.pos.temp)){
 	.pos[2*i-1] <- 2*.pos.temp[i] -1
@@ -33,4 +32,3 @@ for(i in 1:length(.pos.temp)){
 ## Return column numbers
 return(.pos)
 }
-

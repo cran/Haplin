@@ -3,7 +3,14 @@ f.suest <- function(reslist, main = "", ad.hoc = 0, debug = T, diag.plot = T){
 ## reslist IS A LIST OF RESULTS FROM haplin, RUN ON THE SAME DATA FILE
 ## (CURRENTLY USES ONLY OVERLAPPING LINES FROM EACH ESTIMATION)
 ##
-
+#
+## KEEP AND RESET SEED VALUE TO FACILITATE SIMULATIONS
+.ex.seed <- exists(".Random.seed")
+if(.ex.seed) .oldseed <- .Random.seed
+set.seed(24)
+if(.ex.seed) on.exit(.Random.seed <<- .oldseed)
+#
+##
 
 .l <- length(reslist)
 ### if(.l < 2) stop("f.suest needs more than one estimation result!")
