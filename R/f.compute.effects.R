@@ -1,5 +1,5 @@
 "f.compute.effects"<-
-function(x, maternal, reference.method, ref.cat, n.all, info)
+function(x, maternal, reference.method, n.all, info)
 {
 # COMPUTES ALLELE FREQUENCIES, RELATIVE RISKS ETC. USING THE RESULTS
 # FROM f.tri.glm. x IS THE VECTOR OF ESTIMATED COEFFICIENTS, OR POSSIBLY
@@ -113,7 +113,7 @@ if(.poo){
 			.Pi.minus <- .f.kryssprod.minus(.pR)/.f.kryssprod.minus(.p)
 			if(any(.Pi.minus == 0)){
 				.Pi.minus[.Pi.minus == 0] <- 1e-10  
-				warning("NAs generated during simulation, perhaps due to rare haplotype!")
+				warning( "NAs generated during simulation, perhaps due to rare haplotype!", call. = FALSE )
 			}
 			.Fi <- .Pi/.Pi.minus
 			.Fi.startilde <- .Rstartilde/.Pi.minus
@@ -155,7 +155,7 @@ if(maternal) {#
 			.Pim.minus <- .f.kryssprod.minus(.pRm)/.f.kryssprod.minus(.p)
 			if(any(.Pim.minus == 0)){
 				.Pim.minus[.Pim.minus == 0] <- 1e-10  
-				warning("NAs generated during simulation, perhaps due to rare haplotype!")
+				warning( "NAs generated during simulation, perhaps due to rare haplotype!", call. = FALSE )
 			}
 			.Fim <- .Pim/.Pim.minus
 			.Fim.startilde <- .Rmstartilde/.Pim.minus

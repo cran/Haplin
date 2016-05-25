@@ -29,8 +29,8 @@ if(!conf.int) {
 	if(info$model$design != "triad") stop("Not implemented")
 	#
 	## COMPUTE REPARAMETRIZATION:
-	.effects <- t(f.compute.effects(.res$coefficients, maternal = .maternal, reference.method = reference.method, ref.cat = .ref.cat, n.all = .n.all, info = info))
-	.ut <- list(effects = .effects, design = info$model$design, pvalues = NULL, maternal = .maternal, reference.method = reference.method, conf.int = conf.int, n.all = .n.all, n.tri = .n.tri, level = level, orig.call = object$orig.call, date = object$date, ref.cat = .ref.cat)
+	.effects <- t(f.compute.effects(.res$coefficients, maternal = .maternal, reference.method = reference.method, n.all = .n.all, info = info))
+	.ut <- list(effects = .effects, design = info$model$design, pvalues = NULL, maternal = .maternal, conf.int = conf.int, n.all = .n.all, n.tri = .n.tri, level = level, orig.call = object$orig.call, date = object$date, ref.cat = .ref.cat)
 }
 #
 if(F){
@@ -61,7 +61,7 @@ if(conf.int) {
 	.sim <- mvrnorm(n.sim, mu = .coef, Sigma = .cov)
 	dimnames(.sim) <- list(NULL, names(.coef))#
 	## COMPUTE REPARAMETRIZATION:
-	.effects <- f.compute.effects(.sim, maternal = .maternal, reference.method = reference.method, ref.cat = .ref.cat, n.all = .n.all, info = info)	
+	.effects <- f.compute.effects(.sim, maternal = .maternal, reference.method = reference.method, n.all = .n.all, info = info)	
 	#	
 	.f.quant <- function(x){
 		if(any(is.na(x))){ 
@@ -71,7 +71,7 @@ if(conf.int) {
 			# SENDS ANY PROBLEMS, LIKE NA, STRAIGHT THROUGH, BUT WITH WARNING
 		}
 	}
-	if(any(is.na(.effects))) warning("NAs in confidence intervals")		
+	if(any(is.na(.effects))) warning( "NAs in confidence intervals", call. = FALSE )
 	.effects.CI <- t(apply(.effects, 2, .f.quant))
 	dimnames(.effects.CI)[[2]] <- c("est.", "lower", "upper")
 #
@@ -79,7 +79,7 @@ if(conf.int) {
 #
 .CI <- as.data.frame(.effects.CI)
 #
-## Finner kolonner som det ikke skal beregnes p-verdi for
+## Do not calculate p-values for .drop.col
 .drop.col <- unique(c(1:.n.all, which(.CI$lower==0 | .CI$upper==Inf), which(.CI$upper==1 & .CI$lower==1), which(is.na(.CI$upper) | is.na(.CI$lower))))
 #
 .arg.effects <- .effects[, -.drop.col, drop = F]
@@ -89,15 +89,16 @@ if(conf.int) {
 #
 if(length(.arg.effects!=0)){
 	.temp.pvalues <- apply(.arg.effects,2,function(x){
-		## Johnson parameters
-		.param <- JohnsonFit(x, moment="quant")
+		## Johnson's parameters
+		.param <- JohnsonFit(log(x), moment="quant")
 		#
 		## p-values
-		.est <- ifelse(median(x)>1, pJohnson(1,.param), 1-pJohnson(1,.param))
+		.est <- ifelse(median(log(x))>0, pJohnson(0,.param), 1-pJohnson(0,.param))
 		.temp.pvalues <- min(.est*2,1)
 	})
 	.pvalues[-c(.drop.col)] <- .temp.pvalues
 }
+#
 .pvalues[which(.CI$lower==0 | .CI$upper==Inf)] <- 1
 #
 if(exists("debug.haplin.pvalues")){
@@ -113,7 +114,7 @@ if(exists("debug.haplin.pvalues")){
 }
 #
 .effects.CI <- cbind(.effects.CI, p.value = as.numeric(.pvalues))
-.ut <- list(effects = .effects.CI, design = info$model$design, pvalues = .pvalues, maternal = .maternal, reference.method = reference.method, conf.int = conf.int, n.all = .n.all, n.tri = .n.tri, level = level, orig.call = object$orig.call, date = object$date, ref.cat = .ref.cat, info = info)
+.ut <- list(effects = .effects.CI, design = info$model$design, pvalues = .pvalues, maternal = .maternal, conf.int = conf.int, n.all = .n.all, n.tri = .n.tri, level = level, orig.call = object$orig.call, date = object$date, ref.cat = .ref.cat, info = info)
 }
 #		
 class(.ut) <- "summary.tri.glm"

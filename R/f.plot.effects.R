@@ -1,4 +1,4 @@
-f.plot.effects <- function(coeff, ref.cat, reference.method, haplos, markernames, maternal, poo, type = 1, ylim = c(0.2, 5), lwd = 2, use.dd, use.single, verbose = T, ...)
+f.plot.effects <- function(coeff, ref.cat, reference.method, haplos, markernames, maternal, poo, type = 1, ylim = c(0.2, 5), lwd = 2, use.single = seq(along = haplos), use.dd = seq(along = haplos), verbose = T, ...)
 {
 ## PLOTS THE RESULT OF ESTIMATED ALLELE EFFECTS
 ##
@@ -21,9 +21,15 @@ if(poo) .shift <- .shift * 2 ## NEED SPACE FOR TWO SINGLE DOSE EFFECTS
 .len <- 0.02 # LENGHT OF CROSSBAR AT END OF CI IS 2*.len
 .top <- T
 .bottom <- T
+#
+## SELECT SINGLE- AND DOUBLE DOSES TO BE PLOTTED
+.use.single <- use.single
+.use.dd <- use.dd
+if(reference.method == "ref.cat"){
+	.use.single <- setdiff(.use.single, ref.cat)
+	if(.nall == 2) .use.dd <- setdiff(.use.dd, ref.cat)
+}
 
-if(missing(use.single)) use.single <- seq(along = .haplos)
-if(missing(use.dd)) use.dd <- seq(along = .haplos)
 
 if(!missing(markernames)){
 	if(length(markernames) == 1) .tmp <- "Marker: "
@@ -126,80 +132,75 @@ else axis(side = 2, tick = 0.02, font = 2, lwd = lwd)
 ## DOUBLE DOSE:
 .ddpos <- 1:.nall + .shift	#
 #
-## REMOVE REFERENCE CATEGORY, IF REQUIRED
-if(reference.method == "ref.cat"){
-	.pos <- .pos[-ref.cat]
-	.midpos <- .midpos[-ref.cat]
-	if(.nall == 2) .ddpos <- .ddpos[-ref.cat]
-}
+## USE ONLY THOSE SELECTED
+.pos <- .pos[.use.single]
+.midpos <- .midpos[.use.single]
+.ddpos <- .ddpos[.use.dd]
 #
 ## MARK REFERENCE CATEGORY
 if(reference.method == "ref.cat") textlabel(x = .ref.pos - .shift, y = 1, labels = "REF", cex = 0.7, font = 2)
 ### if(reference.method == "ref.cat") text(.ref.pos - .shift, 1 - 0.08, "REF", cex = 0.7, font = 2)	#
 #
 ##
-.f.in <- function(x, yl) {(x >= yl[1]) & (x <= yl[2])}
-#
-##
 if(.sel == "m" | !poo){
 	#
 	## NAMES FOR RR PARAMETERS, ONLY USED TO EXTRACT VALUES FROM TABLE:
 	.names <- paste("RR", .sel, 1:.nall, sep = "")
-	if(reference.method == "ref.cat") .names <- .names[ - ref.cat]
+	.names <- .names[.use.single]
 	#
 	## EXTRACT COEFFICIENT VALUES
 	.est <- coeff[.names, "est."]
-	.est.in <- .f.in(.est, ylim) & is.element(seq(along = .est), use.single) # PLOT ONLY EFFECTS WITHIN BOUNDARIES, AND WHICH THE USER REQUESTS
 	#
 	.L <- coeff[.names, "lower"]
 	.U <- coeff[.names, "upper"]
 	#
 	## BASIC PLOTTING OF SINGLE DOSE EFFECTS AND CIs
-	f.Rplot(lwd = lwd, ylim = ylim, L = .L, U = .U, len = .len, pos = .pos, est = .est, est.in = .est.in, use = use.single, pch = "s")
+	.est.in <- f.Rplot(lwd = lwd, ylim = ylim, L = .L, U = .U, len = .len, pos = .pos, est = .est, pch = "s")
 }
 if(.sel == "c" & poo){
 	#
 	## NAMES FOR RR PARAMETERS, ONLY USED TO EXTRACT VALUES FROM TABLE:
 	.names.mat <- paste("RR", "cm", 1:.nall, sep = "")
-	if(reference.method == "ref.cat") .names.mat <- .names.mat[ - ref.cat]
-	#
-	.names.pat <- paste("RR", "cf", 1:.nall, sep = "")
-	if(reference.method == "ref.cat") .names.pat <- .names.pat[ - ref.cat]
+	.names.mat <- .names.mat[.use.single]
 	#
 	## EXTRACT COEFFICIENT VALUES
 	.est.mat <- coeff[.names.mat, "est."]
-	.est.mat.in <- .f.in(.est.mat, ylim) & is.element(seq(along = .est.mat), use.single) # PLOT ONLY EFFECTS WITHIN BOUNDARIES, AND WHICH THE USER REQUESTS
-	#
-	.est.pat <- coeff[.names.pat, "est."]
-	.est.pat.in <- .f.in(.est.pat, ylim) & is.element(seq(along = .est.pat), use.single) # PLOT ONLY EFFECTS WITHIN BOUNDARIES, AND WHICH THE USER REQUESTS
 	#
 	.L.mat <- coeff[.names.mat, "lower"]
 	.U.mat <- coeff[.names.mat, "upper"]
+	#
+	## BASIC PLOTTING OF SINGLE DOSE EFFECTS AND CIs
+	.est.mat.in <- f.Rplot(lwd = lwd, ylim = ylim, L = .L.mat, U = .U.mat, len = .len, pos = .pos, est = .est.mat, pch = "m")
+	#
+	## NAMES FOR RR PARAMETERS, ONLY USED TO EXTRACT VALUES FROM TABLE:
+	.names.pat <- paste("RR", "cf", 1:.nall, sep = "")
+	.names.pat <- .names.pat[.use.single]
+	#
+	## EXTRACT COEFFICIENT VALUES
+	.est.pat <- coeff[.names.pat, "est."]
 	#
 	.L.pat <- coeff[.names.pat, "lower"]
 	.U.pat <- coeff[.names.pat, "upper"]
 	#
 	## BASIC PLOTTING OF SINGLE DOSE EFFECTS AND CIs
-	f.Rplot(lwd = lwd, ylim = ylim, L = .L.mat, U = .U.mat, len = .len, pos = .pos, est = .est.mat, est.in = .est.mat.in, use = use.single, pch = "m")
-	f.Rplot(lwd = lwd, ylim = ylim, L = .L.pat, U = .U.pat, len = .len, pos = .midpos, est = .est.pat, est.in = .est.pat.in, use = use.single, pch = "p")
+	.est.pat.in <- f.Rplot(lwd = lwd, ylim = ylim, L = .L.pat, U = .U.pat, len = .len, pos = .midpos, est = .est.pat, pch = "p")
 	#
 	## SAMLEVERDI, TIL RAPPORTERING
-	.est.in <- .est.mat | .est.pat
+	.est.in <- .est.mat.in | .est.pat.in
 }
 #
 ## PLOT DOUBLE DOSE
 .ddnames <- paste("RR", .sel, "dd", 1:.nall, sep = "")
-if(reference.method == "ref.cat" & .nall == 2) .ddnames <- .ddnames[ - ref.cat] #
+.ddnames <- .ddnames[.use.dd]
 #
 .est.dd <- coeff[.ddnames, "est."]
-.est.dd.in <- .f.in(.est.dd, ylim) & is.element(seq(along = .est.dd), use.dd) # PLOT ONLY EFFECTS WITHIN BOUNDARIES, AND WHICH THE USER REQUESTS
 #
 .L.dd <- coeff[.ddnames, "lower"]
 #
 .U.dd <- coeff[.ddnames, "upper"]
 #
 ## BASIC PLOTTING OF DOUBLE DOSE EFFECTS AND CIs
-f.Rplot(lwd = lwd, ylim = ylim, L = .L.dd, U = .U.dd, len = .len, pos = .ddpos, est = .est.dd, est.in = .est.dd.in, use = use.dd, pch = "d")
+.est.dd.in <- f.Rplot(lwd = lwd, ylim = ylim, L = .L.dd, U = .U.dd, len = .len, pos = .ddpos, est = .est.dd, pch = "d")
 #
 ## REMARK ABOUT PLOTTING RANGE
 if(any(!.est.in) | any(!.est.dd.in)) {

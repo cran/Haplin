@@ -5,13 +5,16 @@ plot.haplin <- function(x, reference, separate.plots = F, filename, filetype = "
 ## MERK: DENNE HAR MYE FELLES MED plot.haptable, BURDE KANSKJE VAERT SAMKJOERTE
 ##
 #
-.n.sel.haplo <- sum(x$selected.haplotypes)
 .maternal <- x$result$maternal
 .info <- x$info
 .sel.sex <- .info$variables$sel.sex
 .response <- .info$haplos$response
+.selected.haplotypes <- .info$haplos$selected.haplotypes
+.n.sel.haplo <- sum(.selected.haplotypes)
+.reference.method <- .info$haplos$reference.method
+
 .poo <- .info$model$poo
-.haplos <- names(x$selected.haplotypes)[x$selected.haplotypes]
+.haplos <- names(.selected.haplotypes)[.selected.haplotypes]
 .alleles <- .info$haplos$alleles
 .markernames <- names(.alleles)
 .ref.cat <- .info$haplos$ref.cat
@@ -20,19 +23,16 @@ if(.info$model$scoretest == "only") stop('Sorry, plotting of effect estimates
 not available when haplin was run with scoretest = "only"', call. = F)
 #
 ## USE APPROPRIATE REFERENCE
-if(missing(reference)){
-	.reference.method <- x$reference.method
-} else
-if(reference == "reciprocal" & .poo){
-	warning(paste('Can only (for the time being) use reference = "ref.cat" or "population" when poo == TRUE. Has been changed to ', x$reference.method, sep = ""), call. = F)
-		.reference.method <- x$reference.method
-} else
-if(reference %in% c("reciprocal", "population", "ref.cat")){	
-	.reference.method <- reference
-} else if (is.numeric(reference)){
-	cat("\nWARNING: REFERENCE CATEGORY CAN ONLY BE SET IN FIRST RUN OF HAPLIN!\nFOR summary AND plot METHODS ONLY REFERENCE METHOD CAN BE CHOSEN, NOT CATEGORY\n\n")
-	.reference.method <- x$reference.method
-} else stop("Invalid reference choice!", call. = F)
+if(!missing(reference)){
+	if(reference == "reciprocal" & .poo){
+		warning(paste('Can only (for the time being) use reference = "ref.cat" or "population" when poo == TRUE. Has been changed to ', .reference.method, sep = ""), call. = F)
+	} else
+	if(reference %in% c("reciprocal", "population", "ref.cat")){	
+		.reference.method <- reference
+	} else if (is.numeric(reference)){
+		cat("\nWARNING: REFERENCE CATEGORY CAN ONLY BE SET IN FIRST RUN OF HAPLIN!\nFOR summary AND plot METHODS ONLY REFERENCE METHOD CAN BE CHOSEN, NOT CATEGORY\n\n")
+	} else stop("Invalid reference choice!", call. = F)
+}
 #
 ## CHECK THAT ONLY REFCAT IS USED WHEN ONLY TWO HAPLOTYPES/ALLELES	
 if(.n.sel.haplo == 2 & .reference.method != "ref.cat"){

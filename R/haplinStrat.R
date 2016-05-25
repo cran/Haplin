@@ -61,12 +61,13 @@ if(.verbose) cat("\nRunning Haplin for full data file...")
 if(.verbose) cat("Done\n")
 #
 ## WRITE (TEMPORARY) FILE CONTAINING HAPLOTYPES
-.selected.haplotypes <- .ut.list[["all"]]$selected.haplotypes
+.selected.haplotypes <- .ut.list[["all"]]$info$haplos$selected.haplotypes
 .selected.haplotypes <- names(.selected.haplotypes)[.selected.haplotypes]
 write.table(dframe(haplos = .selected.haplotypes), file = .tmphaplofile, quote = F, row.names = F, col.names = T)
 ## FORCE haplin LATER ON TO USE SAME HAPLOTYPES AND SAME REFERENCE CATEGORY
 .args$haplo.file <- .tmphaplofile
 .args$reference <- .ut.list[["all"]]$info$haplos$ref.cat
+.reference.method <- .ut.list[["all"]]$info$haplos$reference.method
 #
 ## RUN HAPLIN ON EACH STRATUM
 for(i in seq(along = .strata.list)){
@@ -78,6 +79,14 @@ for(i in seq(along = .strata.list)){
 	#
 	## RUN HAPLIN
 	.ut.list[[i + 1]] <- try(do.call("haplin", .args))
+	if(class(.ut.list[[i + 1]]) != "try-error"){
+		## RESET reference.method TO ORIGINAL
+
+		if(.ut.list[[i + 1]]$info$haplos$reference.method != "ref.cat") stop("Something's wrong with the choice of reference...", call. = F) # should never kick in
+		
+		.ut.list[[i + 1]]$info$haplos$reference.method <- .reference.method
+	}
+
 	if(.verbose) cat("Done\n")
 }
 #

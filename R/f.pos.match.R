@@ -4,7 +4,7 @@ f.pos.match <- function(data, info){
 ## GRID AS USED IN THE GLM
 #
 ## EXTRACT CHARACTERISTICS FROM THE DESIGN MATRIX
-.char <- f.make.design(info = info, ret.characteristics = T)
+.char <- f.design.make(info = info, ret.characteristics = T)
 #
 ##
 ## MATCH PREDICTED PROBABILITIES TO ORIGINAL DATA:

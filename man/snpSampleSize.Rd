@@ -14,9 +14,9 @@ RR, MAF, alpha = 0.05, power = 0.80)
 %- maybe also 'usage' for other objects documented here.
 
 \arguments{
-	\item{fam.cases}{A character vector of the case family design. The possible family designs are "mfc" (full triad), "mc" (mother-child dyad), "fc" (father-child dyad) and "c" (a single case child).}
-	\item{fam.controls}{A character vector of the control family design. The possible family designs are "mfc" (full triad), "mc" (mother-child-dyad), "fc" (father-child dyad), "mf" (mother-father dyad), "c" (a single control child), "m" (a single control mother), "f" (a single control father) or "no_controls" (no control families).}
-	\item{fraction}{A numeric vector of the proportion of case families. Equals 0.5 by default, i.e. there are as many case families as control families. If \code{fam.controls} equals "no_controls", \code{fraction} is automatically set to 1.}
+	\item{fam.cases}{A character vector of the case family design. The possible family designs are \code{"mfc"} (full triad), \code{"mc"} (mother-child dyad), \code{"fc"} (father-child dyad) and \code{"c"} (a single case child).}
+	\item{fam.controls}{A character vector of the control family design. The possible family designs are \code{"mfc"} (full triad), \code{"mc"} (mother-child-dyad), \code{"fc"} (father-child dyad), \code{"mf"} (mother-father dyad), \code{"c"} (a single control child), \code{"m"} (a single control mother), \code{"f"} (a single control father) or \code{"no_controls"} (no control families).}
+	\item{fraction}{A numeric vector of the proportion of case families. Equals 0.5 by default, i.e. there are as many case families as control families. If \code{fam.controls} equals \code{"no_controls"}, \code{fraction} is automatically set to 1.}
 	\item{RR}{A numeric vector of the relative risks (the effect sizes of interest).}
 	\item{MAF}{A numeric vector of the minor allele frequencies.}
 	\item{alpha}{A numeric vector of the Type I Errors. Equals 0.05 by default.}
@@ -24,7 +24,8 @@ RR, MAF, alpha = 0.05, power = 0.80)
 }
 
 \details{\code{snpSampleSize} computes the number of case and control families required for a single SNP to attain the desired power. 
-It calculates the fraction of case alleles corresponding to the given family designs 
+It assumes a multiplicative dose-response model.
+\code{snpSampleSize} calculates the fraction of case alleles corresponding to the given family designs 
 and then uses the asymptotic normal approximation for the natural logarithm of the odds ratio for calculating the sample sizes 
 (the relative risks and odds ratios are used interchangeably due to the "rare disease assumption").\cr
 
@@ -36,7 +37,7 @@ and then uses the asymptotic normal approximation for the natural logarithm of t
 \references{
 Skare O, Jugessur A, Lie RT, Wilcox AJ, Murray JC, Lunde A, Nguyen TT, Gjessing HK. Application of a novel hybrid study design to explore gene-environment interactions in orofacial clefts. Annals of Human Genetics (2012) 76, pp. 221-236.\cr
 
-Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}
+Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}
 }
 
 \author{Miriam Gjerdevik,\cr

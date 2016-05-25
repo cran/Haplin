@@ -49,7 +49,7 @@ Column 7 and onwards contain the genotype data, with alleles in separate columns
 	A vector of the column numbers of the SNP identifiers/SNP numbers in the ped file, sorted in the same order as given in \code{snp.select}.
 } 
 \references{
-Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
+Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 \author{Miriam Gjerdevik,\cr
 with Hakon K. Gjessing\cr
 Professor of Biostatistics\cr

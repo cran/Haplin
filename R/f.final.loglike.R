@@ -32,7 +32,7 @@ f.final.loglike <- function(data, pred, info, type = "EM"){
 ##
 if(type == "full"){
 	## CORRESPONDS TO THE FULL, UNCORRECTED GLM LOGLIKE, UP TO A CONSTANT
-	.probsum <- f.groupsum(.prob, data$ind)
+	.probsum <- f.groupsum(.prob, data$orig.lines)
 	.probnorm <- .prob/.probsum
 	.loglike <- sum(.probnorm * log(.prob))
 }
@@ -40,7 +40,7 @@ if(type == "EM"){
 	## THIS IS THE ONE TO USE, CORRECTS FOR EM UNCERTAINTY
 	#
 	## SUM PREDICTED PROBABILITIES OVER AMBIGUITIES FOR EACH TRIAD:
-	.prob <- tapply(.prob, data$ind, sum)
+	.prob <- tapply(.prob, data$orig.lines, sum)
 	#
 	## COMPUTE LOG-LIKELIHOOD:
 	.loglike <- sum(log(.prob)) # NOTE: FREQUENCIES ARE 1

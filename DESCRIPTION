@@ -1,17 +1,18 @@
 Package: Haplin
 Title: Analyzing Case-Parent Triad and/or Case-Control Data with SNP
         Haplotypes
-Version: 5.5
-Date: 2015-04-21
+Version: 6.0
+Date: 2016-05-24
 Type: Package
 Author: Hakon K. Gjessing
 Maintainer: Hakon K. Gjessing <hakon.gjessing@fhi.no>
 Depends: GenABEL, DatABEL
-Imports: parallel, tools, mgcv, MASS, SuppDists, snow
-Description: Performs genetic association analyses of case-parent triad (trio) data with multiple markers. It can also incorporate complete or incomplete control triads, for instance independent control children. Estimation is based on haplotypes, for instance SNP haplotypes, even though phase is not known from the genetic data. Haplin estimates relative risk (RR + conf.int.) and p-value associated with each haplotype. It uses maximum likelihood estimation to make optimal use of data from triads with missing genotypic data, for instance if some SNPs has not been typed for some individuals. Haplin also allows estimation of effects of maternal haplotypes and parent-of-origin effects, particularly appropriate in perinatal epidemiology. Haplin allows special models, like X-inactivation, to be fitted on the X-chromosome.
+Imports: utils, stats, graphics, grDevices, parallel, tools, mgcv,
+        MASS, SuppDists, snow
+Description: Performs genetic association analyses of case-parent triad (trio) data with multiple markers. It can also incorporate complete or incomplete control triads, for instance independent control children. Estimation is based on haplotypes, for instance SNP haplotypes, even though phase is not known from the genetic data. Haplin estimates relative risk (RR + conf.int.) and p-value associated with each haplotype. It uses maximum likelihood estimation to make optimal use of data from triads with missing genotypic data, for instance if some SNPs has not been typed for some individuals. Haplin also allows estimation of effects of maternal haplotypes and parent-of-origin effects, particularly appropriate in perinatal epidemiology. Haplin allows special models, like X-inactivation, to be fitted on the X-chromosome. A GxE analysis allows testing interactions between environment and all estimated genetic effects.
 License: GPL (>= 2)
-URL: http://www.uib.no/smis/gjessing/genetics/software/haplin/
+URL: http://folk.uib.no/gjessing/genetics/software/haplin/
 NeedsCompilation: no
-Packaged: 2015-04-21 16:09:43 UTC; hkgjess
+Packaged: 2016-05-24 21:59:02 UTC; hkgjess
 Repository: CRAN
-Date/Publication: 2015-05-15 21:42:38
+Date/Publication: 2016-05-25 11:17:09

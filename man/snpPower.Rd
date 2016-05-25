@@ -13,20 +13,20 @@ snpPower(cases, controls, RR, MAF, alpha = 0.05)
 %- maybe also 'usage' for other objects documented here.
 
 \arguments{
-	\item{cases}{A list of the number of case families. Each element contains the number of families of a specified family design. The possible family designs, i.e. the possible names of the elements, are "mfc" (full triad), "mc" (mother-child dyad), "fc" (father-child dyad) or "c" (a single case child).}
-	\item{controls}{A list of the number of control families. Each element contains the number of families of a specified family design. The possible family designs are "mfc" (full triad), "mc" (mother-child-dyad), "fc" (father-child dyad), "mf" (mother-father dyad), "c" (a single control child), "m" (a single control mother) or "f" (a single control father).}
+	\item{cases}{A list of the number of case families. Each element contains the number of families of a specified family design. The possible family designs, i.e. the possible names of the elements, are \code{"mfc"} (full triad), \code{"mc"} (mother-child dyad), \code{"fc"} (father-child dyad) or \code{"c"} (a single case child).}
+	\item{controls}{A list of the number of control families. Each element contains the number of families of a specified family design. The possible family designs are \code{"mfc"} (full triad), \code{"mc"} (mother-child-dyad), \code{"fc"} (father-child dyad), \code{"mf"} (mother-father dyad), \code{"c"} (a single control child), \code{"m"} (a single control mother) or \code{"f"} (a single control father).}
 	\item{RR}{A numeric vector of the relative risks (the effect sizes of interest).}
 	\item{MAF}{A numeric vector of the minor allele frequencies.}
 	\item{alpha}{A numeric vector of the Type I Errors. Equals 0.05 by default.}
 }
 
 \details{\code{snpPower} computes power for a single SNP by counting the number of "real" case alleles, "real" control alleles and pseudo-control alleles. 
-(The pseudo-control alleles are the non-transmitted alleles, possibly from both case families and control families.)
-It then uses the asymptotic normal approximation for the natural logarithm of the odds ratio for calculating power 
+The pseudo-control alleles are the non-transmitted alleles, possibly from both case families and control families. It assumes a multiplicative dose-response model.
+\code{snpPower} uses the asymptotic normal approximation for the natural logarithm of the odds ratio for calculating power 
 (the relative risks and odds ratios are used interchangeably due to the "rare disease assumption").\cr
 
 \code{snpPower} allows for power calculations for mixtures of the possible case family designs and control family designs. 
-The argument \code{cases} could, for example, consist of a combination of 1000 full case triads (family design "mfc") and 500 single case children (family design "c"). 
+The argument \code{cases} could, for example, consist of a combination of 1000 full case triads (family design \code{"mfc"}) and 500 single case children (family design \code{"c"}). 
 It is also feasible to compute power for several combinations of the input variables simultaneously. See Examples for further details.
 }
 
@@ -35,7 +35,7 @@ It is also feasible to compute power for several combinations of the input varia
 \references{
 Skare O, Jugessur A, Lie RT, Wilcox AJ, Murray JC, Lunde A, Nguyen TT, Gjessing HK. Application of a novel hybrid study design to explore gene-environment interactions in orofacial clefts. Annals of Human Genetics (2012) 76, pp. 221-236.\cr
 
-Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}
+Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}
 }
 
 \author{Miriam Gjerdevik,\cr

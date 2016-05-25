@@ -1,7 +1,4 @@
 f.catch <- function(mcall, defaults){
-##
-##
-#####################
 ## EXTRACT CALL
 .mcall <- lapply(mcall[-1], function(x) eval.parent(x, 4))
 #

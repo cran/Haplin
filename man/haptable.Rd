@@ -48,7 +48,7 @@ Create a comprehensive table of haplin output
 	\item{RRmdd.p.value }{ P-values for individual double dose estimates for maternal haplotype}
 	Note that the results from the maternal haplotype risks will not be present unless \code{maternal = T} was used in the \code{haplin} call. 
 }
-\references{Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
+\references{Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

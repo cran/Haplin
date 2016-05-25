@@ -1,4 +1,4 @@
-f.make.design <- function(maternal, response, info, test = F, ret.characteristics = F){
+f.design.make <- function(maternal, response, info, ret.characteristics = F){
 #
 # THE PROGRAM ESTIMATES EFFECTS OF SEVERAL ALLELES IN A CASE-TRIAD, CASE-CONTROL-TRIAD OR CASE-CONTROL DESIGN
 # CREATES AN APPROPRIATE DESIGN MATRIX FOR USE IN f.tri.glm
@@ -230,7 +230,7 @@ if(response != "simple"){
 			.f2.dum <- .f2.dum[,  - .ref.cat, drop = F]
 			.design.matrix1 <- cbind(.design.matrix1, .m2.dum, .f2.dum)
 		}
-	}else{
+	}else{# if(!.poo)
 		.c.dumsum <- .c.dumsum[,  - .ref.cat, drop = F]
 		.design.matrix1 <- cbind(.design.matrix1, .c.dumsum)
 	}

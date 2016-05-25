@@ -33,7 +33,7 @@ suest(reslist)
 	\item{bonferroni}{A logical, usually FALSE, which means the \code{suest} estimation went well. If TRUE, it means that the \code{suest} estimation failed for some reason, and a standard Bonferroni correction was used instead.}
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
+Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

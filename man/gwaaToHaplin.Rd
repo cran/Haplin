@@ -23,7 +23,7 @@
   A data matrix (character) with one row for each family. The column names should be more or less self-explanatory. "m", "f", and "c" are used to names columns belonging to the mother, the father, and the child, respectively. Alleles are in separate columns.
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
+Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

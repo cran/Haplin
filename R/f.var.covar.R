@@ -11,12 +11,6 @@ f.var.covar <- function(pred, X, data, info){
 .pX <- pred * X
 .d2Poisson <- -t(X) %*% (.pX) # THIS IS STANDARD POISSON WITH VALUES PREDICTED ACCORDING TO EM
 #
-## MIDLERTIDIG SJEKK (SER UT TIL AA VAERE UNODVENDIG): #-#
-.sjekk <- tapply(data$orig.lines, data$ind, unique)
-.sjekk0 <- table(.sjekk)
-.sjekk1 <- table(tapply(data$ind, data$orig.lines, unique))
-if(any(.sjekk0 != 1) | any(.sjekk1 != 1)) stop() # SJEKKER AT ind OG orig.lines ER EN-TIL-EN, BURDE IKKE VAERE NODVENDIG
-#
 ## MATCH EVERYTHING TO data
 .pos <- f.pos.match(data = data, info = info)
 .X <- X[.pos,]

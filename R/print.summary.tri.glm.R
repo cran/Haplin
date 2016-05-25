@@ -9,11 +9,13 @@ function(x, digits = 2, haplos, ...)
 design <- x$design
 .fn <- function(x) paste(x, 1:.n.all, sep = "")
 if(missing(haplos)) haplos <- .fn("h")
-.sel.sex <- x$info$variables$sel.sex
-.comb.sex <- x$info$model$comb.sex
-.response <- x$info$haplos$response
-.xchrom <- x$info$model$xchrom
-.poo <- x$info$model$poo
+.info <- x$info
+.sel.sex <- .info$variables$sel.sex
+.comb.sex <- .info$model$comb.sex
+.response <- .info$haplos$response
+.xchrom <- .info$model$xchrom
+.poo <- .info$model$poo
+.reference.method <- .info$haplos$reference.method
 #
 #### PRINT GENERAL INFORMATION: ####################
 cat("\nDate of call:\n")
@@ -42,7 +44,7 @@ if(!x$conf.int){
 .printout <- formatC(.printout, flag = "-", digits = digits, width = max(digits + 2, 10) )
 #
 if(.poo){
-	if(x$reference.method == "ref.cat"){
+	if(.reference.method == "ref.cat"){
 		## REMOVE PRINTOUT FOR REFERENCE CATEGORY	
 		.nam.strikeout <- c("RRcm", "RRcf", "RRcm_RRcf")
 		if(.n.all == 2){
@@ -59,7 +61,7 @@ if(.poo){
 		.nam.strikeout <- NULL
 	}
 }else{
-	if(x$reference.method == "ref.cat"){
+	if(.reference.method == "ref.cat"){
 		## REMOVE PRINTOUT FOR REFERENCE CATEGORY	
 		.nam.strikeout <- "RRc"
 		if(.n.all == 2){
@@ -88,8 +90,8 @@ else {
 }
 #
 ## PRINT REFERENCE METHOD/CATEGORY
-cat("Reference method: ", x$reference.method, "\n", sep = "")
-if(x$reference.method == "ref.cat") cat("Reference category: ", x$ref.cat, " (Haplotype ", names(x$ref.cat), ")\n", sep = "")
+cat("Reference method: ", .reference.method, "\n", sep = "")
+if(.reference.method == "ref.cat") cat("Reference category: ", x$ref.cat, " (Haplotype ", names(x$ref.cat), ")\n", sep = "")
 cat("Response model: ", .response, "\n", sep = "")
 if(.xchrom){
 	cat("Assuming X-chromosome data:\n")

@@ -137,30 +137,30 @@ if(length(.rows.with.Mendelian.inconsistency) == 0){
 # WARNING: .orig.lines.seq[[2]] SHOULD HAVE THE SAME ORDERING AS data.read!
 if(any(.orig.lines.seq[[3]] != sort(unique(.orig.lines)))) stop("problem!")
 #
-.ind <- 1:(dim(.data.gen)[1])
+.ind <- 1:nrow(.data.gen)
 .ind <- rep(.ind, .data.gen$freq)
-.ind.aux <- unlist(sapply(.data.gen$freq, function(x)1:x))
+# .ind.aux <- unlist(sapply(.data.gen$freq, function(x)1:x))
 #
 ##
 if(design == "triad" | design == "cc.triad"){
 	if(!xchrom){
-		.data.gen <- cbind(.data.gen[.ind,1:5], ind.aux = .ind.aux, .orig.lines)
-		names(.data.gen) <- c("m1", "m2", "f1", "f2", "ind.unique.line", "ind.aux", "orig.lines")
+		.data.gen <- cbind(.data.gen[.ind,1:5], .orig.lines)
+		names(.data.gen) <- c("m1", "m2", "f1", "f2", "ind.unique.line", "orig.lines")
 	}
 	if(xchrom){
-		.data.gen <- cbind(.data.gen[.ind,1:6], ind.aux = .ind.aux, .orig.lines)
-		names(.data.gen) <- c("m1", "m2", "f1", "f2", "sex", "ind.unique.line", "ind.aux", "orig.lines")
+		.data.gen <- cbind(.data.gen[.ind,1:6], .orig.lines)
+		names(.data.gen) <- c("m1", "m2", "f1", "f2", "sex", "ind.unique.line", "orig.lines")
 	}
 }
 ##
 if(design == "cc"){
 	if(!xchrom){
-		.data.gen <- cbind(.data.gen[.ind,1:3], ind.aux = .ind.aux, .orig.lines)
-		names(.data.gen) <- c("c1", "c2", "ind.unique.line", "ind.aux", "orig.lines")
+		.data.gen <- cbind(.data.gen[.ind,1:3], .orig.lines)
+		names(.data.gen) <- c("c1", "c2", "ind.unique.line", "orig.lines")
 	}
 	if(xchrom){
-		.data.gen <- cbind(.data.gen[.ind,1:4], ind.aux = .ind.aux, .orig.lines)
-		names(.data.gen) <- c("c1", "c2", "sex", "ind.unique.line", "ind.aux", "orig.lines")
+		.data.gen <- cbind(.data.gen[.ind,1:4], .orig.lines)
+		names(.data.gen) <- c("c1", "c2", "sex", "ind.unique.line", "orig.lines")
 	}
 }
 ###if(.n.vars > 0){
@@ -170,10 +170,12 @@ if(design == "cc"){
 #
 ##	REPLACE LINE COUNTERS ETC. WITH UNIQUE TAG ind, WHICH HAS ONE VALUE FOR 
 ##	EACH (REMAINING) TRIAD:
-.tag.tmp <- f.create.tag(.data.gen[,c("ind.unique.line", "ind.aux")])
-.tag.tmp <- match(.tag.tmp, unique(.tag.tmp))
-.data.gen$ind <- .tag.tmp
-.data.gen$ind.unique.line <- .data.gen$ind.aux <- NULL
+# .tag.tmp <- f.create.tag(.data.gen[,c("ind.unique.line", "ind.aux")])
+# .tag.tmp <- match(.tag.tmp, unique(.tag.tmp))
+# .data.gen$ind <- .tag.tmp
+.data.gen$ind.unique.line <- NULL
+# kan denne fjernes tidligere? Kanskje ikke hvis vi skal frekvensopptelle!
+# .data.gen$ind.unique.line <- .data.gen$ind.aux <- NULL
 #
 
 .data <- .data.gen # TEMPORARY!!
@@ -205,10 +207,10 @@ if(abs(.ntri.seq[4] - round(.ntri.seq[4])) > 1e-6) warning("There may be a probl
 .orig.lines.seq[[4]] <- unique(.data$orig.lines)
 if(verbose) cat("Done\n")
 #
-## DECIDE REFERENCE
+## DECIDE REFERENCE, ADD THIS TO INFO OBJECT
 .tmp <- f.prep.reference(.info)
-reference.method <- .tmp$reference.method
-ref.cat <- .tmp$ref.cat
+.info$haplos$reference.method <- .tmp$reference.method
+.info$haplos$ref.cat <- .tmp$ref.cat
 #
 ## ADD ON CASE-CONTROL VARIABLE FOR cc AND cc.triad DATA
 if(design == "cc" | design == "cc.triad"){
@@ -263,8 +265,6 @@ if(!is.null(.info$variables$covar)){
 .info$data$ntri.seq <- .ntri.seq
 .info$data$lines.Mend.inc <- .ind.Mend ## LINE NUMBERS (IN ORIGINAL FILE) WITH MEND. INCONS.
 .info$check$HWE.res <- .HWE.res
-.info$haplos$reference.method <- reference.method
-.info$haplos$ref.cat <- ref.cat
 #
 ##
 return(list(data = .data, info = .info))

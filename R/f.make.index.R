@@ -13,10 +13,18 @@ f.make.index <- function(vardata, output = "line numbers"){
 
 ## CHECK family VARIABLE
 cat("\nChecking family and id variables...\n")
-if(any(table(vardata$family, exclude = NULL) > 3)) warning("Found family size larger than 3!  Will extract trios from general pedigree.", call. = F)
-if(.test <- (any(vardata$family == "0") | any(vardata$id == "0"))) stop(paste('Cannot use "0" in family or id code!\n', 'Found on line(s): ', paste(which(.test), collapse = " "), sep = ""), call. = F)
-if(.test <- (any(is.na(vardata$family)) | any(is.na(vardata$id)))) stop(paste('Cannot have missing values in family or id variable\n', 'Found on line(s): ', paste(which(.test), collapse = " "), sep = ""), call. = F)
-#
+if( any( table( vardata$family, exclude = NULL ) > 3) ){
+	warning("Found family size larger than 3!  Will extract trios from general pedigree.", call. = F)
+}
+
+if( .test <- ( any( vardata$family == "0") | any( vardata$id == "0" ) ) ){
+	stop( paste( 'Cannot use "0" in family or id code!\n', 'Found on line(s): ', paste( which( .test ), collapse = " " ), sep = "" ), call. = F )
+}
+
+if( .test <- ( any( is.na( vardata$family ) ) | any( is.na( vardata$id ) ) ) ){
+	stop( paste( 'Cannot have missing values in family or id variable\n', 'Found on line(s): ', paste( which( .test ), collapse = " "), sep = "" ), call. = F )
+}
+
 ## RECODE ZEROES TO MISSING
 vardata$mother[vardata$mother == "0"] <- NA
 vardata$father[vardata$father == "0"] <- NA
@@ -83,7 +91,9 @@ if(output == "line numbers"){
 }else if(output == "ids"){
 	## USES SAME IDS AS IN FILE. REQUIRES IDS TO BE UNIQUE!
 	## CAN BE USED WITH GenABEL SINCE THEY INSIST THAT IDS SHOULD BE UNIQUE.
-	if(any(duplicated(vardata$id))) stop("Duplicated individual id", call. = F)
+	if( any( duplicated( vardata$id ) ) ){
+		stop("Duplicated individual id", call. = F)
+	}
 	.fam.child <- vardata$family[.line.child]
 	.fam.mother <- vardata$family[.line.mother]
 	.fam.father <- vardata$family[.line.father]
@@ -92,8 +102,10 @@ if(output == "line numbers"){
 	.id.mother <- vardata$id[.line.mother]
 	.id.father <- vardata$id[.line.father]
 	#
-	if(any(.fam.child != .fam.mother, na.rm = T) | any(.fam.child != .fam.father, na.rm = T)) stop("Problem with family identification!", call. = F)
-	#
+	if(any(.fam.child != .fam.mother, na.rm = T) | any(.fam.child != .fam.father, na.rm = T)){
+		stop( "Problem with family identification!", call. = F )
+	}
+
 	## JOIN FAMILY ID, CHILD ID, MOTHER ID, FATHER ID INTO MATRIX
 	.ut <- cbind(family = .fam.child, id.child = .id.child, id.mother = .id.mother, id.father = .id.father)
 }else if(output == "tags"){

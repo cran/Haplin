@@ -7,15 +7,15 @@ f.jackknife <- function(data, maternal, verbose = F, use.EM, max.EM.iter, info, 
 ##
 #
 ## PREPARE:
-.ind <- unique(data$ind)
-.coef.jack <- vector(length(.ind), mode = "list")
+.orig.lines <- unique(data$orig.lines)
+.coef.jack <- vector(length(.orig.lines), mode = "list")
 ref.cat <- info$haplos$ref.cat
 .response <- info$haplos$response
 #
 ## JACKKNIFE LOOP:
-for (i in seq(along = .ind)){
-	.data.tmp <- data[-which(data$ind == .ind[i]),] # JACKKNIFE, ONE FOR EACH TRIAD
-	cat("\nJackknife sample no.", i, "of", length(.ind), "total\n")
+for (i in seq(along = .orig.lines)){
+	.data.tmp <- data[-which(data$orig.lines == .orig.lines[i]),] # JACKKNIFE, ONE FOR EACH TRIAD
+	cat("\nJackknife sample no.", i, "of", length(.orig.lines), "total\n")
 	
 ###		cat("kan unngaas! Kan subtrahere fra data.agg\n")
 ###		.data.agg.tmp <- f.sum.and.expand(.data.tmp)		
@@ -35,8 +35,8 @@ if(any(.check != .check[1])) stop("Problem: differing number of coefficients in 
 .coef.jack.mat <- matrix(unlist(.coef.jack), nrow = length(.coef.jack[[1]]), dimnames = list(names(.coef.jack[[1]]), NULL)) #
 #
 ## COMPUTE WEIGHTED MEAN AND VAR-COVAR MATRIX:
-###	.posfreq <- data$freq[.ind]
-.posfreq <- rep(1, length(.ind)) # MODIFISERT MIDLERTIDIG
+###	.posfreq <- data$freq[.orig.lines]
+.posfreq <- rep(1, length(.orig.lines)) # MODIFISERT MIDLERTIDIG
 
 .mean <- as.numeric(.coef.jack.mat %*% .posfreq / sum(.posfreq))
 .cent.coef <- .coef.jack.mat - .mean

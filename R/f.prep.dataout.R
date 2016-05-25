@@ -7,7 +7,11 @@ f.prep.dataout <- function(info, data, res){
 #
 ## IF data.out IS NOT "prelim", FREQUENCIES SHOULD BE EXTRACTED FROM ESTIMATED OBJECT
 if(.data.out %in% c("null", "full")){
-	.pred.redist <- f.redistribute(pred = res$pred, data = .data, info = info, expand = F)
+	#
+	## PREPARE TO MATCH PREDICTED FREQUENCIES TO data IN f.redistribute:
+	.pos <- f.pos.match(data = data, info = info)
+	.freqsum <- f.groupsum(X = data$freq, INDICES = data$orig.lines) # MERK: .freqsum ER 1 FOR DENNE VARIANTEN
+	.pred.redist <- f.redistribute(pred = res$pred, data = .data, pos = .pos, freqsum = .freqsum, expand = F)
 	.data$freq <- .pred.redist # REPLACE THE OLD PRELIMINARY FREQ WITH PREDICTED UNDER FULL MODEL
 }
 #
@@ -34,7 +38,7 @@ if(info$model$xchrom){
 }
 #
 ## REMOVE UNNECESSARY INFORMATION
-.data$ind <- NULL # REMOVED SINCE 1-1 WITH orig.lines
+# .data$ind <- NULL # REMOVED SINCE 1-1 WITH orig.lines
 attr(.data, "selected.haplotypes") <- NULL # TAKE THIS FROM info
 rownames(.data) <- seq(length.out = dim(.data)[1])
 #

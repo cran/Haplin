@@ -1,5 +1,4 @@
-"f.EM.missing" <- function(data, maternal, response = "free", max.EM.iter, x = F, verbose = T, suppressEmWarnings = F, info)
-{
+"f.EM.missing" <- function(data, maternal, response = "free", max.EM.iter, x = F, verbose = T, suppressEmWarnings = F, info) {
 ## PERFORMS THE ESSENTIALS OF THE EM-ALGORITHM, INCLUDING HANDLING AMBIGUOUS HAPLOTYPES
 ## AND MISSING GENOTYPE DATA
 #
@@ -15,20 +14,26 @@
 ##	.tmpfreq <- .freq
 #
 #
-#### INITIALIZE EM LOOP: ##################
-.tmpfreq <- -1 ## SIGNALS INITIALIZATION
-.deviance <- numeric(max.EM.iter)	#
-i <- 1	#
+#### INITIALIZE EM LOOP:
+.tmpfreq <- -1 # SIGNALS INITIALIZATION
+.deviance <- numeric(max.EM.iter)
+i <- 1
 .EM.conv <- F
 #
 ## SET UP DESIGN MATRIX, ONE TIME ONLY
-.design.matrix <- f.make.design(maternal = maternal, response = response, info = info)
-#### EM LOOP: ###########################
+.design.matrix <- f.design.make(maternal = maternal, response = response, info = info)
+#
+## PREPARE TO MATCH PREDICTED FREQUENCIES TO data IN f.redistribute:
+.pos <- f.pos.match(data = data, info = info)
+.freqsum <- f.groupsum(X = data$freq, INDICES = data$orig.lines) # MERK: .freqsum ER 1 FOR DENNE VARIANTEN
+#
+##
+#### EM LOOP:
 repeat{
 	# M-STEP:
 	#
 	## ACTUAL ESTIMATION
-	.res <- f.tri.glm(.tmpfreq, design.matrix = .design.matrix, maternal = maternal, info = info)	#
+	.res <- f.tri.glm(.tmpfreq, design.matrix = .design.matrix, maternal = maternal, info = info)
 	#
 	## PARAMETERS NEEDED TO CHECK CONVERGENCE
 	.deviance[[i]] <- .res$result$deviance	# THIS IS TWICE THE MINUS LOG-LIKELIHOOD OF THE GLM
@@ -55,7 +60,7 @@ repeat{
 	#
 	## BREAK OFF, WITH WARNING, IF max.EM.iter IS EXCEEDED:
 	if(i >= max.EM.iter) {
-		if(!suppressEmWarnings) warning("Maximum number of EM iterations reached!\n Convergence not yet obtained. Setting max.EM.iter higher may help.")
+		if(!suppressEmWarnings) warning( "Maximum number of EM iterations reached!\n Convergence not yet obtained. Setting max.EM.iter higher may help.", call. = FALSE )
 		break
 	}
 	#
@@ -64,15 +69,15 @@ repeat{
 	i <- i + 1
 	.coef.old <- .coef.new
 	.pred <- .res$pred	#
-	.tmpfreq <- f.redistribute(pred = .pred, data = data, info = info)
+	.tmpfreq <- f.redistribute(pred = .pred, data = data, pos = .pos, freqsum = .freqsum)
 	#
 	## CHECK CONSISTENCY OF NEW VALUES:
 		if(any(is.na(.pred))) {
-			warning("Missing in predicted values.... There may be a problem with the EM algorithm!")
+			warning( "Missing in predicted values.... There may be a problem with the EM algorithm!", call. = FALSE )
 			.tmpfreq[is.na(.tmpfreq)] <- 1e-005	# FORSIKTIG HER!!!
 		}
 		if(sum(is.na(.tmpfreq)) > 0) {
-			stop("Missing values in EM-updated frequencies!")
+			stop("Missing values in EM-updated frequencies!", call. = FALSE)
 		}
 next
 }# END REPEAT

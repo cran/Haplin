@@ -16,7 +16,7 @@ if(cov.type == "resamp"){
 	## RESAMPLED (JACKKNIFE) MATRIX
 	.cov <- attr(object, "cov.resamp")
 	if(is.null(.cov)){
-		warning("Resampled (jackknife) covariance matrix not available!\n Using standard Fisher EM-corrected instead")
+		warning("Resampled (jackknife) covariance matrix not available!\n Using standard Fisher EM-corrected instead", call. = FALSE)
 		cov.type <- "Fisher.EM"
 	}
 }
@@ -24,7 +24,7 @@ if(cov.type == "Fisher.EM"){
 	## FISHER COVARIANCE MATRIX, CORRECTED FOR EM-IMPUTATIONS
 	.cov <- attr(object, "cov.correct")
 	if(is.null(.cov)){
-		warning("Fisher EM-corrected covariance not available!\n Using uncorrected instead")
+		warning("Fisher EM-corrected covariance not available!\n Using uncorrected instead", call. = FALSE)
 		cov.type <- "Fisher"
 	}
 }

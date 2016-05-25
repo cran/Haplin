@@ -21,13 +21,14 @@ if(!is.numeric(markers)){
 	.markers <- 1:.test
 	.sel <- 1:ncols
 }else{
-	#
 	## COMPUTE COLUMN NUMBERS OF MARKERS SPECIFIED IN markers ARGUMENT 
 	.sel <- c(seq(length.out = n.vars), n.vars + as.numeric(t(outer((markers-1)*.t, 0:(.t - 1), "+")) + 1))
 	if(max(.sel) > ncols) .err <- T
 	.markers <- markers
 }
-if(.err) stop('It appears that the number of columns in the data file is wrong! \nCheck the datafile, the "n.vars", "sep" and "markers" arguments, etc....', call. = F)
+if(.err){
+	stop('It appears that the number of columns in the data file is wrong! \nCheck the datafile, the "n.vars", "sep" and "markers" arguments, etc....', call. = F)
+}
 #
 ##
 attr(.sel, "markers") <- .markers

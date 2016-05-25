@@ -15,15 +15,14 @@ f.preliminary.freq.new <- function(data, info){
 ##
 #
 ## PREPARATIONS:
-#
-.ntri <- length(unique(data$ind))
+.ntri <- length(unique(data$orig.lines))
 design <- info$model$design
 max.EM.iter <- info$control$max.EM.iter
 verbose <- info$control$verbose
 .xchrom <- info$model$xchrom
 #
 ## CREATE A .freq VECTOR WITH UNIFORM DISTRIBUTION WITHIN FAMILIES:
-	.freq <- 1/f.groupsum(X = rep(1, length(data$ind)), INDICES = data$ind)
+	.freq <- 1/f.groupsum(X = rep(1, length(data$orig.lines)), INDICES = data$orig.lines)
 #
 #
 if((design == "triad" | design == "cc.triad") & !.xchrom){
@@ -53,7 +52,6 @@ if(is.factor(.all) | is.character(.all)) stop("Problem with data type in f.preli
 
 #
 ## PREPARE FOR EM ALGORITHM:
-#
 if(verbose) cat("\nRunning EM for preliminary estimates of haplotype frequencies...  ")
 #
 i <- 0
@@ -66,40 +64,41 @@ i <- 0
 #
 #
 ## LOOP OVER EM:
-	repeat{
-		i <- i + 1
-		if(i >= max.EM.iter) {
-			warning("Maximum number of EM iterations reached!\n Convergence not yet obtained. Setting max.EM.iter higher may help.")
-			break}
+repeat{
+	i <- i + 1
+	if(i >= max.EM.iter) {
+		warning( "Maximum number of EM iterations reached!\n Convergence not yet obtained. Setting max.EM.iter higher may help.", call. = FALSE )
+		break
+	}
 #
 #		FREQUENCY TABLE OVER ALL HAPLOTYPES:		
-		.table <- tapply(c(.aux.freq, .all.freq), c(.aux.haplotypes, .all), sum) ## THE .aux ENSURES ALL HAPLOTYPES ARE PRESENT
-		.table <- .table/sum(.table)
-		if(verbose & F) print(round(.table, 8))
+	.table <- tapply(c(.aux.freq, .all.freq), c(.aux.haplotypes, .all), sum) ## THE .aux ENSURES ALL HAPLOTYPES ARE PRESENT
+	.table <- .table/sum(.table)
+	if(verbose & F) print(round(.table, 8))
 #
 #		STOP WHEN FREQUENCY TABLE HAS CONVERGED SUFFICIENTLY:
-		if(max(abs(.table - .oldtable)) < .epsilon) break
-		.oldtable <- .table
+	if(max(abs(.table - .oldtable)) < .epsilon) break
+	.oldtable <- .table
 #
 #		PREDICT FROM MULTIPLICATIVE MODEL:
-		.pred <- matrix(.table[.all], ncol = .ncols)
-		#
-		if((design == "triad" | design == "cc.triad") & !.xchrom){
-			.pred <- .pred[,1] * .pred[,2] * .pred[,3] * .pred[,4] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
-		}
-		if((design == "triad" | design == "cc.triad") & .xchrom){
-			.pred <- .pred[,1] * .pred[,2] * .pred[,3] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
-		}
-		if(design == "cc"){
+	.pred <- matrix(.table[.all], ncol = .ncols)
+	#
+	if((design == "triad" | design == "cc.triad") & !.xchrom){
+		.pred <- .pred[,1] * .pred[,2] * .pred[,3] * .pred[,4] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
+	}
+	if((design == "triad" | design == "cc.triad") & .xchrom){
+		.pred <- .pred[,1] * .pred[,2] * .pred[,3] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
+	}
+	if(design == "cc"){
 #			if(.xchrom) stop ("Not implemented!")
-			.pred <- .pred[,1] * .pred[,2] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
-		}
+		.pred <- .pred[,1] * .pred[,2] * .ntri # AVOID apply FOR SPEED WITH LARGER MATRICES
+	}
 #
 #		RENORMALIZE WITHIN EACH FAMILY:
-		.predsum <- f.groupsum(X = .pred, INDICES = data$ind)
-		.tmpfreq <- ifelse(.predsum > 0, .pred/.predsum, 0)
+	.predsum <- f.groupsum(X = .pred, INDICES = data$orig.lines[])
+	.tmpfreq <- ifelse(.predsum > 0, .pred/.predsum, 0)
 #
-		.all.freq <- rep(.tmpfreq, .ncols)
+	.all.freq <- rep(.tmpfreq, .ncols)
 } # END repeat
 #
 #

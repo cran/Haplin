@@ -7,6 +7,8 @@ haptable.haplin <- function(object){
 .summ.res <- summary(object)
 .info <- object$info
 .poo <- .info$model$poo
+.alleles <- .info$haplos$alleles
+.reference.method <- .info$haplos$reference.method
 .comb.sex <- .info$model$comb.sex
 .rem.dd <- FALSE
 if(!is.null(.comb.sex) && (.comb.sex == "males")) .rem.dd <- TRUE
@@ -15,16 +17,16 @@ if(.info$model$scoretest == "only") stop('Sorry, haptable is not very helpful
 when haplin was run with scoretest = "only"', call. = F)
 #
 ## NUMBER OF TRIADS USED IN ANALYSIS
-.ntri.seq <- object$ntri.seq
+.ntri.seq <- .info$data$ntri.seq
 #.ntri.used <- as.numeric(object$ntri.seq["After rem rare haplos"])
 #if(.ntri.used != object$result$ntri) stop() ## object$result$ntri ER IKKE ALLTID *HELT* AVRUNDET
 #
 ## EXTRACT AND COMPUTE ALLELE-RELATED RESULTS
-.alls <- t(sapply(object$alleles, function(x) c(alleles = paste(names(x), collapse = "/"), counts = paste(x, collapse = "/"))))
-.alls <- dframe(marker = names(object$alleles), .alls, HWE.pv = sapply(object$HWE.res, function(x) x$p.value))
+.alls <- t(sapply(.alleles, function(x) c(alleles = paste(names(x), collapse = "/"), counts = paste(x, collapse = "/"))))
+.alls <- dframe(marker = names(.alleles), .alls, HWE.pv = sapply(.info$check$HWE.res, function(x) x$p.value))
 #
 ## EXTRACT HAPLOTYPES USED
-.selected.haplotypes <- object$selected.haplotypes
+.selected.haplotypes <- object$info$haplos$selected.haplotypes
 .nh <- sum(.selected.haplotypes)
 .selected.haplotypes <- names(.selected.haplotypes)[.selected.haplotypes]
 .fn <- function(x) paste(x, 1:.nh, sep = "")
@@ -33,7 +35,6 @@ when haplin was run with scoretest = "only"', call. = F)
 .effs <- .summ.res$summary.tri.glm$effects
 .n.all <- .summ.res$summary.tri.glm$n.all
 .ref.cat <- .summ.res$summary.tri.glm$ref.cat
-.reference.method <- .summ.res$summary.tri.glm$reference.method
 
 if(F){
 ## TROR JEG BARE LAR DET STAA SOM 1, SIDEN JEG NAA TAR MED EN KOLONNE FOR REFERANSE

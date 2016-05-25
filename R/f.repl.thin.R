@@ -39,7 +39,7 @@ f.repl.thin <- function(data, selection, design){
 ## PREPARE OUTPUT:
 #
 #		RENORMALIZE WITHIN EACH FAMILY:
-		.indsum <- f.groupsum(X = .data.sel$freq, INDICES = .data.sel$ind)
+		.indsum <- f.groupsum(X = .data.sel$freq, INDICES = .data.sel$orig.lines)
 		.data.sel$freq <- ifelse(.indsum > 0, .data.sel$freq/.indsum, 0) # SHOULD NOT REALLY BE ZERO, BUT...
 #
 ###	attr(.data.sel, "selected.haplotypes") <- selection

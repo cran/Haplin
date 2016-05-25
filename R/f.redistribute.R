@@ -1,4 +1,4 @@
-f.redistribute <- function(pred, data, info, expand = T){
+f.redistribute <- function(pred, data, pos, freqsum, expand = T){
 ##
 ## REDISTRIBUTE OBSERVED FREQUENCIES ACCORDING TO PREDICTED
 ## NOTE: pred IS OF LENGTH MATCHING THE DESIGN MATRIX, NOT data.
@@ -9,27 +9,18 @@ f.redistribute <- function(pred, data, info, expand = T){
 ##
 #
 ## MATCH PREDICTED FREQUENCIES TO data:
-.pos <- f.pos.match(data = data, info = info)
-.pred <- pred[.pos]
-	
-	
-###
-####
-###	MERK: cat("dette kunne vaert gjort en gang for alle...\n")
-### (BAADE f.pos.match OG BEREGNING AV .freqsum
-
+.pred <- pred[pos]
 #
-##
 ## RESCALE PREDICTED FREQUENCIES WITHIN EACH TRIAD:
-.predsum <- f.groupsum(X = .pred, INDICES = data$ind)
-.freqsum <- f.groupsum(X = data$freq, INDICES = data$ind) # MERK: .freqsum ER 1 FOR DENNE VARIANTEN
-.pred.redist <- .pred/.predsum * .freqsum
+.predsum <- f.groupsum(X = .pred, INDICES = data$orig.lines)
+
+.pred.redist <- .pred/.predsum * freqsum
 #
 if(!expand) return(.pred.redist)
 #	
 ##
 ## AGGREGATE TRIAD CONTRIBUTIONS OVER HAPLOTYPE COMBINATIONS:
-.pred.redist <- tapply(.pred.redist, .pos, sum)
+.pred.redist <- tapply(.pred.redist, pos, sum)
 #	
 ##
 ## PREPARE OUTPUT:
@@ -37,5 +28,5 @@ if(!expand) return(.pred.redist)
 .utfreq[] <- 0	
 .utfreq[as.numeric(names(.pred.redist))] <- .pred.redist
 #
-.utfreq
+return(.utfreq)
 }

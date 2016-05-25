@@ -11,8 +11,8 @@ f.sim <- function(.prob, size, nall, .nloci, xchrom, .grid){
 		.tmp.boys <- .sim.rownum[!.girls]
 		.tmp.girls <- .sim.rownum[.girls]
 		.tmp.girls <- .tmp.girls - .nrows
-		.alleles.boys <- f.pos.to.haplocomb(A = nall, pos = .tmp.boys, fam = "mfx")
-		.alleles.girls <- f.pos.to.haplocomb(A = nall, pos = .tmp.girls, fam = "mfx")
+		if(length(.tmp.boys!=0)) .alleles.boys <- f.pos.to.haplocomb(A = nall, pos = .tmp.boys, fam = "mfx")
+		if(length(.tmp.girls!=0)) .alleles.girls <- f.pos.to.haplocomb(A = nall, pos = .tmp.girls, fam = "mfx")
 		###.sex1 <- .sex[.sim.rownum]
 		.sex1 <- c(rep(1, length(.tmp.boys)), rep(2, length(.tmp.girls)))
 		###.alleles <- rbind(.alleles.boys, .alleles.girls)
@@ -22,18 +22,27 @@ f.sim <- function(.prob, size, nall, .nloci, xchrom, .grid){
 	#
 	## ADD COLUMNS WITH CHILD GENOTYPES
 	if(xchrom){
-		.names <- dimnames(.alleles.boys)[[2]]
+		if(length(.tmp.boys!=0)) .names <- dimnames(.alleles.boys)[[2]]
+		else .names <- dimnames(.alleles.girls)[[2]]
+
 		.names <- matrix(.names, nrow = .nloci)
-		.ind.boys <- c(1,2,3,3,2,2)
-		.ind.girls <- c(1,2,3,3,2,3)
-		.names.boys <- .names[, .ind.boys]
-		.names.girls <- .names[, .ind.girls]
-		.names.boys <- as.vector(t(.names.boys))
-		.names.girls <- as.vector(t(.names.girls))
-		#
-		.alleles.boys <- .alleles.boys[,.names.boys]
-		.alleles.girls <- .alleles.girls[,.names.girls]
-		.alleles <- rbind(.alleles.boys, .alleles.girls)
+		
+		if(length(.tmp.boys!=0)){
+			.ind.boys <- c(1,2,3,3,2,2)
+			.names.boys <- .names[, .ind.boys]
+			.names.boys <- as.vector(t(.names.boys))
+			.alleles.boys <- .alleles.boys[,.names.boys]
+			.alleles <- .alleles.boys
+		}
+		
+		if(length(.tmp.girls!=0)){
+		.ind.girls <- c(1,2,3,3,2,3)		
+			.names.girls <- .names[, .ind.girls]
+			.names.girls <- as.vector(t(.names.girls))
+			.alleles.girls <- .alleles.girls[,.names.girls]
+			.alleles <- .alleles.girls
+		}
+		if(length(.tmp.boys!=0) & length(.tmp.girls!=0)).alleles <- rbind(.alleles.boys, .alleles.girls)
 	}else{
 		.names <- dimnames(.alleles)[[2]]
 		.names <- matrix(.names, nrow = .nloci)

@@ -40,7 +40,7 @@ Missing values in the sex and case-control columns are not accepted.
   There is no useful output; the task of \code{prepPed} is to save the extracted information in the \code{outdir} directory.
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
+Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

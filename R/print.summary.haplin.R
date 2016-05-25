@@ -59,7 +59,7 @@ for (i in seq(along = .alleles)){
 #
 cat("--------\n")
 #
-.haplo <- x$selected.haplotypes
+.haplo <- .info$haplos$selected.haplotypes
 #
 #
 cat("Haplotypes removed because of low frequencies:\n")
