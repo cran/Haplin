@@ -1,4 +1,4 @@
-75f42cddba8e17bb3cf715b6ca4e2adb *DESCRIPTION
+942783550bfc9a7bc3690ab7427526ad *DESCRIPTION
 82ad9a6cfd622fdb4e95538ae2c97e7d *NAMESPACE
 adf4b28806313d104b763e510e258158 *R/as.dframe.R
 b5d39b5024f58cc2e768b99bb50377c5 *R/cbindFiles.R
@@ -75,10 +75,10 @@ af795484ade8021673639b0bbaf4474e *R/f.tri.glm.R
 2a17c0693dfd5a6ae537110b107ad870 *R/f.windows.R
 c37d356ff6fbdf4cc6935aa48e753bf8 *R/gwaaToHaplin.R
 fac72dd7eba156e9dc9c097265965979 *R/gxe.R
-68f1390d10f98f336042fbf6e04be89f *R/hapPower.R
+6aa1d803de3d753066a386240317ca53 *R/hapPower.R
 61d2c098632d8cca90336937544ed481 *R/hapRun.R
 5e88f785b8c44ba830d03ae908df33ed *R/hapSim.R
-5c6085e83432623d348a3658e43e4928 *R/haplin.R
+25e79ee488ee798d37065a80f02488c8 *R/haplin.R
 429cb01a1bd29d8646c5b56ed83c5259 *R/haplinSlide.R
 5a56da9ae87c309632ed5e4555f0c6ad *R/haplinStrat.R
 b17e1640cebe1ff3fc2189908e6e58ae *R/haptable.R
@@ -119,8 +119,8 @@ c88df50ed240272ed5d1b793124f0449 *R/summary.haplinStrat.R
 a9e2694040ced0fe7a84d7d35e2b9c50 *R/textlabel.R
 f3bfcb53b7047a2aeb1c3b0d5959d878 *R/toDataFrame.R
 8f09a81bfc1188eaa2189230c252cb40 *R/uniqueID.R
-9b6d49538eb102d3ccb9ea213ea5fb48 *inst/doc/Haplin_data_format.pdf
-bddc6cf1bffa0c47644f7ee6742bd34c *inst/doc/Haplin_power.pdf
+1a3328a4901ec12c5afa76e0b127ae90 *inst/doc/Haplin_data_format.pdf
+f8746084d10f04c720ab221cbb9f5eee *inst/doc/Haplin_power.pdf
 c1dd5ca254262f8c2bf35da76baeb768 *inst/doc/index.html
 c733db45c77dc3e125dce75350853370 *man/cbindFiles.Rd
 480c5fcf9f9afbd48f089b9eaadea9fe *man/convertPed.Rd

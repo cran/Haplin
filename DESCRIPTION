@@ -1,8 +1,8 @@
 Package: Haplin
 Title: Analyzing Case-Parent Triad and/or Case-Control Data with SNP
         Haplotypes
-Version: 6.0
-Date: 2016-05-24
+Version: 6.0.1
+Date: 2016-05-25
 Type: Package
 Author: Hakon K. Gjessing
 Maintainer: Hakon K. Gjessing <hakon.gjessing@fhi.no>
@@ -13,6 +13,6 @@ Description: Performs genetic association analyses of case-parent triad (trio) d
 License: GPL (>= 2)
 URL: http://folk.uib.no/gjessing/genetics/software/haplin/
 NeedsCompilation: no
-Packaged: 2016-05-24 21:59:02 UTC; hkgjess
+Packaged: 2016-05-25 17:09:49 UTC; hkgjess
 Repository: CRAN
-Date/Publication: 2016-05-25 11:17:09
+Date/Publication: 2016-05-26 17:44:32

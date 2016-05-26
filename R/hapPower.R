@@ -45,8 +45,8 @@ if(.hapfunc == "haplin"){
 	})
 	.hap.run[which(!.error)] <- NULL
 	.pvalues <- lapply(.hap.run, function(x){
-		.pvalues <- x$pval
-		names(.pvalues) <- x$test
+		.pvalues <- x$gxe.test$pval
+		names(.pvalues) <- x$gxe.test$gxe.test
 		.pvalues <- .pvalues[-which(names(.pvalues)=="haplo.freq")]
 	}) 
 	.pvalues <- do.call("cbind",.pvalues)
