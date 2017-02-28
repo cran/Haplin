@@ -19,7 +19,7 @@ for(i in 1:.nloci){
 		if(missing(sex)){# AUTOSOME TRIAD
 			.data.tmp <- rbind(.data.tmp[,1:2], .data.tmp[,3:4], .data.tmp[,5:6])
 		}else{# TRIAD ON X-CHROM
-			.data.tmp <- .data.tmp[,1:2] # USES ONLY MOTHERS
+			.data.tmp <- rbind(.data.tmp[,1:2], .data.tmp[sex == 2,5:6]) # USES ONLY MOTHERS AND DAUGHTERS
 		}
 	}
 	if(design == "cc"){

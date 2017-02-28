@@ -59,18 +59,47 @@ if(.poo & (.design == "cc"))stop("Not implemented")## DETTE BLIR DET OGSAA SJEKK
 
 if(.covar.yes) .mf.tmp$covar <- factor(seq(along = info$variables$covar.codes))
 
-if(ret.characteristics){
-	.char <- sapply(.mf.tmp, length)
-	## LITT AD-HOC, HAAPER DET IKKE TRENGS ANDRE STEDER:
-	if(.design == "cc"){
-		names(.char)[names(.char) == "m2"] <- "c1"
-		names(.char)[names(.char) == "f2"] <- "c2"
-	}
-	return(.char)
-}
+
 #
 ## EXPAND GRID
 .mf <- do.call("expand.grid", .mf.tmp)
+
+if(.xchrom){
+	# Define a sex variable for xchrom
+	#
+	## RECALL THAT sex IS NOT PART OF .mf IF ONLY ONE SEX IS SELECTED
+	if(.comb.sex %in% c("single", "double")){
+		.sex <- .mf$sex
+	}
+	if(.comb.sex == "males"){
+		.sex <- rep(0, nrow(.mf))
+	}
+	if(.comb.sex == "females"){
+		.sex <- rep(1, nrow(.mf))
+	}
+}
+
+if(.xchrom & (.design == "cc")){
+	## For this special case, reduce grid
+	## MERK: dette kunne ogsaa vaert gjort for alle xchrom, men de er i data lagt ut som ambiguities
+	.rem <- (.sex == 0) & (.mf$m2 != .mf$f2)
+	.mf <- .mf[!.rem,]
+	.sex <- .sex[!.rem]
+}
+
+if(ret.characteristics){
+	## Return what's needed to regenerate grid
+	if(.xchrom & (.design == "cc")){
+		## For the time being, return entire exapnded and reduced grid for matching. Remember to change m2, f2 into c1, c2, and sex <- sex + 1
+		return(.mf)
+	}else{
+		.char <- sapply(.mf.tmp, length)
+		return(.char)
+	}
+}
+
+
+
 #
 ###########
 # CREATE DUMMY VARIABLES FOR PARENTAL GENOTYPES
@@ -119,16 +148,6 @@ if(.xchrom){
 	## BOYS: 1, RR, GIRLS: 1, RR, RR^2 (response = "mult")
 	## BOYS: 1, RR1, GIRLS: 1, RR1, RR1^2*RR2 (response = "free")
 	#
-	## RECALL THAT sex IS NOT PART OF .mf IF ONLY ONE SEX IS SELECTED
-	if(.comb.sex %in% c("single", "double")){
-		.sex <- .mf$sex
-	}
-	if(.comb.sex == "males"){
-		.sex <- rep(0, nrow(.mf))
-	}
-	if(.comb.sex == "females"){
-		.sex <- rep(1, nrow(.mf))
-	}
 	.m2.girls.dum <- .m2.dum * .sex # ALLELE FROM MOTHER, IN GIRLS
 	.f2.girls.dum <- .f2.dum * .sex # ALLELE FROM FATHER, IN GIRLS
 	.m2.boys.dum <- .m2.dum * (1 - .sex) # ALLELE FROM MOTHER, IN BOYS
@@ -138,6 +157,10 @@ if(.xchrom){
 		.c.dumsum <- .m2.girls.dum + .f2.girls.dum + 2 * .m2.boys.dum
 	}else{
 		.c.dumsum <- .m2.girls.dum + .f2.girls.dum + 1 * .m2.boys.dum
+	}
+	if(.design == "cc"){
+		## Use only maternal allele for frequency computation
+		.parents.dumsum[.sex == 0, ] <- .m.dumsum[.sex == 0, ]
 	}
 }else{
 	## CHILD, STANDARD AUTOSOMAL MODEL
@@ -261,5 +284,6 @@ if(.cond.cc){
 .design.matrix <- as.dframe(cbind(.design.matrix0, .design.matrix1))
 #
 ##
+# return(cbind(.mf, .design.matrix))
 return(.design.matrix)
 }

@@ -53,7 +53,13 @@ if(.hapfunc == "haplin"){
 	.no.files <- length(.hap.run)
 	if(any(is.na(.pvalues))) warning("Some p-values were estimated to NA. These were removed from the power calculations", call. = F)
 	.power <- rowMeans(.pvalues <= alpha, na.rm = TRUE)
-}	 
+}
+#
+## Output
+.names <- names(.power)
+.names <- sub("p.value","power",.names)
+.names <- sub("pv.overall","overall.power",.names)
+names(.power) <- .names
 #
 cat(paste("\nThe power was calculated using ", .no.files, " of ", .n.sim, " files\n", sep = ""))
 #

@@ -7,7 +7,7 @@ f.HWE <- function(data, quiet.warning = F){
 ## NOTE: NECESSARY TO MAKE SURE THAT ALL POSSIBLE GENOTYPES ARE COUNTED
 #
 if(!is.numeric(data) | dim(data)[2] != 2) stop("Wrong data type for HWE testing!", call. = F)
-if(nrow(data) == 0){# CAN HAPPEN IF E.G. SELECT comb.sex = "boys" UNDER xchrom = T
+if((nrow(data) == 0) | all(is.na(data))) {# CAN HAPPEN IF E.G. SELECT comb.sex = "boys", OR NO MOTHERS NOR DAUGHTERS, UNDER xchrom = T
 	.ut <- list(table = NA, freq = NA, warnings = "No data available for HWE testing", chisq = NA, df = NA, p.value = NA, n.miss.geno = NA, fail = FALSE)
 	class(.ut) <- "HWE.test"
 	return(.ut)

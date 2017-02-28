@@ -168,6 +168,10 @@ names(.chisq.res) <- .test
 .ut <- dframe(test = rownames(.ut), .ut)
 rownames(.ut) <- NULL
 #
+## Add coefficients and covariance as attribute
+attr(.ut,"coef") <- .coef
+attr(.ut,"cov") <- .cov
+#
 ##
 return(.ut)
 

@@ -36,7 +36,7 @@ cat("\nTriads remaining for analysis:", .ntri.seq[4], "\n")
 cat("\nNOTE: In the following, the most frequent allele\n is printed as upper-case, all others are lower-case\n")
 
 for (i in seq(along = .alleles)){
-	cat("\nMarker ", names(.alleles)[i], ":\n", sep = "")
+	cat("\nMarker ", names(.alleles)[i], " (raw counts):\n", sep = "")
 	#
 	## PREPARE NUMBERS FOR PRINTING
 	.all <- .alleles[[i]]

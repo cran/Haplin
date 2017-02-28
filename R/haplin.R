@@ -33,7 +33,7 @@ data.out <- .info$control$data.out
 printout <- .info$control$printout
 #
 ## START 
-if( verbose ) cat( "\n## HAPLIN, VERSION 6.0.1 ##\n" )
+if( verbose ) cat( "\n## HAPLIN, VERSION 6.2.0 ##\n" )
 #
 ## LOAD DATA, EITHER FROM FILE OR FROM DATA OBJECT
 .data.read <- f.get.data(data, pedIndex, .info)

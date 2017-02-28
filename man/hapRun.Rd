@@ -17,7 +17,7 @@ It enables simulation and calculation of gene-environment interaction effects, i
 hapRun(nall, n.strata= 1, cases, controls, haplo.freq,
 RR, RRcm, RRcf, RRstar, RR.mat, RRstar.mat, hapfunc = "haplin",
 gen.missing.cases = NULL, gen.missing.controls = NULL, 
-n.sim = 1000, xchrom = F, sim.comb.sex = "double", BR.girls, dire,
+n.sim = 1000, xchrom = FALSE, sim.comb.sex = "double", BR.girls, dire,
 ask = TRUE, cpus = 1, slaveOutfile = "", ...)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -61,12 +61,18 @@ The stratum specific arguments may be simplified if the number of strata is one,
 
 \code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinStrat}} and \code{\link[Haplin]{haplinSlide}} will run with default values unless otherwise specified by \code{hapRun}.
 For example, if \code{hapfunc = "haplin"}, \code{\link[Haplin]{haplin}} will use \code{response = "free"} unless \code{response = "mult"} is explicitly given as an argument in \code{hapRun}. 
-Moreover, triads with missing data are only included in the haplin analysis if the argument \code{use.missing} equals \code{TRUE}. Please confer \url{http://folk.uib.no/gjessing/genetics/software/haplin/Haplin_power.pdf} for further details and examples.
+Moreover, triads with missing data are only included in the haplin analysis if the argument \code{use.missing} equals \code{TRUE} (default in \code{hapRun}). Please confer \url{http://folk.uib.no/gjessing/genetics/software/haplin/Haplin_power.pdf} for further details and examples.
  
 For information on the arguments to be passed on to \code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinStrat}} and \code{\link[Haplin]{haplinSlide}}, please consult their help pages.
 
 Note that \code{RR.mat} and \code{RRstar.mat} and \code{RRcm} and \code{RRcf} are required for \code{\link[Haplin]{hapSim}} to simulate maternal and parent-of-origin effects, respectively.
 To calculate these effects, however, arguments \code{maternal = TRUE} and/or \code{poo = TRUE} must be specified.
+
+\code{gen.missing.cases} and \code{gen.missing.controls} are flexible arguments. By default, both equal NULL, which means that no missing data are generated at random.
+If the arguments are single numbers, missing data are generated at random with this proportion for all cases and/or controls. 
+If the arguments are vectors of length equal to the number of loci, missing data are generated with the corresponding proportion for each locus.
+The arguments can also be matrices with the number of rows equal to the number of loci and three columns. 
+Each row corresponds to a locus, and the columns correspond to mothers, fathers and children, respectively. 
 }
 
 \value{If \code{hapfunc = "haplin"}, \code{hapRun} returns a dataframe consisting of results from running \code{\link[Haplin]{haplin}} on each simulated file.
@@ -101,9 +107,7 @@ Norwegian Institute of Public Health\cr
 \seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinSlide}}, \code{\link[Haplin]{hapSim}}, \code{\link[Haplin]{haptable}}, \code{\link[Haplin]{suest}}, \code{\link[Haplin]{hapPower}}}
 
 \examples{
-
 \dontrun{
-
 ## Simulate Haplin results from 100 files using the multiplicative model in haplin. 
 ## The files consist of fetal effects at two diallelic markers,
 ## corresponding to haplo.freq = rep(0.25, 4), RR = c(2,1,1,1) 
@@ -113,7 +117,7 @@ Norwegian Institute of Public Health\cr
 ## No environmental factors are considered, i.e. the number of strata is one.
 hapRun(nall = c(2,2), n.strata = 1, cases = c(mfc=100), controls = c(mfc=100),
 haplo.freq = rep(0.25,4), RR = c(2,1,1,1), RRstar = c(1,1,1,1), 
-hapfunc = "haplin", response = "mult", n.sim = 100, dire = "simfiles")
+hapfunc = "haplin", response = "mult", n.sim = 100, dire = "simfiles", ask = FALSE)
 
 ## Simulate power from 100 files applying haplinStrat. 
 ## The files consist of fetal and maternal effects at two diallelic markers.
@@ -122,11 +126,12 @@ hapfunc = "haplin", response = "mult", n.sim = 100, dire = "simfiles")
 ## The fetal effects vary across strata,
 ## whereas the maternal effects are the same.
 ## One percent of the case triads are missing at random in the second stratum.
-.hapRun <- hapRun(nall = c(2,2), n.strata = 2, cases = c(mfc=500),
-controls = list(c(mfc=200),c(mfc=500)), haplo.freq = rep(0.25,4), maternal = T, 
+hapRun(nall = c(2,2), n.strata = 2, cases = c(mfc=500),
+controls = list(c(mfc=200),c(mfc=500)), haplo.freq = rep(0.25,4), maternal = TRUE, 
 RR = list(c(1.5,1,1,1),c(1,1,1,1)), RRstar = c(1,1,1,1),
-RR.mat = c(1.5,1,1,1), RRstar.mat = c(1,1,1,1), gen.missing.cases = list(NULL,0.01), 
-use.missing = T, hapfunc = "haplinStrat", n.sim = 100)
+RR.mat = c(1.5,1,1,1), RRstar.mat = c(1,1,1,1), 
+gen.missing.cases = list(NULL,0.01), use.missing = TRUE, hapfunc = "haplinStrat", 
+n.sim = 100, ask = FALSE)
 
 ## Simulate Haplin results from 100 files using haplin. 
 ## The files consist of fetal effects at one diallelic locus, 
@@ -136,6 +141,6 @@ use.missing = T, hapfunc = "haplinStrat", n.sim = 100)
 ## No environmental effects are considered.
 hapRun(nall = c(2), n.strata = 2, cases = c(mfc=100), controls = c(mfc=100),
 haplo.freq = rep(0.5,2), RR = c(1.5,1), RRstar = c(1,1),
-hapfunc = "haplinStrat", n.sim = 100, dire = "simfiles")
+hapfunc = "haplinStrat", n.sim = 100, dire = "simfiles", ask = FALSE)
 }
 }

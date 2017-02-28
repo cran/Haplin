@@ -53,6 +53,7 @@ f.sim <- function(.prob, size, nall, .nloci, xchrom, .grid){
 		.alleles <- .alleles[,.names]
 	}
 	#
+	if(is.vector(.alleles)) .alleles <- as.matrix(t(.alleles))
 	## RANDOMIZE SEQUENCE OF ALLELES AND PREPARE FOR WRITING TO DISK
 	.all.paste <- vector(dim(.alleles)[2]/2, mode = "list")
 	for(j in seq(along = .all.paste)){

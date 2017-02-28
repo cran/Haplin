@@ -43,19 +43,17 @@ Norwegian Institute of Public Health\cr
 \seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinSlide}}, \code{\link[Haplin]{hapSim}}, \code{\link[Haplin]{hapRun}}, \code{\link[Haplin]{snpPower}}}
 
 \examples{
-
 \dontrun{
-
 ## Simulate power from 100 files using haplin. 
 ## The files consist of fetal effects at two diallelic markers,
 ## corresponding to haplo.freq = rep(0.25, 4), RR = c(2,1,1,1) and RRstar = c(1,1,1,1).
 ## The power is simulated for the combination of 100 case triads 
 ## and 100 control triads with no missing data at a 0.05 significance level,
 ## applying a multiplicative model.
-.hapRun <- hapRun(nall = c(2,2), n.strata = 1, cases = c(mfc=100), controls = c(mfc=100),
+hapRun.res <- hapRun(nall = c(2,2), n.strata = 1, cases = c(mfc=100), controls = c(mfc=100),
 haplo.freq = rep(0.25,4), RR = c(2,1,1,1), RRstar = c(1,1,1,1), 
-hapfunc = "haplin", response = "mult", n.sim = 100, dire = "simfiles")
-hapPower(.hapRun)
+hapfunc = "haplin", response = "mult", n.sim = 100, dire = "simfiles", ask = FALSE)
+hapPower(hapRun.res)
 
 ## Simulate power from 100 files applying haplinStrat. 
 ## The files consist of fetal and maternal effects at two diallelic markers.
@@ -64,21 +62,21 @@ hapPower(.hapRun)
 ## The fetal effects vary across strata,
 ## whereas the maternal effects are the same.
 ## One percent of the case triads are missing at random in the second stratum.
-.hapRun <- hapRun(nall = c(2,2), n.strata = 2, cases = c(mfc=500),
-controls = list(c(mfc=200),c(mfc=500)), haplo.freq = rep(0.25,4), maternal = T, 
+hapRun.res <- hapRun(nall = c(2,2), n.strata = 2, cases = c(mfc=500),
+controls = list(c(mfc=200),c(mfc=500)), haplo.freq = rep(0.25,4), maternal = TRUE, 
 RR = list(c(1.5,1,1,1),c(1,1,1,1)), RRstar = c(1,1,1,1),
 RR.mat = c(1.5,1,1,1), RRstar.mat = c(1,1,1,1), gen.missing.cases = list(NULL,0.01), 
-use.missing = T, hapfunc = "haplinStrat", n.sim = 100)
-hapPower(.hapRun)
+use.missing = TRUE, hapfunc = "haplinStrat", n.sim = 100, ask = FALSE)
+hapPower(hapRun.res)
 
 ## Simulate power at the 10% significance level from 100 files using haplin.
 ## The files consist of fetal effects at one diallelic locus,
 ## corresponding to haplo.freq = c(0.1,0.9), RR = c(1.5,1) and RRstar = c(1,1).
 ## The data consists of a combination of 100 case triads and 100 control triads.
-.hapRun <- hapRun(nall = c(2), cases = c(mfc=100), controls = c(mfc=100),
+hapRun.res <- hapRun(nall = c(2), cases = c(mfc=100), controls = c(mfc=100),
 haplo.freq = c(0.1,0.9), RR = c(2,1), RRstar = c(1,1),
-hapfunc = "haplin", response = "mult", n.sim = 1000)
-hapPower(.hapRun, alpha= 0.10)
+hapfunc = "haplin", response = "mult", n.sim = 1000, ask = FALSE)
+hapPower(hapRun.res, alpha= 0.10)
 
 ## The latter example, applying response = "mult", should be comparable to 
 ## the theoretic calculations of snpPower.

@@ -1,4 +1,4 @@
-hapRun <- function(nall, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, RRcf, RRstar, RR.mat, RRstar.mat, hapfunc = "haplin", gen.missing.cases = NULL, gen.missing.controls = NULL, n.sim = 1000, xchrom = F, sim.comb.sex = "double", BR.girls, dire, ask = TRUE, cpus = 1, slaveOutfile = "", ...){
+hapRun <- function(nall, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, RRcf, RRstar, RR.mat, RRstar.mat, hapfunc = "haplin", gen.missing.cases = NULL, gen.missing.controls = NULL, n.sim = 1000, xchrom = FALSE, sim.comb.sex = "double", BR.girls, dire, ask = TRUE, cpus = 1, slaveOutfile = "", ...){
 ##
 ##
 ## Simulates genetic data in Haplin format, consisting of fetal effects, maternal effects and/or parent-of-origin effects, then runs haplin or haplinSlides on the simulated data files. 
@@ -79,9 +79,9 @@ if(!missing(dire)) .dire <- TRUE
 if(.dire){
 	## If directory exists & ask == TRUE, query user
 	if(file.exists(dire) & length(list.files(dire)) != 0 & ask){
-		.answer <- readline(paste('Overwrite all files in ', dire, '? (y/n)', sep = ""))
+		.answer <- readline(paste('Do you really want to overwrite ALL files in directory ', dire, '? (y/n)', sep = ""))
 		if(.answer != "y"){
-			message("Stopped without overwriting file(s) in directory")
+			cat("Stopped without overwriting file(s) in directory\n")
 			return(invisible(FALSE))
 		}
 	}
@@ -90,7 +90,7 @@ if(.dire){
 	dir.create(dire)
 }	
 #
-if(xchrom & sim.comb.sex == "males") message("The males are simulated assuming no contribution from fathers to sons")
+if(xchrom & sim.comb.sex == "males") cat("The males are simulated assuming no contribution from fathers to sons\n")
 #
 ## Choose Haplin design according to the arguments "cases" and "controls"
 .design <- sapply(1:.n.strata, function(x){

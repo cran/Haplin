@@ -31,7 +31,7 @@ hapSim <- function(nall, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, RR
 ##
 #
 .sim.maternal <- FALSE
-if(!missing(RR.mat) | !missing(RR.mat)) .maternal <- TRUE
+if(!missing(RR.mat) | !missing(RR.mat)) .sim.maternal <- TRUE
 #
 .sim.poo <- FALSE
 if(!missing(RRcm) | !missing(RRcf)) .sim.poo <- TRUE
@@ -69,9 +69,9 @@ lapply(1:.n.strata, function(x){do.call(f.hapTests, args = .strat.arg[x, ])})
 if(nzchar(dire)){
 	## If directory exists & ask == TRUE, query user
 	if(file.exists(dire) & length(list.files(dire)) != 0 & ask){
-		.answer <- readline(paste('Overwrite all files in ', dire, '? (y/n)', sep = ""))
+		.answer <- readline(paste('Do you really want to overwrite ALL files in directory ', dire, '? (y/n)', sep = ""))
 		if(.answer != "y"){
-			message("Stopped without overwriting file(s) in directory")
+			cat("Stopped without overwriting file(s) in directory\n")
 			return(invisible(FALSE))
 		}
 	}
@@ -80,7 +80,7 @@ if(nzchar(dire)){
 	dir.create(dire)
 }	
 #
-if(xchrom & sim.comb.sex == "males") message("The males are simulated assuming no contribution from fathers to sons")
+if(xchrom & sim.comb.sex == "males") cat("The males are simulated assuming no contribution from fathers to sons\n")
 #
 ## Runs in parallel only if cpus is numeric > 1
 if(!missing(cpus)){
@@ -93,7 +93,7 @@ if(!missing(cpus)){
 #	
 ## If pure case/contol design, delete columns corresponding to mothers and fathers
 if(all(sapply(.strat.arg[,"case.design"], length)==1) & all(sapply(.strat.arg[,"control.design"], length)==1) && (all(sapply(.strat.arg[,"case.design"], function(x){x=="c"}) & all(sapply(.strat.arg[,"control.design"], function(x){x=="c"}))))){
-	message("The files contain only the case-control data; the columns related to the parents will be deleted")
+	cat("The files contain only the case-control data; the columns related to the parents will be deleted\n")
 	.colnames <- paste("l_", rep(1:.nloci,each=2), ".c", c(1,2), sep = "")
 } else .colnames <- paste("l_", rep(1:.nloci,each=6), rep(c(".m",".f",".c"),each=2), c(1,2), sep = "")
 #
@@ -104,10 +104,10 @@ if(.n.strata > 1) .colnames <- c("strat", .colnames)
 .simulations <- function(i){
 	.return <- NA
 	#
-	if(verbose) message("Simulating ",.filename.R[i], ": ", sep = "")
+	if(verbose) cat("Simulating ",.filename.R[i], ": \n", sep = "")
 	#
 	## Haplin must be made available in each run
-	if(verbose) on.exit(if(!is.data.frame(.return) && is.na(.return)){message("Run failed")}, add = T)	
+	if(verbose) on.exit(if(!is.data.frame(.return) && is.na(.return)){cat("Run failed\n")}, add = T)	
 	#
 	## Haplin must be made available in each run
 	suppressPackageStartupMessages(require(Haplin, quietly = T))
@@ -137,14 +137,14 @@ if(.n.strata > 1) .colnames <- c("strat", .colnames)
 	## Write to file
 	if(nzchar(dire)) write.table(.file, file = .filename[i], quote = F, col.names = F, row.names = F)
 	#
-	if(verbose) message("OK")
+	if(verbose) cat("OK\n")
 	if(dire=="") .return <- .file
 	else .return <- TRUE
 	return(invisible(.return))
 }
 #
 ## Parallel
-message("\n--- Running hapSim using ", cpus, " cpu(s) ---\n", sep = "")
+cat("\n--- Running hapSim using ", cpus, " cpu(s) ---\n\n", sep = "")
 #
 if(!.run.para){
 	.sim <- lapply(seq(length.out = n.sim), function(x) try(.simulations(x), silent = T))
@@ -171,22 +171,22 @@ if(any(.errs)){
 	#
 	.sim[.errs] <- .err.res
 	#
-	message("\n --- hapSim has completed with errors ---\n")
+	cat("\n --- hapSim has completed with errors ---\n\n")
 	#
 	## Display error messages
-	message("Error message(s):")
+	cat("Error message(s):\n")
 	#
 	.sim.error <- .sim[which(is.na(.sim))]
 	for(i in 1:length(.sim.error)){
-		message(paste("Did not generate ", names(.sim.error[i]), ": ", attr(.sim.error[[i]], "Error"), sep = ""))
-		if(nzchar(dire)) message(paste("Summary:\n",n.sim-length(.sim.error)," of ", n.sim, " files have been written to directory \"", dire, "\".", sep = ""))
+		cat(paste("Did not generate ", names(.sim.error[i]), ": ", attr(.sim.error[[i]], "Error"), sep = ""), "\n")
+		if(nzchar(dire)) cat(paste("Summary:\n",n.sim-length(.sim.error)," of ", n.sim, " files have been written to directory \"", dire, "\".", sep = ""), "\n")
 	}
 } else{
-	message("\n --- hapSim has completed without errors ---\n")
-	if(nzchar(dire)) message(paste("Summary:\nAll files have been written to directory \"", dire, "\".", sep = ""))
+	cat("\n --- hapSim has completed without errors ---\n\n")
+	if(nzchar(dire)) cat(paste("Summary:\nAll files have been written to directory \"", dire, "\".", sep = ""), "\n")
 }
 #
-if(nzchar(dire)) message(paste("The order of the columns in the files is: \n", paste(.colnames[1:min(15,length(.colnames))],sep="", collapse = " "), if(length(.colnames)>15) " etc", sep = "" ))
+if(nzchar(dire)) cat(paste("The order of the columns in the files is: \n", paste(.colnames[1:min(15,length(.colnames))],sep="", collapse = " "), if(length(.colnames)>15) " etc", sep = "" ), "\n")
 #
 ## Return
 if(!nzchar(dire)) return(.sim)

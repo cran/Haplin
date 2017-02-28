@@ -107,6 +107,7 @@ if( .info$model$poo ){
 		.info$haplos$reference <- "ref.cat"
 	}
 }
+if((.info$model$design == "cc") & .xchrom) stop('The X-chromosome analysis with a "pure" cc design needs\n some additional testing before being made available again...')
 #
 ## TEST FOR CC VARIABLE SPECIFICATION
 if( .ccdesign ){
