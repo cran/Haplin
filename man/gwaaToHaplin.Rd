@@ -28,7 +28,7 @@ Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
-\email{hakon.gjessing@fhi.no}}
+\email{hakon.gjessing@uib.no}}
 
 \seealso{\code{\link{haplin}}, \code{\link{prepPed}}, \code{\link[GenABEL]{convert.snp.ped}}, \code{\link[GenABEL]{load.gwaa.data}}}
 \examples{

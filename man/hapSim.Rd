@@ -65,8 +65,8 @@ Intermediate designs, for instance mother-child dyads, are represented as full t
 
 There are no row or column names in the files.
 
-Some examples are given below. See \url{http://folk.uib.no/gjessing/genetics/software/haplin/haplin_data_format.html} for a thorough description of the Haplin format. Note that this description separates the two alleles for an individual within a locus by a semi-colon, such as 1;2. This is, however, not necessary.\cr
-Confer the document \url{http://folk.uib.no/gjessing/genetics/software/haplin/Haplin_power.pdf} for details and examples on how to perform the simulations.
+Some examples are given below. See \url{http://folk.uib.no/gjessing/genetics/software/haplin/docu/haplin_data_format.html} for a thorough description of the Haplin format. Note that this description separates the two alleles for an individual within a locus by a semi-colon, such as 1;2. This is, however, not necessary.\cr
+Confer the document \url{http://folk.uib.no/gjessing/genetics/software/haplin/docu/Haplin_power.pdf} for details and examples on how to perform the simulations.
 
 \code{gen.missing.cases} and \code{gen.missing.controls} are flexible arguments. By default, both equal NULL, which means that no missing data are generated at random.
 If the arguments are single numbers, missing data are generated at random with this proportion for all cases and/or controls. 
@@ -85,7 +85,7 @@ Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
 
-\email{hakon.gjessing@fhi.no}}
+\email{hakon.gjessing@uib.no}}
 
 \seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{hapRun}}, \code{\link[Haplin]{hapPower}}}
 

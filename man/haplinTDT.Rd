@@ -143,7 +143,7 @@ sex = NULL, threshold = 0.01, verbose = TRUE, printout = TRUE)
 \author{Oivind Skare,\cr with Hakon K. Gjessing\cr
   Division of Epidemiology\cr
   Norwegian Institute of Public Health\cr
-  \email{hakon.gjessing@fhi.no}}
+  \email{hakon.gjessing@uib.no}}
 
 %\section{Warning}{Some warnings????.}
 

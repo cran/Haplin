@@ -61,7 +61,7 @@ The stratum specific arguments may be simplified if the number of strata is one,
 
 \code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinStrat}} and \code{\link[Haplin]{haplinSlide}} will run with default values unless otherwise specified by \code{hapRun}.
 For example, if \code{hapfunc = "haplin"}, \code{\link[Haplin]{haplin}} will use \code{response = "free"} unless \code{response = "mult"} is explicitly given as an argument in \code{hapRun}. 
-Moreover, triads with missing data are only included in the haplin analysis if the argument \code{use.missing} equals \code{TRUE} (default in \code{hapRun}). Please confer \url{http://folk.uib.no/gjessing/genetics/software/haplin/Haplin_power.pdf} for further details and examples.
+Moreover, triads with missing data are only included in the haplin analysis if the argument \code{use.missing} equals \code{TRUE} (default in \code{hapRun}). Please confer \url{http://folk.uib.no/gjessing/genetics/software/haplin/docu/Haplin_power.pdf} for further details and examples.
  
 For information on the arguments to be passed on to \code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinStrat}} and \code{\link[Haplin]{haplinSlide}}, please consult their help pages.
 
@@ -102,7 +102,7 @@ Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
 
-\email{hakon.gjessing@fhi.no}}
+\email{hakon.gjessing@uib.no}}
 
 \seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinSlide}}, \code{\link[Haplin]{hapSim}}, \code{\link[Haplin]{haptable}}, \code{\link[Haplin]{suest}}, \code{\link[Haplin]{hapPower}}}
 

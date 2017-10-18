@@ -64,7 +64,7 @@ Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
-\email{hakon.gjessing@fhi.no}}
+\email{hakon.gjessing@uib.no}}
 
 \section{Warning}{Typically, some of the included haplotypes will be relatively rare, such as a frequency of 1\% - 5\%. For those haplotypes there may be too little data to estimate the double doses properly, so the estimates may be unreliable. This is seen from the extremely wide confidence intervals. The rare double dose estimates should be disregarded, but the remaining single and double dose estimates are valid. To avoid the problem one can also reduce the model to a purely multiplicative model by setting \code{response = "mult"} combined with \code{reference = "ref.cat"}.}
 

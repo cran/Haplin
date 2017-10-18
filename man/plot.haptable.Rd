@@ -29,7 +29,7 @@ Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
-\email{hakon.gjessing@fhi.no}}
+\email{hakon.gjessing@uib.no}}
 \note{Further information is found on the web page.
 }
 \seealso{\code{\link{haplin}}}

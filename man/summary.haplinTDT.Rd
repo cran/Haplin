@@ -19,7 +19,7 @@
 \author{Hakon K. Gjessing (Professor of Biostatistics) and Oivind Skare\cr
   Division of Epidemiology\cr
   Norwegian Institute of Public Health\cr
-  \email{hakon.gjessing@fhi.no}}
+  \email{hakon.gjessing@uib.no}}
 
 %\note{}
 

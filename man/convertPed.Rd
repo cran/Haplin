@@ -83,7 +83,7 @@ with Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
-\email{hakon.gjessing@fhi.no}}
+\email{hakon.gjessing@uib.no}}
 
 \seealso{\code{\link[Haplin]{lineByLine}}, \code{Haplin:::lineConvert}, \code{\link[Haplin]{snpPos}}, \code{\link[Haplin]{prepPed}}, \code{\link[GenABEL]{convert.snp.ped}}}
 

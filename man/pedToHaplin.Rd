@@ -34,7 +34,7 @@ Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
-\email{hakon.gjessing@fhi.no}}
+\email{hakon.gjessing@uib.no}}
 
 \section{Warning}{Data files come in many shapes and formats, so you should always check the output from \code{pedToHaplin} before using it.}
 

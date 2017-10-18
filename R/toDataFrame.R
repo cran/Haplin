@@ -45,7 +45,7 @@ for(i in 1:.dim[2]){
 .markers.ext <- strsplit(rownames(.ut), split = "-xXx-")
 .markers.ext1 <- sapply(.markers.ext, function(x)x[1])
 .markers.ext2 <- sapply(.markers.ext, function(x)x[2])
-.ut <- cbind(element = .markers.ext1, row.no = .markers.ext2, .ut)
+.ut <- dframe(element = .markers.ext1, row.no = .markers.ext2, .ut)
 rownames(.ut) <- NULL
 #
 if(reduce){

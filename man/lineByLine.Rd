@@ -65,7 +65,7 @@ Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
 
-\email{hakon.gjessing@fhi.no}}
+\email{hakon.gjessing@uib.no}}
 
 \seealso{\code{\link[Haplin]{convertPed}}}
 

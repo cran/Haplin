@@ -27,7 +27,7 @@ Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
-\email{hakon.gjessing@fhi.no}}
+\email{hakon.gjessing@uib.no}}
 \section{NOTE:}{In the future, the structure of the output from gxe will change. In particular, measures of ratios of relative risks will be reported in addition to the p-values}
 \note{
 	Further information is found on the web page.
