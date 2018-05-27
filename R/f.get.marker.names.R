@@ -5,7 +5,7 @@ f.get.marker.names <- function(data, n.vars){
 #
 if(class(data) == "gwaa.data"){
 	## GWAA OBJECT
-	.marker.names <- snpnames(data)
+	# .marker.names <- snpnames(data)
 }else{
 	## HAPLIN DATA MATRIX
 	.marker.names <- colnames(data)

@@ -7,21 +7,20 @@ f.args.from.info <- function(info){
 #
 ## EXTRACT STANDARD HAPLIN ARGUMENTS WITH DEFAULTS
 .formals <- formals(haplin)
-
-.formals$data <- NULL
-.formals$pedIndex <- NULL
-
-
 #
 ## FLATTEN info OBJECT, ONE LEVEL
-.tmp <- unlist(info, recursive = F)
+which.data.par <- which( names( info ) == "data" )
+.tmp <- unlist(info[ -which.data.par ], recursive = F)
+.tmp <- c( .tmp, data = info[ which.data.par ] )
 #
 ## EXTRACT NAMES FROM ONE LEVEL DOWN
-.names <- sapply(info, names)
-.names <- c("filename", unlist(.names[-1]))
+.names <- sapply(info[ -which.data.par ], names)
+.names <- c( .names, data = "data" )
+.names <- unlist( .names[-1] )
+# .names <- c("filename", unlist(.names[-1]))
 #
 ## CHECK NAME LENGTH
-if(length(.names) != length(.tmp)) stop()
+if(length(.names) != length(.tmp)) stop( "Problem with args...", call. = FALSE )
 #
 ## USE NAMES FROM ONE LEVEL DOWN
 names(.tmp) <- .names
@@ -30,7 +29,7 @@ names(.tmp) <- .names
 .tmp <- .tmp[names(.formals)]
 #
 ## FOR SAFETY'S SAKE
-.test <- f.check.pars(.tmp, .formals)
+.test <- f.check.pars( .tmp, .formals )
 #
 ##
 return(.tmp)

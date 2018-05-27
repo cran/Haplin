@@ -15,32 +15,32 @@ f.preliminary.freq.new <- function(data, info){
 ##
 #
 ## PREPARATIONS:
-.ntri <- length(unique(data$orig.lines))
+.ntri <- length(unique(data$orig.lines[]))
 design <- info$model$design
 max.EM.iter <- info$control$max.EM.iter
 verbose <- info$control$verbose
 .xchrom <- info$model$xchrom
 #
 ## CREATE A .freq VECTOR WITH UNIFORM DISTRIBUTION WITHIN FAMILIES:
-	.freq <- 1/f.groupsum(X = rep(1, length(data$orig.lines)), INDICES = data$orig.lines)
+.freq <- 1/f.groupsum(X = rep(1, length( data$orig.lines )), INDICES = as.numeric( data$orig.lines[] ))
 #
 #
 if((design == "triad" | design == "cc.triad") & !.xchrom){
 ## LIST ALL HAPLOTYPES IN SINGLE VECTOR:
-	.all <- c(data$m1, data$m2, data$f1, data$f2)
+	.all <- as.numeric( c( data$m1[], data$m2[], data$f1[], data$f2[] ) )
 	.ncols <- 4
 #
 }
 if((design == "triad" | design == "cc.triad") & .xchrom){
 ## LIST ALL HAPLOTYPES IN SINGLE VECTOR:
-	.all <- c(data$m1, data$m2, data$f1)
+	.all <- as.numeric( c( data$m1[], data$m2[], data$f1[] ) )
 	.ncols <- 3
 #
 }
 #
 if(design == "cc"){
 ## LIST ALL HAPLOTYPES IN SINGLE VECTOR:
-	.all <- c(data$c1, data$c2)
+	.all <- as.numeric( c( data$c1[], data$c2[] ) )
 	.ncols <- 2
 #
 }

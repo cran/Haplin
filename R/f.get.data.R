@@ -12,7 +12,7 @@ if(missing(data)){
 	## READ DATA FROM FILE, CLASSIC HAPLIN APPROACH
 	## (NOTE THAT info IS UPDATED AND RETURNED AS AN ATTR. TO .data.read)
 	if(info$control$verbose)	cat("\nReading data from file...  ")
-	.data.read <- f.read.data(info) ##
+	# .data.read <- f.read.data0(info) ##
 	.big <- prod(dim(.data.read)) > 10000000 # ROUGHLY 40 Mb(?) object.size
 	if(.big){
 		gc()
@@ -25,7 +25,7 @@ if(missing(data)){
 		## CONVERT FROM GenABEL-OBJECT TO HAPLIN DATA MATRIX
 ###		if(identical(info$filespecs$markers, "ALL")) info$filespecs$markers <- seq(length.out = nsnps(data))
 		## GI FEILMELDING DERSOM markers ER UTENFOR RANGE?
-		.data.read <- gwaaToHaplin(data = data[, info$filespecs$markers], pedIndex = pedIndex, design = info$model$design)
+		# .data.read <- gwaaToHaplin(data = data[, info$filespecs$markers], pedIndex = pedIndex, design = info$model$design)
 		#
 		.data.read <- f.data.ready(.data.read, info, sel.markers = F)
 	}else{

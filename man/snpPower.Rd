@@ -46,7 +46,8 @@ Norwegian Institute of Public Health\cr
 
 \email{hakon.gjessing@uib.no}}
 
-\seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{snpSampleSize}}}
+
+\seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{snpSampleSize}}, \code{\link[Haplin]{hapRun}}, \code{\link[Haplin]{hapPower}}, \code{\link[Haplin]{hapPowerAsymp}}}
 
 \examples{
 \dontrun{

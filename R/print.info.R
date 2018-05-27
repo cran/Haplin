@@ -8,12 +8,13 @@ print.info <- function(info, args.only = F){
 #
 ## FOR SAFETY'S SAKE
 .info <- unclass(info)
+.haplin.vers <- .info$misc$orig.call[[1]]
 #
 ## NAMES OF ARGUMENTS TO haplin
 if(args.only){
 	#
 	## IF ONLY TO SHOW ARGUMENTS TO A HAPLIN CALL, REMOVE THE OTHERS
-	.names <- names(formals(haplin))
+	.names <- names(formals(eval(.haplin.vers)))
 	for(i in 2:length(.info)){
 		## REMOVE ELEMENTS IN EACH GROUP
 		.info[[i]] <- .info[[i]][is.element(names(.info[[i]]), .names)]

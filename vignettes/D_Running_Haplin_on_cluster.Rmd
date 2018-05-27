@@ -1,0 +1,113 @@
+---
+title: "Running Haplin on cluster"
+author: "Julia Romanowska"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Running Haplin on cluster}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup,include=FALSE}
+knitr::opts_chunk$set( echo = TRUE )
+```
+
+# General about running analysis on a cluster
+
+_NB:_ Usually running on a cluster requires some scripting and coding skills, however, with the VPN graphical connections, it's becoming easier for non-programmers to run any software. Below, we provide some exemplary scripts that one can usually copy and use with small modifications on many clusters. If in doubt, check with your administrator and/or write to us!
+
+# Extra requirements
+
+To run Haplin on a cluster you will need an MPI implementation and the [Rmpi package](https://CRAN.R-project.org/package=Rmpi) installed manually, before the Haplin package installation. How to install extra R packages can vary from cluster to cluster, so check the manual!
+
+# Job submission
+
+To run a job on a cluster, usually one needs to submit a script to a job queue. The submission method varies depending on the queue system used, so check the help pages of your cluster. Here, we present the quite popular SLURM queueing system.
+	
+Below, is an exemplary script that sets up a SLURM job:
+
+```
+#!/bin/bash
+
+#SBATCH --job-name=haplin_cluster_run
+#SBATCH --output=haplin_cluster_run.out
+#SBATCH --nodes=3
+#SBATCH --ntasks-per-node=8
+#SBATCH --time=8:00:00
+#SBATCH --mem-per-cpu=100
+#SBATCH --mail-user=user```domain.com
+#SBATCH --mail-type=ALL
+
+module load R
+module load openmpi
+
+echo "nodes: $SLURM_JOB_NODELIST"
+myhostfile="cur_nodes.dat"
+
+echo "----STARTING THE JOB----"
+date
+echo "------------------------"
+
+mpiexec --hostfile $myhostfile -n 1 R --save < haplin_cluster_run.r >& mpi_run.out
+
+exit_status=$?
+echo "----JOB EXITED WITH STATUS---: $exit_status"
+exit $exit_status
+echo "----DONE----"
+```
+
+Here, the important part is the `mpiexec` line, where the R session is loaded to run in parallel on several cores. To achieve this with the Rmpi package, one needs to provide a list of cores available currently for the user, which is done through the `--hostfile $myhostfile` part. This means that the given file should hold a list of cores --- if this is not available automatically on the cluster, one can extract it from the `$SLURM_JOB_NODELIST` variable (see `submit_haplin_cluster_rmpi.sh` script in this folder).
+	
+For a more detailed explanation of the `#SBATCH` commands, see e.g., [the official documentation](http://slurm.schedmd.com/srun.html).
+	
+# Running parallel Haplin analysis on a cluster
+
+The most effective way of using Haplin on a cluster is to run `haplinSlide` on a large GWAS dataset. The data preparation and calling haplinSlide is the same as for single run, see the section above. However, before calling any parallel function one needs to setup the cluster with the function:
+	
+```{r eval=FALSE}
+initParallelRun()
+```
+
+This will make use of maximum number of available cores. If one wants to limit the run to a specific number of CPUs, the `cpus` argument needs to be specified.
+
+Then, when evoking the analysis, one needs to specify that the Rmpi package will be used:
+
+```{r eval=FALSE}
+haplinSlide( trial.data2.prep, use.missing = TRUE, ccvar = 2, design =
+  "cc.triad", reference = "ref.cat", response = "mult", para.env = "Rmpi" )
+```
+
+Finally, right before the script finishes, we need to close all the threads created by `initParallelRun`:
+
+```{r eval=FALSE}
+finishParallelRun()
+```
+
+_CAUTION:_ If the user forgets to call this function before exiting R, all the work will still be saved, however, the `mpirun` will end with an error.
+
+To sum up, an exemplary R script to run on a cluster, would look like that:
+
+```{r eval=FALSE}
+library( Haplin )
+
+initParallelRun()
+
+chosen.markers <- 3:55
+
+data.in <- genDataLoad( filename = "mynicedata" )
+# analysis without maternal risks calculated
+results1 <- haplinSlide( data = data.in, markers = chosen.markers, winlength = 2, 
+	design = "triad", use.missing = TRUE, maternal = FALSE, response = "free",
+	cpus = 2, verbose = FALSE, printout = FALSE, para.env = "Rmpi" )
+
+# analysis with maternal risks calculated
+results2 <- haplinSlide( data = data.in, markers = chosen.markers, winlength = 2, 
+	design = "triad", use.missing = TRUE, maternal = TRUE, response = "mult",
+	cpus = 2, verbose = FALSE, printout = FALSE, para.env = "Rmpi" )
+
+finishParallelRun()
+```
+
+_IMPORTANT:_ To run in parallel, we need to specify both the `cpus` and `para.env` arguments, however, the true number of CPUs used will be set within `initParallelRun` and not by the `cpus` argument.
+

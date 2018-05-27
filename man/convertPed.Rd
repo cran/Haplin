@@ -5,7 +5,7 @@
 
 \title{Convert large ped files by creating unique IDs, converting allele coding and extracting a selection of SNPs}
 
-\description{The function \code{\link[Haplin]{prepPed}} is used to prepare a ped file for loading into GenABEL. However, GenABEL requires unique individual IDs in the file, not only unique within family. Furthermore, numeric allele coding 1,2,3,4 is not accepted. To fix this, \code{convertPed} can be run prior to running \code{prepPed}. This will create unique IDs and do the necessary allele recoding, and possibly also select and reorder SNPs. \code{convertPed} will also update the corresponding map file.}
+\description{NOTE: This function is probably less useful now that GenABEL is no longer used by Haplin. The function is used to prepare a ped file for loading into GenABEL. However, GenABEL requires unique individual IDs in the file, not only unique within family. Furthermore, numeric allele coding 1,2,3,4 is not accepted. To fix this, \code{convertPed} can be run prior to running \code{prepPed}. This will create unique IDs and do the necessary allele recoding, and possibly also select and reorder SNPs. \code{convertPed} will also update the corresponding map file.}
 
 \usage{
 convertPed(ped.infile, map.infile, ped.outfile, map.outfile, create.unique.id = FALSE,
@@ -85,7 +85,7 @@ Division of Epidemiology\cr
 Norwegian Institute of Public Health\cr
 \email{hakon.gjessing@uib.no}}
 
-\seealso{\code{\link[Haplin]{lineByLine}}, \code{Haplin:::lineConvert}, \code{\link[Haplin]{snpPos}}, \code{\link[Haplin]{prepPed}}, \code{\link[GenABEL]{convert.snp.ped}}}
+\seealso{\code{\link[Haplin]{lineByLine}}, \code{Haplin:::lineConvert}, \code{\link[Haplin]{snpPos}}}
 
 \examples{
 \dontrun{

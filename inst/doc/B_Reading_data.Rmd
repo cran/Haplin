@@ -1,0 +1,98 @@
+---
+title: "Reading and preparing the data"
+author: "Hakon K. Gjessing and Julia Romanowska"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Reading and preparing the data}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup,include=FALSE}
+knitr::opts_chunk$set( echo = TRUE )
+library( Haplin, quietly = TRUE )
+```
+
+# Reading the data into Haplin
+Haplin reads data in two formats:
+
+1. Haplin's own text file format;
+
+2. PED format.
+
+Both types of data are read in through the use of `genDataRead` function:
+```{r eval=FALSE}
+my.gen.data <- genDataRead( file.in = "my_gen_data.ped", file.out =
+  "my_saved_gen_data", dir.out = ".", format = "ped" )
+my.gen.data.haplin <- genDataRead( file.in = "my_gen_data_hap.dat",
+  file.out = "my_saved_gen_data_hap", dir.out = ".", format = "haplin", n.vars = 0 )
+```
+
+The function reads in all the data in the file, creates `ff` objects to store the genetic information and `data.frame` to store covariate data (if any). These objects are saved in `.RData` and `.ffData` files, which can be later on easily uploaded to R (with `genDataLoad`) and re-used.
+	
+_CAUTION:_ This can take a long time for large datasets (such as from GWAS analysis, e.g., reading in a 7 GB file will take ca.15 minutes), however, this needs to be run only once and then, the next time you need to use the data, use the `genDataLoad` function (see below). Be careful NOT TO DELETE the output files!
+	
+The `genDataRead` function returns a list object with two elements:
+
+*  _cov.data_ - a `data.frame` with covariate data (if available in the input file);
+*  _gen.data_ - the genetic part of data.
+
+The above function reads in also any additional covariate data the user has through the parameter `cov.file.in`:
+```{r eval=FALSE}
+my.gen.data.haplin2 <- genDataRead( file.in = "my_gen_data_hap.dat",
+  file.out = "my_saved_gen_data_hap2", cov.file.in = "add_cov.dat",
+  dir.out = ".", format = "haplin" )
+```
+The file with the additional information should have a header with names of the data columns!
+  
+To see all the available arguments and usage examples, type:
+```{r eval=FALSE}
+?genDataRead
+```
+(this works also with any other function)
+  
+# Preparing your data
+
+After loading the data, it is necessary to pre-process it to the internal format used by haplin. This is done by evoking the command:
+```{r eval=FALSE}
+my.prepared.gen.data <- genDataPreprocess( data.in = my.gen.data, map.file =
+  "my_gen_data.map", design = "triad", file.out = "my_prepared_gen_data",
+  dir.out = "." )
+```
+
+_CAUTION:_ This action can be very time-consuming for large datasets (e.g., estimated time for ca.45,000 SNPs and 1,600 individuals, a PED file of ca.700MB, is ca.6 minutes on a 7-core CPU). However, this needs to be done only once and the output, stored in small files, can be used for the subsequent analysis repeatedly. (See also section [Choosing a subset of data](#subset)
+	
+This will also create `.RData` and `.ffData` files, which take much less space than the input PED files. Be careful not to delete these files, as they can be re-used by simply loading into R (the `genDataLoad function) right before Haplin analysis.
+	
+_NOTE:_ The information on the `my.prepared.gen.data` object can be displayed by simply writing the name of the object.
+
+# Choosing a subset of data {#subset}
+
+If you know that you want to focus your analysis on a certain region of the entire SNP set, or perhaps you're impatient and want to check out Haplin without waiting a long time for the preprocessing to finish, you can easily choose a subset of the data to pre-process and analyze. This can be done with the command:
+
+```{r eval=FALSE}
+gen.data.subset <- genDataGetPart( data.in = my.gen.data, markers = c( 3:15,22 ),
+  file.out = "my_gen_data_subset", dir.out = "." )
+```
+
+This function allows you to specify the subset in various ways:
+
+*  __markers__ - numeric vector with numbers indicating which markers to choose;
+*  __indiv.ids__ - numeric vector giving IDs of individuals. _CAUTION:_ in a standard PED file, individual IDs are not unique, so this will select all individuals with given numbers;
+*  __rows__ - numeric vector giving the positions - this will select only these rows;
+*  __cc__ - one or more values to choose based on the case-control status ('cc' column);
+*  __sex__ - one or more values to choose based on the 'sex' column;
+*  __...__ - if any additional covariate data are available in `data.in, the user can choose based on values of these.
+
+If you give a combination of these parameters, the result will be the intersection of the subsets defined by each of the parameters alone. The subset is then available in the `gen.data.subset` object and written to `file.out` file(s). These can be loaded and re-used multiple times.
+
+# Re-using the data
+
+_IMPORTANT:_ Remember that each time you start a new R session, you need to load the data into the memory with the command:
+```{r eval=FALSE}
+my.prepared.gen.data <- genDataLoad( filename = "my_prepared_gen_data",
+  dir.in = "." )
+```
+This takes much less time than re-reading and running the data preparations! The output of the `genDataPreprocess` function (or `genDataLoad`) can then be used to run the analysis.
+

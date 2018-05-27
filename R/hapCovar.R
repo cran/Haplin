@@ -5,7 +5,7 @@ hapCovar <- function(nall, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, 
 ## Note: This part is almost identical to hapRun
 #
 .sim.maternal <- FALSE
-if(!missing(RR.mat) | !missing(RR.mat)) .sim.maternal <- TRUE
+if(!missing(RR.mat) | !missing(RRstar.mat)) .sim.maternal <- TRUE
 #
 .sim.poo <- FALSE
 if(!missing(RRcm) | !missing(RRcf)) .sim.poo <- TRUE
@@ -163,7 +163,7 @@ for(i in 1:n.strata){
 	.haparg$data <- .grid
 	#
 	## Compute data file prepared for analysis
-	.data <- do.call("haplin", args=.haparg)
+	.data <- do.call("haplin0", args=.haparg)
 	if(.design!="triad"){
 		.data$cc[.data$cc=="case"] <- 2
 		.data$cc[.data$cc=="control"] <- 1

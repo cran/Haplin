@@ -1,194 +1,232 @@
-haplinSlide <- function(filename, data, pedIndex, markers = "ALL", winlength = 1, strata = NULL, table.output = TRUE, cpus = 1, slaveOutfile = "", printout = FALSE, verbose = FALSE, ...)
+haplinSlide <- function( data, markers = "ALL", winlength = 1, strata = NULL, table.output = TRUE, cpus = 1, para.env = NULL, slaveOutfile = "", printout = FALSE, verbose = FALSE, ... )
 {
 ##
 ## RUN HAPLIN ON SLIDING WINDOWS
 ##
-#
-## SELECT PARALLEL MECHANISM (SOME MAY BE DISABLED)
-#.para <- "snow"
-#.para <- "snowfall"
-#.para <- "doSMP"
-.para <- "parallel"
-#
+## MERK: BRUKER "#i#" TIL AA KOMMENTERE VEKK DET SOM GIR ADVARSEL MED R CMD check, SIDEN DE RETTE PAKKENE IKKE ER INSTALLERT
+
 ## RUNS IN PARALLEL ONLY IF cpus IS NUMERIC > 1
-if(!missing(cpus)){
-	if(!is.numeric(cpus)) stop('The number of cpu-s "cpus" must be numeric!', call. = F)
-	.run.para <- (cpus > 1)
-} else .run.para <- F
-#
-## GET HAPLIN DEFAULTS, OVERRIDE DEFAULTS FOR SPECIFIED ARGUMENTS
-.info <- f.catch(match.call(), formals())
-#
-##
-if(winlength > 1) cat("\nImportant: Remember that SNPs must be in correct physical ordering\nfor a sliding window approach to be meaningful!\n")
-#
-## CHECK IF DATA DERIVE FROM AN R OBJECT OR FROM FILE
-.missdata <- missing(data)
-.misspedIndex <- missing(pedIndex)
-#
-## IMPORTANT: DO NOT REMOVE MISSING YET, EVEN IF use.missing = F (I.E. REMOVE WINDOW-WISE, NOT LISTWISE)
-.use.missing <- .info$model$use.missing ## SAVE OLD VALUE
-.info$model$use.missing <- T ## ENFORCE
-#
-## WITH A gwaa.data OBJECT, DELAY CONVERSION, ELSE READ AND CONVERT
-.is.gwaa <- !.missdata && (class(data) == "gwaa.data")
-if(.is.gwaa){
-	## ONLY REDUCE NUMBER OF MARKERS, BUT DO NOT CONVERT YET
-	.data.read <- data[, .info$filespecs$markers]
-}else{
-	## READ AND CONVERT DATA
-	.data.read <- f.get.data(data, pedIndex, .info)
-	.info <- attr(.data.read, "info")
+if( !missing( cpus ) ){
+	if( !is.numeric( cpus ) ){
+		stop( 'The number of CPUs "cpus" must be numeric!', call. = F )
+	}
+	.run.para <- ( cpus > 1 )
+	.para <- get( ".default.para.env", envir = .haplinEnv )
+} else {
+	.para <- NULL
+	.run.para <- F
 }
-.marker.names <- f.get.marker.names(.data.read, n.vars = .info$filespecs$n.vars)
-if(length(.marker.names) != length(.info$filespecs$markers)) warning("Something's wrong with the marker names...", call. = F)
-#
-##
-.info$model$use.missing <- .use.missing ## REVERT TO ORIGINAL VALUE
-#
+
+## SELECT PARALLEL MECHANISM ( SOME MAY BE DISABLED )
+if( !missing( para.env ) ){
+	if( !is.null( para.env  ) ){
+		all.para.env <- get( ".para.env", envir = .haplinEnv )
+		if( para.env %in% all.para.env ){
+			.para <- para.env
+		} else {
+			cat( "You specified parallel environment that is not recognized:\n" )
+			cat( para.env, "\n" )
+			cat( "(currently accepted values are:", all.para.env,")\n" )
+			.para <- get( ".default.para.env", envir = .haplinEnv )
+			cat( "Setting the default environment, '", .para,"' package.\n" )
+		}
+		# if the Rmpi parallel mechanism was set up, get the CPU number from there
+		if( get( "Rmpi.spawned", envir = .haplinEnv ) ){
+			cpus <- Rmpi::mpi.comm.size( 1 )
+		}
+	}
+}
+
+## GET HAPLIN DEFAULTS, OVERRIDE DEFAULTS FOR SPECIFIED ARGUMENTS
+cur.call <- match.call( )
+.info <- f.catch( cur.call, formals( ) )
+
+design <- .info$model$design
+
+if( winlength > 1 ){
+	cat( "\nImportant: Remember that SNPs must be in correct physical ordering\nfor a sliding window approach to be meaningful!\n" )
+}
+
+.marker.names <- data$aux$marker.names[ .info$filespecs$markers ]
+if( length( .marker.names ) != length( .info$filespecs$markers ) ){
+	warning( "Something's wrong with the marker names...", call. = F )
+}
+
 ## FIND MARKERS INCLUDED IN EACH WINDOW. NB: THEY NOW REFER TO MARKERS IN THE _REDUCED_ FILE, NOT THE ORIGINAL ONE
-.slides <- f.windows(markers = seq(along = .info$filespecs$markers), winlength = winlength)
+.slides <- f.windows( markers = .info$filespecs$markers, winlength = winlength )
 ## USE ORIGINAL MARKER SPECIFICATION AS NAMES
-###.names <- .info$filespecs$markers[.slides]
-.names <- .marker.names[.slides]
-.names <- matrix(.names, ncol = ncol(.slides))
-.names <- f.create.tag(.names, sep = "-")
-#
+.names <- matrix( data$aux$marker.names[ as.numeric( .slides ) ], ncol = ncol( .slides ) )
+.names <- f.create.tag( .names, sep = "-" )
+
 ## PREPARE TO RUN ON EACH WINDOW
-.nres <- dim(.slides)[1]
-#
-## REPRODUCE HAPLIN ARGUMENTS FROM .info
-.args <- f.args.from.info(.info)
-#
-##
-cat("\n")
-#
+.nres <- dim( .slides )[1]
+orig.args <- f.args.from.info( .info )
+attr( data, "sel.markers" ) <- TRUE
+
 ## FUNCTION TO RUN HAPLIN ON A SINGLE WINDOW
-.f.run <- function(i){
-	cat("Running Haplin on Window '", .names[i], "' (", i, "/", .nres, ")...:  ", sep = "")
-	args_ <- .args
-	#
-	if(.run.para){
-		## HAPLIN MUST BE MADE AVAILABLE IN EACH RUN
-		suppressPackageStartupMessages(require(Haplin, quietly = T))
-	}
-	#
-	##
-	## FILE, DATA MATRIX, AND GWAA
-	args_$filename <- NULL
-	args_$markers <- .slides[i,]
-	args_$data <- .data.read
-	if(.is.gwaa & !.misspedIndex){
-		args_$pedIndex <- pedIndex
-	}
-	#
+.f.run <- function( i, args ){
+	cat( "Running Haplin on Window '", .names[i], "' (", i, "/", .nres, ")...: ", sep = "" )
+	
+	args$markers <- .slides[i,]
+	args$data <- data
+	
 	## RUN HAPLIN
-	if(is.null(strata)){
-		.res <- try(do.call("haplin", args_), silent = T)
-		#
+	if( is.null( strata ) ){
+		.res <- try( do.call( "haplin", args ), silent = T )
 		## CHECK IF ERRORS
-		if(class(.res) == "try-error") cat("RUN FAILED\n")
-		else{
-			if(table.output) .res <- haptable(.res)
-			cat("done\n")
-		}		
+		if( identical(class( .res ), "try-error") ){
+			cat( "RUN FAILED\n" )
+		}else{
+			cat( "done\n" )
+		}
+		if(table.output){
+			.res <- try(haptable( .res ))
+			if( identical(class( .res ), "try-error") ){
+				cat( "haptable FAILED\n" )
+			}
+		}
 	}else{
-		.res <- try(do.call("haplinStrat", args_), silent = T)
+		.res <- try( do.call( "haplinStrat", args ), silent = T )
 		## CHECK IF ERRORS
-		if(class(.res) == "try-error"){
+		if( identical(class(.res), "try-error") ){
 			cat("RUN FAILED\n")
 		}else{
-			if(table.output){
-				.gxe.res <- try(gxe(.res))
-				if(class(.gxe.res) == "try-error"){
-					cat("RUN FAILED\n")
-					.res <- .gxe.res # somewhat ad hoc, but at least picks up the error message
+			cat( "done\n" )
+		}
+		if(table.output){
+			.gxe.res <- try(gxe(.res))
+			if( identical(class(.gxe.res), "try-error") ){
+				cat("RUN FAILED\n")
+				.res <- .gxe.res # somewhat ad hoc, but at least picks up the error message
+			}else{
+				# create haptables and join them
+				.res <- try(haptable(.res))
+				if( identical(class(.res), "try-error") ){
+					cat( "haptable FAILED\n" )
 				}else{
-					# create haptables and join them
-					.gxe.res <- haptable(.gxe.res)
-					.res <- haptable(.res)
-					.res <- cbind(.res, .gxe.res)
+					.gxe.res <- try(haptable(.gxe.res))
+				 	if( identical(class(.gxe.res), "try-error") ){
+						cat( "haptable FAILED\n" )
+						.res <- .gxe.res # somewhat ad hoc, but at least picks up the error message
+					}else{
+						.res <- cbind(.res, .gxe.res)
+					}
 				}
 			}
-			cat("done\n")
-		}		
+		}
 	}
-	return(.res)
+	return( .res )
 }
-#
+
 ## DO THE RUN
-## EITHER IN SEQUENCE (SINGLE CPU) 
-## OR IN PARALLEL (MULTIPLE CPUs)
-if(!.run.para){
-    if(!missing(slaveOutfile)) sink(file = slaveOutfile)
-	.res.list <- lapply(seq(length.out = .nres), .f.run)
-    if(!missing(slaveOutfile)) sink()
-	names(.res.list) <- .names
-	#
+## EITHER IN SEQUENCE ( SINGLE CPU ) 
+## OR IN PARALLEL ( MULTIPLE CPUs )
+if( !.run.para ){
+	cat( "INFO: No parallel environment selected. Will run in sequential mode.\n" )
+	if( !missing( slaveOutfile ) ){
+		sink( file = slaveOutfile )
+	}
+	.res.list <- lapply( seq( length.out = .nres ), .f.run, args = orig.args )
+	if( !missing( slaveOutfile ) ) sink( )
+	names( .res.list ) <- .names
+	
 	## CHECK FOR HAPLIN FAILURES
-	.errs <- sapply(.res.list, class) == "try-error"
+	.errs <- sapply( .res.list, class ) == "try-error"
 }else{
-	#
+	cat( "INFO: Will run in parallel mode using the '", .para,"' package.\n", sep = "" )
 	## INITIALIZE CPUS
-	if(.para == "parallel"){
+	if( .para == "parallel" ){
 		## parallel
-		w <- parallel::makeCluster(spec = cpus, outfile = slaveOutfile)
-		#on.exit(stopCluster(w))
-		#
+		w <- parallel::makeCluster( cpus, outfile = slaveOutfile )
+		invisible( parallel::clusterEvalQ( w, suppressPackageStartupMessages( requireNamespace( "Haplin", quietly = TRUE ) ) ) )
+		invisible( parallel::clusterEvalQ( w, suppressPackageStartupMessages( loadNamespace( "Haplin" ) ) ) )
+# 		parallel::clusterExport( w, c( ".f.run", "f.sel.markers", "f.get.which.gen.el", "f.get.gen.data.cols", "make.ff.data.out", "f.args.from.info", "f.check.pars", "f.extract.ff.numeric" ), envir = environment( ) )
+		on.exit( parallel::stopCluster( w ) )
+
 		## shut down nodes explicitly
 		.plat <- .Platform$OS.type
-		if(.plat == "windows") .cmds <- "taskkill /pid "
-		if(.plat == "unix") .cmds <- "kill "
+		if( .plat == "windows" ){
+			.cmds <- "taskkill /pid "
+		} else if( .plat == "unix" ){
+			.cmds <- "kill "
+		}
 		# get process id's
-		.pids <- sapply(w, function(x){
-			snow::sendCall(x, eval, list(quote(Sys.getpid())))
-			snow::recvResult(x)
-		})
-		.cmds <- paste(.cmds, .pids, sep = "")
-		on.exit({
-			if(!missing(slaveOutfile)) sink(file = slaveOutfile, append = T)
-				sapply(.cmds, system)
-				for(.w in w){
-					try(snow::postNode(.w, "DONE"), silent = T)
-					try(snow::closeNode(.w), silent = T)
-				}
-			if(!missing(slaveOutfile)) sink()
-		})
+		.pids <- sapply( w, function( x ){
+			snow::sendCall( x, eval, list( quote( Sys.getpid ( ) ) ) )
+			snow::recvResult( x )
+		} )
+		.cmds <- paste( .cmds, .pids, sep = "" )
+		on.exit( {
+			if( !missing( slaveOutfile ) ){
+				sink( file = slaveOutfile, append = T )
+			}
+			sapply( .cmds, system )
+			for( .w in w ){
+				try( snow::postNode( .w, "DONE" ), silent = T )
+				try( snow::closeNode( .w ), silent = T )
+			}
+			if( !missing( slaveOutfile ) ) sink( )
+		} )
+	} else if( .para == "snow" ){
+		## SNOW
+		stop( "NOT IMPLEMENTED, use \"parallel\"!", call. = FALSE )
+	} else if( .para == "Rmpi" ){
+		is.spawned <- get( "Rmpi.spawned", envir = .haplinEnv )
+		if( !is.spawned ){
+			stop( "You chose to use 'Rmpi' parallel mechanism but forgot to prepare the cluster. Use 'initParallelRun' function before calling 'haplinSlide' for the first time. After all the calculations are done, right before quitting R, remember to use 'finishParallelRun'!", call. = FALSE )
+		}
+	
+		Rmpi::mpi.bcast.Robj2slave( list( .f.run, f.sel.markers, f.get.which.gen.el, f.get.gen.data.cols, make.ff.data.out, f.args.from.info, f.check.pars, f.extract.ff.numeric ) )
 	}
-	#
+	
 	## RUN BY SPLITTING ON CPUS
-	if(!missing(slaveOutfile)) sink(file = slaveOutfile, append = T)
-		cat("\n--- Running haplinSlide using ", cpus, " cpu's ---\n\n", sep = "")
-	if(!missing(slaveOutfile)) sink()
-	if(.para == "parallel") .res.list <- parLapply(w, seq(length.out = .nres), .f.run)
-	names(.res.list) <- .names
-	#
-	## CHECK FOR HAPLIN FAILURES
-	.ftest <- function(x){
-		return(identical(class(x), "try-error"))
+	if( !missing( slaveOutfile ) ){
+		sink( file = slaveOutfile, append = T )
 	}
-	if(.para == "parallel") .errs <- unlist(parLapply(w, .res.list, .ftest))
+		cat( "\n--- Running haplinSlide using ", cpus, " cpu's ---\n", sep = "" )
+	if( !missing( slaveOutfile ) ) sink( )
+	
+	if( .para == "parallel" ){
+		.res.list <- parallel::parLapply( w, seq( length.out = .nres ), .f.run, args = orig.args )
+	} else if( .para == "Rmpi" ){
+		.res.list <- Rmpi::mpi.parLapply( seq( length.out = .nres ), .f.run, args = orig.args, job.num = .nres )
+	}
+#i#	if( .para == "snow" ) .res.list <- parLapply( w, seq( length.out = .nres ), .f.run )
+	names( .res.list ) <- .names
+	
+	## CHECK FOR HAPLIN FAILURES
+	.ftest <- function( x ){
+		return( identical( class( x ), "try-error" ) )
+	}
+	if( .para == "parallel" ){
+		.errs <- unlist( parallel::parLapply( w, .res.list, .ftest ) )
+	} else if( .para == "Rmpi" ){
+		.errs <- unlist( Rmpi::mpi.parLapply( .res.list, .ftest ) )
+	}
+#i#	if( .para == "snow" ) .errs <- parLapply( w, .res.list, class ) == "try-error"
 }
-#
+
 ## GO THROUGH POSSIBLE ERRORS
-if(any(.errs)){
+if( any( .errs ) ){
 	## COLLECT ERROR MESSAGES, CHANGE OUTPUT TO NA WITH ERR. MESS. AS ATTRIBUTES
 	.mess <- .res.list[.errs]
-	.err.res <- lapply(.mess, function(x) {
+	.err.res <- lapply( .mess, function( x ) {
 		.tmpres <- NA
-		attributes(x) <- NULL # REMOVE "try-error"
-		attr(.tmpres, "error.message") <- x
-		return(.tmpres)
-	})
+		attributes( x ) <- NULL # REMOVE "try-error"
+		attr( .tmpres, "error.message" ) <- x
+		return( .tmpres )
+	} )
 	.res.list[.errs] <- .err.res
 }
-if(!missing(slaveOutfile)) sink(file = slaveOutfile, append = T)
-	cat("\n --- haplinSlide has completed ---\n")
-if(!missing(slaveOutfile)) sink()
-#
+if( !missing( slaveOutfile ) ){
+	sink( file = slaveOutfile, append = T )
+}
+cat( "\n --- haplinSlide has completed ---\n" )
+if( !missing( slaveOutfile ) ) sink( )
+
 ## SET CLASS
-class(.res.list) <- "haplinSlide"
-#
+class( .res.list ) <- "haplinSlide"
+
 ## RETURN RESULT LIST
-return(.res.list)
+return( .res.list )
 }

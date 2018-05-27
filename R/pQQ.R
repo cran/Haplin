@@ -95,7 +95,7 @@ if(is.numeric(mark)){
 ### LABELS ON THE nlabs MOST SIGNIFICANT
 if(nlabs > 0){
 	.ind <- seq(length.out = nlabs)
-	text(.adj.logaux[.ind], .logpvals[.ind] - 0.05, names(.pvals)[.ind], srt = 270, font = 2, cex = 0.7, adj = 0, col = "black", xaxs = "i", yaxs = "i")
+	text(.adj.logaux[.ind], .logpvals[.ind] + 0.05, names(.pvals)[.ind], srt = 90, font = 2, cex = 0.7, adj = 0, col = "black", xaxs = "i", yaxs = "i", xpd = TRUE)
 }
 return(invisible())
 }

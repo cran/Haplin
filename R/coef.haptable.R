@@ -1,4 +1,4 @@
-coef.haptable <- function(object, ...){
+coef.haptable <- function(object, poo.p.val = FALSE, ...){
 ##
 ## EXTRACT AND FORMAT A COEFFICIENT TABLE FROM A HAPTABLE.
 ## THE COEFFICIENT TABLE HAS THE SAME FORMAT AS THE RESULT OF USING
@@ -50,7 +50,14 @@ if(.poo){
 	rownames(.RRcm) <- paste("RRcm", 1:.n.sel.haplo, sep = "")
 	rownames(.RRcf) <- paste("RRcf", 1:.n.sel.haplo, sep = "")
 	colnames(.RRcm) <- colnames(.RRcf) <- .colnavn
-	.RR <- rbind(.RRcm, .RRcf)
+	if( poo.p.val ){
+		.RRcm.RRcf <- .tab[ ,c( "RRcm_RRcf.est.", "RRcm_RRcf.lower", "RRcm_RRcf.upper", "RRcm_RRcf.p.value" ) ]
+		rownames(.RRcm.RRcf) <- paste("RRcm_RRcf", 1:.n.sel.haplo, sep = "")
+		colnames(.RRcm.RRcf) <- .colnavn
+		.RR <- rbind(.RRcm, .RRcf, .RRcm.RRcf)
+	} else {
+		.RR <- rbind(.RRcm, .RRcf)
+	}
 }else{
 	.RR <- .tab[, c("RR.est.", "RR.lower", "RR.upper", "RR.p.value")]
 	colnames(.RR) <- .colnavn

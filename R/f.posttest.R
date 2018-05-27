@@ -1,4 +1,4 @@
-f.posttest <- function(coef_, cov_, test){
+f.posttest <- function(coef_, cov_, test, test.type = "interaction"){
 ##
 ## EXTRACT COEFFICIENTS TO BE TESTED
 ## BUILD CONTRAST MATRIX FOR INTERACTIONS
@@ -8,6 +8,8 @@ f.posttest <- function(coef_, cov_, test){
 #
 .coef <- coef_
 .cov <- cov_
+#
+.test.type <- test.type
 #
 ## SELECT COEFFICIENTS TO BE TESTED
 f.vis(.coef <- lapply(.coef, function(x)x[test, , drop = F]), vis = .vis)
@@ -20,7 +22,7 @@ f.vis(.coef.vec <- unlist(.coef), vis = .vis)
 f.vis(.cov.mat <- f.bdiag(.cov), vis = .vis)
 #
 ## BUILD CONTRAST MATRIX
-.A <- f.post.contrasts(test.type = "interaction", n.res = .l, n.pars = .n.pars)
+.A <- f.post.contrasts(test.type = test.type, n.res = .l, n.pars = .n.pars)
 #
 ## DO CHI-SQUARED TEST
 .chisq.res <- f.post.chisq(coeff = .coef.vec, covar = .cov.mat, contrast.mat = .A)

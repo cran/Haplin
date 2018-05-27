@@ -1,54 +1,42 @@
-f.sep.data <- function(data, info){
+f.sep.data <- function( data, info ){
 ##
-## SPLIT GENETIC DATA FROM VARIABLES.
 ## RESHAPE GENETIC DATA INTO COMPLETE HAPLOTYPE DATA
 ##
 design <- info$model$design
 xchrom <- info$model$xchrom
 n.vars <- info$filespecs$n.vars
-.alleles <- info$haplos$alleles
-#
-if(n.vars > 0){
-	.data.gen <- data[,-(1:n.vars), drop = F] # SELECTS GENETIC DATA
-	attr(.data.gen, "alleles") <- .alleles # MAKE SURE TO KEEP ATTRIBUTES
-	#
-	.data.vars <- data[,1:n.vars, drop = F] # SELECT VARIABLES
-	attr(.data.vars, "variables") <- attr(data, "variables")
-}else{
-	.data.gen <- data # NO CHANGE
-	.data.vars <- NULL
+alleles <- info$haplos$alleles
+
+nloci <- length( alleles ) 
+# checking whether any locus contain only one allele
+# (this can happen if we omit some data, e.g., due to missingness);
+# if so, re-code this data
+for(i in 1:nloci){
+	alleles.count <- length( alleles[[ i ]] )
+	if( alleles.count == 1 ){
+		if(design %in% c("triad", "cc.triad")){
+			chosen.cols <- ((i-1)*6 + 1):((i-1)*6 + 6)
+		}
+		if(design == "cc"){
+			chosen.cols <- ((i-1)*2 + 1):((i-1)*2 + 2)
+		}
+		data$gen.data[ ,chosen.cols ] <- 1
+	}
 }
-#
+
 ## TEST FOR HWE
 if(!xchrom){
-	.HWE.res <- f.HWE.design(.data.gen, design = design) 
+	.HWE.res <- f.HWE.design( data, design = design )
+} else {
+	.HWE.res <- f.HWE.design( data, design = design, sex = data$cov.data[, info$variables$sex] )
 }
-if(xchrom){
-	.HWE.res <- f.HWE.design(.data.gen, design = design, sex = data[, info$variables$sex]) 
-}
-#
+
 ## RESHAPE GENETIC DATA
-#
-## TRIAD + CC.TRIAD DESIGN (NO X-CHROM):
-if((design %in% c("triad", "cc.triad")) & !xchrom){
-	.data.gen <- f.sort.alleles.new(.data.gen)
+if( xchrom ){
+	.data.gen <- f.sort.alleles.new( data, design = design, xchrom = T, sex = data$cov.data[, info$variables$sex] )
+} else {
+	.data.gen <- f.sort.alleles.new( data, design = design )
 }
-#
-## TRIAD + CC.TRIAD DESIGN (ON THE X-CHROM):
-if((design %in% c("triad", "cc.triad")) & xchrom){
-	.data.gen <- f.sort.alleles.new(.data.gen, xchrom = T, sex = data[, info$variables$sex])
-}
-#
-## CASE-CONTROL DESIGN (NO X-CHROM):
-if((design == "cc") & !xchrom){
-	.data.gen <- f.sort.alleles.cc(.data.gen)
-}
-#
-## CASE-CONTROL DESIGN (ON THE X-CHROM):
-if((design == "cc") & xchrom){
-	.data.gen <- f.sort.alleles.cc(.data.gen, xchrom = T, sex = data[, info$variables$sex])
-}
-#
-#
-return(list(data.gen = .data.gen, data.vars = .data.vars, HWE.res = .HWE.res))
+
+return( list(data.gen = .data.gen, HWE.res = .HWE.res) )
 }

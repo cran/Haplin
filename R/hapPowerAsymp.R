@@ -1,4 +1,4 @@
-hapPowerAsymp <- function(nall, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, RRcf, RRstar, RR.mat, RRstar.mat, xchrom = F, sim.comb.sex = "double", BR.girls, response = "mult", alpha = 0.05, ...){
+hapPowerAsymp <- function(nall=2, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, RRcf, RRstar, RR.mat, RRstar.mat, xchrom = F, sim.comb.sex = "double", BR.girls, response = "mult", alpha = 0.05, ...){
 #
 #
 if(response=="free") stop("response = \"free\" is not yet implemented", call. = F)
@@ -9,9 +9,12 @@ if(response=="free") stop("response = \"free\" is not yet implemented", call. = 
 if(alpha<0 | alpha>1) stop("The significance level, alpha, must have a value between 0 and 1", call. = F)
 #
 .sim.maternal <- FALSE
-if(!missing(RR.mat) | !missing(RR.mat)) .sim.maternal <- TRUE
+if(!missing(RR.mat) | !missing(RRstar.mat)) .sim.maternal <- TRUE
 .sim.poo <- FALSE
 if(!missing(RRcm) | !missing(RRcf)) .sim.poo <- TRUE
+#
+if(missing(RRstar)) RRstar <- rep(1,.nhaplo)
+if(.sim.maternal && missing(RRstar.mat)) RRstar.mat <- rep(1,.nhaplo)
 #
 ## Save misc tests for hapCovar
 #

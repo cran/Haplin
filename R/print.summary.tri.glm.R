@@ -19,7 +19,7 @@ if(missing(haplos)) haplos <- .fn("h")
 #
 #### PRINT GENERAL INFORMATION: ####################
 cat("\nDate of call:\n")
-cat(x$date, "\n")	
+cat(.info$misc$date, "\n")	
 cat("\nNumber of triads: ", round(x$n.tri), "\n", sep = "")
 cat("\nNumber of haplotypes: ", round(x$n.all), "\n", sep = "")	#
 #

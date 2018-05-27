@@ -27,7 +27,7 @@ f.grid.asymp <- function(pos, design, xchrom, n.vars, nall, case.design, control
 		}		
 		if(xchrom){
 			## Add fathers and children
-			.grid.fathers <- as.matrix(.grid[,grep("f",colnames(.grid))])
+			.grid.fathers <- as.matrix(.grid[,grep("\\.f",colnames(.grid))])
 			colnames(.grid.fathers) <- paste("l",rep(1:length(nall),each=1),c(".f1"),sep="")
 			.grid <- cbind(.grid,.grid.fathers)
 			.grid.children <- lapply(1:length(nall), function(x){
@@ -46,12 +46,12 @@ f.grid.asymp <- function(pos, design, xchrom, n.vars, nall, case.design, control
 		} else .grid.cases <- .grid
 		#
 		## Set columns missing (if family members are missing by design)
-		if(!grepl("m", .case.design)) .grid.cases[,grep("m",colnames(.grid.cases))] <- NA 
-		if(!grepl("f", .case.design)) .grid.cases[,grep("f",colnames(.grid.cases))] <- NA 
+		if(!grepl("m", .case.design)) .grid.cases[,grep("\\.m",colnames(.grid.cases))] <- NA 
+		if(!grepl("f", .case.design)) .grid.cases[,grep("\\.f",colnames(.grid.cases))] <- NA 
 		if(.design=="cc.triad"){
-			if(!grepl("m", .control.design)) .grid.controls[,grep("m",colnames(.grid.controls))] <- NA 
-			if(!grepl("f", .control.design)) .grid.controls[,grep("f",colnames(.grid.controls))] <- NA 
-			if(!grepl("c", .control.design)) .grid.controls[,which(colnames(.grid.controls)=="c")] <- NA
+			if(!grepl("m", .control.design)) .grid.controls[,grep("\\.m",colnames(.grid.controls))] <- NA 
+			if(!grepl("f", .control.design)) .grid.controls[,grep("\\.f",colnames(.grid.controls))] <- NA 
+			if(!grepl("c", .control.design)) .grid.controls[,grep("\\.c",colnames(.grid.controls))] <- NA			
 			.grid <- rbind(.grid.controls,.grid.cases)
 		} else .grid <- .grid.cases
 	}

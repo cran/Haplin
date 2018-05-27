@@ -31,7 +31,7 @@ hapSim <- function(nall, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, RR
 ##
 #
 .sim.maternal <- FALSE
-if(!missing(RR.mat) | !missing(RR.mat)) .sim.maternal <- TRUE
+if(!missing(RR.mat) | !missing(RRstar.mat)) .sim.maternal <- TRUE
 #
 .sim.poo <- FALSE
 if(!missing(RRcm) | !missing(RRcf)) .sim.poo <- TRUE

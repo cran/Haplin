@@ -15,6 +15,14 @@ if(test.type == "interaction"){
 	
 }
 
+if(test.type == "interaction.trend"){
+	f.vis(.id <- diag(n.pars), vis = .vis)
+	f.vis(.A1 <- t(1:n.res - (n.res+1)/2), vis = .vis)
+
+	f.vis(.A <- .A1 %x% .id, vis = .vis)
+
+}
+
 return(.A)
 
 }

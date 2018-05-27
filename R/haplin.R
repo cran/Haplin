@@ -1,22 +1,21 @@
-haplin <- function(filename, data, pedIndex,
-markers = "ALL", n.vars = 0, sep = " ", allele.sep = ";", na.strings = "NA",
+haplin <- function( data, markers = "ALL",
 design = "triad", use.missing = FALSE, xchrom = FALSE, maternal = FALSE, test.maternal = FALSE, poo = FALSE, scoretest = "no",
 ccvar = NULL, strata = NULL, sex = NULL, comb.sex = "double",
 reference = "reciprocal", response = "free", threshold = 0.01, max.haplos = NULL, haplo.file = NULL,
-resampling = "no", max.EM.iter = 50, data.out = "no", verbose = TRUE, printout = TRUE
-)
-{
-##
-## filename: (character string) filename 
-## n.vars is the number of columns before genetic data columns, sep = " " is the column separator, allele.sep = ";" separates alleles within marker, na.strings = "NA" identifies missing values
-## ccvar is the position of the case-control variable, covar is the position of the environment covariate
-## 
+resampling = "no", max.EM.iter = 50, data.out = "no", verbose = TRUE, printout = TRUE ){
+#
+# sep = " " is the column separator, allele.sep = ";" separates alleles within marker, na.strings = "NA" identifies missing values
+# ccvar is the position of the case-control variable, covar is the position of the environment covariate
+#
 # PAABEGYNT 13/1-04 KL. 22.46
 #
 #
 ## EXTRACT AND CHECK ARGUMENTS
 cur.call <- match.call()
 .info <- f.catch( cur.call, formals() )
+#
+.info$misc$orig.call <- sys.call( )
+.info$misc$date <- date( )
 #
 ## SET PARAMETERS, FOR SIMPLICITY
 design <- .info$model$design
@@ -33,18 +32,25 @@ data.out <- .info$control$data.out
 printout <- .info$control$printout
 #
 ## START 
-if( verbose ) cat( "\n## HAPLIN, VERSION 6.2.1 ##\n" )
-#
-## LOAD DATA, EITHER FROM FILE OR FROM DATA OBJECT
-.data.read <- f.get.data(data, pedIndex, .info)
-#
+if( verbose ) cat( "\n## HAPLIN, VERSION ", packageDescription("Haplin")$Version, " ##\n", sep = "" )
+
+# .info$control$sel.markers <- TRUE
+if( !is.null( attr( data, "sel.markers" ) ) ){
+	.info$control$sel.markers <- attr( data, "sel.markers" )
+}
+
+if( !( class( data ) %in% c( "haplin.ready", "prep.data" ) ) ){
+	stop( "The given input data is not ready for haplin analysis! Please use 'genDataPreprocess' function first!", call. = FALSE )
+}
+
+## preparing the data:
 ## DATA OUT, IF REQUESTED
 if( data.out == "basic" ){
-	return( f.data( data.read = .data.read, quick = T ) )
+	return( f.data( data.read = data, info = .info, quick = T ) )
 }
 #
 ## PREPARE DATA, RETURN HERE
-.tmp <- f.data(data.read = .data.read)
+.tmp <- f.data( data.read = data, info = .info )
 #
 ## DATA OUT, IF REQUESTED
 if( data.out == "prelim" ){
@@ -246,7 +252,7 @@ if( verbose ){
 	cat( "\nEstimation finished, preparing output... " )
 }
 #
-.out <- list( result = .res, orig.call = sys.call( ), date = date( ), loglike = .lratio.ut, score = .score.ut, var.cov = .var.cov.ut, info = .info, temp = list( o.var.covar.list = .o.var.covar.list, npars.0 = .npars.0 ), temp1 = .data )
+.out <- list( result = .res, loglike = .lratio.ut, score = .score.ut, var.cov = .var.cov.ut, info = .info, temp = list( o.var.covar.list = .o.var.covar.list, npars.0 = .npars.0 ), temp1 = .data )
 class( .out ) <- "haplin"
 #
 if( verbose ){

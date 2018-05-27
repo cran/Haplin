@@ -1,0 +1,13 @@
+bibentry(
+	bibtype = "Article",
+	title = "Case-parent triads: Estimating single- and double-dose
+	effects of fetal and maternal disease gene haplotypes",
+	author = c(person("H\\aa{}kon K", "Gjessing"), person("Rolv Terje", "Lie") ),
+	journal = "Annals of Human Genetics",
+	volume = "70",
+	number = "3",
+	pages = "382--396",
+	year = "2006",
+	url = "http://onlinelibrary.wiley.com/doi/10.1111/j.1529-8817.2005.00218.x/abstract",
+	textVersion = "Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396"
+)

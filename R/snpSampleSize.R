@@ -18,7 +18,7 @@ snpSampleSize <- function(fam.cases, fam.controls, fraction = 0.5, RR, MAF, alph
 ## Function for calculating the power, based on normal approximation on log(OR)
 or.power <- function(p2, OR, n1, fraction, alpha = 0.05, power = 0.80){
 	n2 <- n1*(1-fraction)/fraction
-	p1 <- p2*OR/(1-p2+p2*OR)
+	p1 <- p2*OR/(1-p2+p2*OR)  # p1 er allelefrekvens i case-gruppen (MAF i case-gruppen). p2 er MAF i kontrollgruppen
 	.sd <- sqrt((1/(n1*p1*(1-p1)))+1/(n2*p2*(1-p2)))
 	return(1+pnorm(-qnorm(1-alpha/2)-log(OR)/.sd)-pnorm(qnorm(1-alpha/2)-log(OR)/.sd) - power)
 }
@@ -53,15 +53,45 @@ if(!is.numeric(alpha) || any(alpha <= 0 | alpha >= 1)) stop("\"alpha\" contains 
 if(!is.numeric(.power) || any(.power <= 0 | .power >= 1) | any(.power <= alpha)) stop("\"power\" is not specified correctly", call. = F) 
 #
 ## Weights for the different family designs
-.case.w <- c(2, 2, 2, 2)
-.pseudo.w <- c(2, 1, 1, 0)
-.control.w <- c(4, 3, 3, 4, 2, 2, 2, 0)
-names(.case.w) <- .case.des
-names(.pseudo.w) <- .case.des
-names(.control.w) <- .control.des
+.tab.w <- cbind(1:length(fam.cases), 1:length(fam.controls), fraction=fraction, RR = RR, MAF = MAF, alpha = alpha, power=power)
 #
-.allele.weights <- as.data.frame(cbind(cases = .case.w[fam.cases], controls = .control.w[fam.controls], pseudo = .pseudo.w[fam.cases], fraction = fraction))
+.rat.loss.pseudo <- apply(.tab.w, 1, function(x){
+	.k <- (1-x["MAF"])/(x["MAF"]*x["RR"])
+	.rat.loss <- .k/(1 + .k)^2
+	.rat.loss
+})
+#
+.rat.loss.controls <- apply(.tab.w, 1, function(x){
+	.k <- (1-x["MAF"])/x["MAF"]
+	.rat.loss <- .k/(1 + .k)^2
+	.rat.loss
+})
+#
+.l <- length(.rat.loss.pseudo)
+.case.w <- c(2, 2, 2, 2)
+.pseudo.w <- matrix(c(rep(2,.l), (1-.rat.loss.pseudo), (1-.rat.loss.pseudo), rep(0,.l)), nrow=.l)
+.control.w <- matrix(c(rep(4,.l), (3-.rat.loss.controls), (3-.rat.loss.controls), rep(4, .l), rep(2,.l), rep(2,.l), rep(2,.l),rep(0,.l)),nrow=.l)
+#
+names(.case.w) <- .case.des
+colnames(.pseudo.w) <- .case.des
+colnames(.control.w) <- .control.des
+#
+if(length(fam.cases)==1) fam.cases <- rep(fam.cases,.l)
+.w <- rep(NA, .l)
+for(i in 1:.l)	.w[i] <- .pseudo.w[i, which(colnames(.pseudo.w)==fam.cases[i])]	
+.pseudo.w <- .w
+#
+if(length(fam.controls)==1) fam.controls <- rep(fam.controls,.l)
+.w <- rep(NA, .l)
+for(i in 1:.l) .w[i] <- .control.w[i, which(colnames(.control.w)==fam.controls[i])]
+.control.w <- .w
+#
+.case.w <- .case.w[fam.cases]
+names(.case.w) <- NULL
+#
+.allele.weights <- as.data.frame(cbind(cases = .case.w, controls = .control.w, pseudo = .pseudo.w, fraction = fraction))
 .allele.weights$fraction[which(fam.controls == "no_controls")] <- 1
+if(length(fam.controls)==1 && fam.controls == "no_controls") .allele.weights$fraction <- 1
 rownames(.allele.weights) <- NULL
 #
 ## Finding the fraction of case alleles

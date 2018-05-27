@@ -1,7 +1,7 @@
 hapRun <- function(nall, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, RRcf, RRstar, RR.mat, RRstar.mat, hapfunc = "haplin", gen.missing.cases = NULL, gen.missing.controls = NULL, n.sim = 1000, xchrom = FALSE, sim.comb.sex = "double", BR.girls, dire, ask = TRUE, cpus = 1, slaveOutfile = "", ...){
 ##
 ##
-## Simulates genetic data in Haplin format, consisting of fetal effects, maternal effects and/or parent-of-origin effects, then runs haplin or haplinSlides on the simulated data files. 
+## Simulates genetic data in Haplin format, consisting of fetal effects, maternal effects and/or parent-of-origin effects, then runs haplin, haplinStrat or haplinSlide on the simulated data files. 
 ## Allows for simulations and calculations on both autosomal and X-linked markers, assuming HWE.
 ##
 ##
@@ -14,7 +14,7 @@ hapRun <- function(nall, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, RR
 ## RRcm and RRcf are numeric vectors of the relative risks associated with the haplotypes transmitted from the mother and father, respectively.
 ## RRstar is a numeric vector and estimates how much double-dose children would deviate from the risk expected in a multiplicative dose-response relationship.
 ## RR.mat and RRstar.mat have an interpretation simular to RR and RRstar respectively, when simulating genetic data with maternal effects.
-## hapfunc. Defines which haplin function to run, "haplin" or "haplinSlide,". "haplinStrat" is not yet implemented.
+## hapfunc. Defines which haplin function to run, "haplin" or  "haplinStrat". "haplinSlide" is only partially implemented.
 ## gen.missing.cases generates missing values at random for the case families. Set to "NULL" by default, i.e. no missing values generated.
 ## gen.missing.controls generates missing values at random for the control families. Set to "NULL" by default, i.e. no missing values generated.
 ## n.sim is the number of simulations, i.e., the number of simulated data files.
@@ -25,13 +25,19 @@ hapRun <- function(nall, n.strata = 1, cases, controls, haplo.freq, RR, RRcm, RR
 ## ask is a logical variable. If "TRUE", hapSim will ask before overwriting the files in an already existing directory.
 ## cpus. Allows parallel processing of its analyses. The cpus argument should preferably be set to the number of available cpu's. If set lower, it will save some capacity for other processes to run. Setting it too high should not cause any serious problems. 
 ## slaveOutfile. Character. If slaveOutfile = "" (default), output from all running cores will be printed in the standard R session window.
-## ... Arguments to be used by haplin or haplinSlides.
+## ... Arguments to be used by haplin0 or haplinSlide0.
 ##
 ##
 ##
 #
+## Make sure ... does not contain arguments that cannot be passed onto haplin0, haplinStrat0 or haplinSlide0
+## NB! Abbreviations not allowed!
+.list.arg <- names(list(...))
+.list.hap <- unique(c(names(formals(haplin0)),names(formals(haplinStrat0)),names(formals(haplinSlide0))))
+if(any(!.list.arg %in% .list.hap)) stop(paste(hapfunc, " cannot reckognize some of the following arguments: ", paste(.list.arg, sep="", collapse=", "), sep=""), call. = F)
+#
 .sim.maternal <- FALSE
-if(!missing(RR.mat) | !missing(RR.mat)) .sim.maternal <- TRUE
+if(!missing(RR.mat) | !missing(RRstar.mat)) .sim.maternal <- TRUE
 #
 .sim.poo <- FALSE
 if(!missing(RRcm) | !missing(RRcf)) .sim.poo <- TRUE
@@ -105,7 +111,7 @@ if(xchrom & sim.comb.sex == "males") cat("The males are simulated assuming no co
 if(length(unique(.design))==1) .design <- unique(.design)
 else stop("Unable to specify haplin design due to the combination of arguments \"cases\" and \"controls\"", call.=F)
 #
-## Specify arguments to be passed to haplin, haplinStrat, haplinSlide
+## Specify arguments to be passed to haplin0, haplinStrat0, haplinSlide0
 .n.vars <- 1
 if(.missing.controls) .n.vars <- 0
 .strata <- NULL
@@ -148,7 +154,7 @@ if(hapfunc != "haplinSlide") {
 	.ref.cat <- which.max(.haplo.freq)
 }	
 #
-## Arguments specified by user to be passed on to by haplin, haplinSlide or haplinStrat
+## Arguments specified by user to be passed on to haplin0, haplinSlide0 or haplinStrat0
 .lu <- list(...)
 .ld <- list(n.vars = .n.vars, design = .design, ccvar = .ccvar, xchrom = xchrom, sex = .sex, strata = .strata, reference = .ref.cat, verbose = FALSE, haplo.file = .haplo.file, use.missing = TRUE, printout = FALSE)
 .nu <- names(.lu)
@@ -157,7 +163,7 @@ if(hapfunc != "haplinSlide") {
 ## Set argument(s) to user defined value(s)
 .ld[.nu] <- .lu
 #
-## Report if default haplin arguments are overwritten
+## Report if default haplin0 arguments are overwritten
 .fixed <- c("n.vars", "ccvar", "sex", "strata", "max.haplos", "haplo.file", "data.out")
 if(any(.fixed%in%.nu)) stop(paste("The following arguments are not valid:", paste(intersect(.fixed,.nu), collapse = ", "), "\n", sep = " "), call. = F)
 if(!is.numeric(.ld$reference) | .ld$reference>.nhaplo |.ld$reference<1) stop("Argument \"reference\" is not valid", call. = F)
@@ -168,7 +174,7 @@ if(.dire) .simfiles <- paste(dire, "/", 1:n.sim, sep = "")
 else .simfiles <- 1:n.sim
 .filename <- paste(.simfiles, "/", "sim1.dat", sep = "")
 #
-### Function running haplin (one version or another)
+### Function running haplin0 (one version or another)
 .hapRun <- function(x){
 	## Haplin must be made available in each run
 	suppressPackageStartupMessages(require(Haplin, quietly = T))
@@ -203,7 +209,7 @@ else .simfiles <- 1:n.sim
 		else colnames(.file) <- paste("l_",rep(1:.nloci,each=6),rep(c(".m",".f",".c"),each=2),c(1,2),sep="")
 	}	
 	#
-	.ld <- c(list(data=.file), allele.sep = " ", .ld)
+	.ld <- c(list(data=.file), .ld)
 	#
 	## Write to file if .dire = T
 	if(.dire && nzchar(dire)){
@@ -212,16 +218,16 @@ else .simfiles <- 1:n.sim
 	}
 	#
 	if(hapfunc == "haplin"){
-		.haplin <- do.call(haplin, args = .ld)
+		.haplin <- do.call(haplin0, args = .ld)
 		.output <- haptable(.haplin)
 	}
 	if(hapfunc == "haplinSlide"){
 		.ld <- c(.ld, table.output = F)
-		.haplin <- do.call(haplinSlide, args = .ld)
+		.haplin <- do.call(haplinSlide0, args = .ld)
 		.output <- suest(.haplin)
 	}
 	if(hapfunc == "haplinStrat"){
-		.haplin <- do.call(haplinStrat, args = .ld)
+		.haplin <- do.call(haplinStrat0, args = .ld)
 		.output <- gxe(.haplin)
 	}
 	#

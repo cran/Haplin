@@ -163,8 +163,32 @@ names(.chisq.res) <- .test
 .ut <- do.call("rbind", .chisq.res)
 .ut <- dframe(gxe.test = rownames(.ut), .ut)
 rownames(.ut) <- NULL
+
 #
-##
+## Trend test if strata > 2
+if(length(.object.list) > 2 & !anyNA(as.numeric(names(.object.list)))){
+	if(length(.object.list) > 9){
+	 	.order <- order(as.numeric(names(.object.list)))
+	 	.coef <- .coef[.order]
+	 	.cov <- .cov[.order]
+	 }
+	.chisq.trend <- lapply(.test, function(x) f.posttest(coef_ = .coef, cov_ = .cov, test = .names.tests[[x]], test.type="interaction.trend"))
+	names(.chisq.trend) <- .test
+	#
+	## Remove redundant y-vector and reduce to numeric
+	.chisq.trend <- lapply(.chisq.trend, function(x) {
+		x$y <- NULL
+		return(unlist(x))
+	})
+	#
+	.ut.trend <- do.call("rbind", .chisq.trend)
+	.ut.trend <- dframe(gxe.test = rownames(.ut.trend), .ut.trend)
+	rownames(.ut.trend) <- NULL
+	.ut.trend$gxe.test <- paste(.ut.trend$gxe.test,"trend",sep=".")
+	#
+	.ut <- rbind(.ut, .ut.trend)
+}
+#
 .ut <- list(gxe.test = .ut)
 class(.ut) <- "gxe"
 #

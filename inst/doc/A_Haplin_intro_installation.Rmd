@@ -1,0 +1,63 @@
+---
+title: "Introduction: installing and citing Haplin"
+author: "Hakon K. Gjessing and Julia Romanowska"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Introduction: installing and citing Haplin}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Citing use of Haplin
+
+If you find Haplin useful, please acknowledge our work by citing:
+  
+>  Gjessing HK and Lie RT. ["Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes."](https://folk.uib.no/gjessing/genetics/software/haplin/docu/Gjessing_Lie_2006.pdf) __Annals of Human Genetics__ _(2006)_ 70, pp. 382-396.
+
+The BibTex entry for LaTeX users can be obtained by the following command in R:
+
+```{r echo=FALSE,results='hide',message=FALSE,warning=FALSE}
+library( Haplin, quietly = TRUE )
+```
+
+```{r }
+citation( "Haplin" )
+```
+
+# Obtaining and installing Haplin
+
+## Requirements
+
+Haplin is written for use with the statistical software R. However, it is easy to install and requires no previous knowledge of R. R can be downloaded free of charge from [The R Project for Statistical Computing](https://www.r-project.org/). Haplin is implemented as a standard R library, and should run without problems on all reasonably new R versions, for Windows, Linux or MAC.
+
+Haplin is dependent on several other R packages:
+
+`MASS, mgcv, tools, ff, ffbase, snow`
+
+These are automatically installed together with Haplin (see below).
+
+Moreover, if you want to use the plotting functions for plotting the results of __haplinSlide__ and __haplinStrat__, you should install the [ggplot2](https://CRAN.R-project.org/package=ggplot2) package separately. You can still use Haplin if you don't have this package, though!
+
+For running on a cluster, you would need the [Rmpi](https://CRAN.R-project.org/package=Rmpi) package installed, see the vignette __"Running Haplin on cluster"__.
+
+## Installation
+
+To install Haplin in R:
+```{r eval=FALSE}
+install.packages( "Haplin", dependencies = TRUE )
+```
+
+Haplin and the dependent packages will then be installed automatically over the internet from the [CRAN library](https://CRAN.R-project.org/package=Haplin).
+
+To start using Haplin, open a new R session (either in a terminal window or any IDE, e.g., [RStudio](https://www.rstudio.com/)). Then, use the R command:
+```{r eval=FALSE}
+library( Haplin )
+```
+
+Haplin is then loaded and ready for use.
+
+<!-- ## GUI -->
+
+<!-- An easily accessible Graphical User Interface for generating Haplin syntax is available at [haplin.fhi.no](http://haplin.fhi.no), thanks to Nguyen Trung Truc. The syntax generator helps setting up Haplin commands which can be cut and pasted into your own R window. It includes some (but not all) of the features currently available in Haplin. -->
+

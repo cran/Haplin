@@ -28,9 +28,9 @@ response = "mult", alpha = 0.05, ...)
 	\item{RRstar}{A list of numeric vectors. Estimates how much double-dose children would deviate from the risk expected in a multiplicative dose-response relationship.}
 	\item{RR.mat}{The interpretation is similar to \code{RR} when simulating genetic data with maternal effects.}
 	\item{RRstar.mat}{The interpretation is similar to \code{RRstar} when simulating genetic data with maternal effects.}
-	\item{xchrom}{Logical. Equals \code{FALSE} by default, which indicates simulation of autosomal markers. If \code{TRUE}, hapSim simulates X-linked genes.}
+	\item{xchrom}{Logical. Equals \code{FALSE} by default, which indicates analyses of autosomal markers. If \code{TRUE}, \code{hapPowerAsymp} performs power analyses of X-linked markers.}
 	\item{sim.comb.sex}{To be used with \code{xchrom = TRUE}. A character value that specifies how to handle gender differences on the X-chromosome. If \code{"single"}, the effect of a (single) allele in males is equal to the effect of a single allele dose in females, and similarly, if \code{"double"}, a single allele in males has the same effect as a double allele dose in females. Default is "double", which corresponds to X-inactivation.} 
-	\item{BR.girls}{To be used with \code{xchrom = TRUE}. Gives the ratio of baseline risk for females to the baseline risk for males.}
+	\item{BR.girls}{To be used with \code{xchrom = TRUE}. Gives the ratio of baseline risk for females relative to the baseline risk for males.}
 	\item{response}{The default value "mult" specifies a multiplicative dose-response model. \code{response = "free"} is not yet implemented.}
 	\item{alpha}{\code{alpha} is the Type I Error probablity. Equals 0.05 by default.}
 	\item{...}{Could include argument \code{reference}. By default, the most frequent allele or haplotype is chosen as reference. The reference haplotype can be set explicitly by giving a numeric value for the reference argument.} 

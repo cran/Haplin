@@ -1,5 +1,4 @@
-summary.tri.glm <-
-function(object, reference.method, conf.int = T, n.sim = 10000, level = 0.95, info, ...)
+summary.tri.glm <- function(object, reference.method, conf.int = T, n.sim = 10000, level = 0.95, info, ...)
 {
 # CREATES A SUMMARY OF AN OBJECT OF CLASS tri.glm
 # NOTE: ... IS JUST IGNORED
@@ -30,7 +29,7 @@ if(!conf.int) {
 	#
 	## COMPUTE REPARAMETRIZATION:
 	.effects <- t(f.compute.effects(.res$coefficients, maternal = .maternal, reference.method = reference.method, n.all = .n.all, info = info))
-	.ut <- list(effects = .effects, design = info$model$design, pvalues = NULL, maternal = .maternal, conf.int = conf.int, n.all = .n.all, n.tri = .n.tri, level = level, orig.call = object$orig.call, date = object$date, ref.cat = .ref.cat)
+	.ut <- list(effects = .effects, design = info$model$design, pvalues = NULL, maternal = .maternal, conf.int = conf.int, n.all = .n.all, n.tri = .n.tri, level = level, ref.cat = .ref.cat, info = info)
 }
 #
 if(F){
@@ -114,7 +113,7 @@ if(exists("debug.haplin.pvalues")){
 }
 #
 .effects.CI <- cbind(.effects.CI, p.value = as.numeric(.pvalues))
-.ut <- list(effects = .effects.CI, design = info$model$design, pvalues = .pvalues, maternal = .maternal, conf.int = conf.int, n.all = .n.all, n.tri = .n.tri, level = level, orig.call = object$orig.call, date = object$date, ref.cat = .ref.cat, info = info)
+.ut <- list(effects = .effects.CI, design = info$model$design, pvalues = .pvalues, maternal = .maternal, conf.int = conf.int, n.all = .n.all, n.tri = .n.tri, level = level, ref.cat = .ref.cat, info = info)
 }
 #		
 class(.ut) <- "summary.tri.glm"

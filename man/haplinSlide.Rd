@@ -1,25 +1,24 @@
 \name{haplinSlide}
 \alias{haplinSlide}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Fit \code{haplin} in a series of sliding windows over a sequence of markers/SNPs}
+\title{Run haplin analysis in a series of sliding windows over a sequence of markers/SNPs}
 \description{
  Produces a list, each element of which is an object of class \code{haplin}, which is the result of fitting the log-linear \code{haplin} models to the data one "window" at a time. 
 }
 \usage{
-haplinSlide(filename, data, pedIndex, markers = "ALL", winlength = 1, 
-strata = NULL, table.output = TRUE, cpus = 1, slaveOutfile = "", 
+haplinSlide( data, markers = "ALL", winlength = 1, 
+strata = NULL, table.output = TRUE, cpus = 1, para.env = NULL, slaveOutfile = "", 
 printout = FALSE, verbose = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-	\item{filename}{A character string giving the name and path of the ASCII data file to be read. The file should be in the Haplin data format. }
-	\item{data}{An R-object which is the result of using \code{load.gwaa.data} to load data into R. See the web page for a description of how to convert a ped file into a file that can be loaded. The conversion uses \code{prepPed} and \code{convert.snp.ped}.}
-	\item{pedIndex}{A file of family indexes constructed by using \code{prepPed} on the original ped file. This file is used by Haplin to extract and store family information.}
+	\item{data}{R-object of class "haplin.ready", which is e.g., output from \code{\link{genDataPreprocess}} or \code{\link{genDataLoad}}, and contains covariate and genetic data.}
 	\item{markers}{Default is "ALL", which means haplinSlide uses all available markers in the data set in the analysis. Alternatively, the relevant markers can be specified by, for instance, \code{markers = c(1, 3:10)}, which would use the 10 first markers except marker 2. \code{haplinSlide} will then run haplin on a series of windows selected from the supplied \code{markers}. The \code{winlength} argument decides the length of the windows. See details.}
 	\item{winlength}{Length of the sliding, overlapping windows to be run along the markers. See details.}
 	\item{strata}{A single numeric value specifying which data column contains the stratification variable.}
 	\item{table.output}{If \code{TRUE}, the \code{haptable} function will be applied to each result after estimation, greatly reducing the size of the output. If \code{FALSE}, each element of the output list is a standard \code{haplin} object. To preserve memory, default is set to TRUE.}
 	\item{cpus}{\code{haplinSlide} allows parallel processing of its analyses. The \code{cpus} argument should preferably be set to the number of available cpu's. If set lower, it will save some capacity for other processes to run. Setting it too high should not cause any serious problems.}
+	\item{para.env}{The user can choose parallel environment to use --- "parallel" (default) or "Rmpi" (for use on clusters); this option is used only when \code{cpus} argument is larger than 1.}
 	\item{slaveOutfile}{Character. To be used when \code{cpus > 1}. If \code{slaveOutfile = ""} (default), output from all running cores will be printed in the standard R session window. Alternatively, the output can be saved to a file by specifying the file path and name.}
 	\item{printout}{Default is FALSE. If TRUE, provides a full summary of each \code{haplin} result during the run of \code{haplinSlide}.}
 	\item{verbose}{Same as for \code{haplin}, but defaults to FALSE to reduce output size.}
@@ -34,7 +33,7 @@ printout = FALSE, verbose = FALSE, ...)
 	A list of objects of class haplin is returned.
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
+Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
@@ -53,11 +52,22 @@ Norwegian Institute of Public Health\cr
 # Below is an illustration. See the haplin help page for more 
 # examples.
 # 
+
+# 1. Read the data:
+my.haplin.data <- genDataRead( file.in = "HAPLIN.trialdata.txt", file.out =
+  "trial_data1", dir.out = ".", format = "haplin", n.vars = 0 )
+
+# 2. Run pre-processing:
+haplin.data.prep <- genDataPreprocess( data.in = my.haplin.data,
+  format = "haplin", design = "triad", file.out = "trial_data1_prep",
+  dir.out = "." )
+
+# 3. Analyze:
 # Analyzing the effect of fetal genes, including triads with missing data,
 # using a multiplicative response model. When winlength = 1, separate
 # markers are used. To make longer windows, winlength can be increased
 # correspondingly:
-result.1 <- haplinSlide("C:/work/data.dat", use.missing = T, response = "mult",
+result.1 <- haplinSlide( haplin.data.prep, use.missing = T, response = "mult",
 reference = "ref.cat", winlength = 1, table.output = F)
 # Provide summary of separate results:
 lapply(result.1, summary)

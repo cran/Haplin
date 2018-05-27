@@ -52,7 +52,7 @@ if(length(.o) != .d1) stop("Problem with design matrix!")
 if(abs(sum(.pred) - .ntri) > 0.001 * .ntri) stop("Potential problem in prediction!")
 #
 ## ADDING INFORMATION TO OUTPUT:
-.out <- list(result = .res, pred = .pred, nall = .n.haplo, ntri = .ntri, ref.cat = info$haplos$ref.cat, maternal = maternal, design = info$model$design, orig.call = sys.call(), date = date())
+.out <- list(result = .res, pred = .pred, nall = .n.haplo, ntri = .ntri, ref.cat = info$haplos$ref.cat, maternal = maternal, design = info$model$design)
 class(.out) <- "tri.glm"
 return(invisible(.out))
 }

@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Running the analysis</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: #990073
+   }
+
+   pre .number {
+     color: #099;
+   }
+
+   pre .comment {
+     color: #998;
+     font-style: italic
+   }
+
+   pre .keyword {
+     color: #900;
+     font-weight: bold
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: #d14;
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h1>Running the analysis</h1>
+
+<p>The output of the <code>genDataPreprocess</code> function (or <code>genDataLoad</code>) is used to run the analysis.  Haplin analysis is run by the single command:</p>
+
+<pre><code class="r">haplin( my.prepared.gen.data )
+</code></pre>
+
+<p><em>CAUTION:</em> this command will try to provide estimates based on <strong>all</strong> the markers in the data object! Therefore, if you have a large dataset, such as from GWAS analysis, first try running a scan over the markers with a small window size, to determine where to focus your subsequent more detailed analysis:</p>
+
+<pre><code class="r">haplinSlide( my.prepared.gen.data, use.missing = TRUE, winlength = 3 )
+</code></pre>
+
+<p>This performs haplin analysis on the marker window of length given by the <code>winlegth</code> argument above in order to search for the most significant regions in the dataset.</p>
+
+<p>For more options and examples of how to run Haplin, see below or the haplin help file, obtained by writing in R:</p>
+
+<pre><code class="r">?haplin
+</code></pre>
+
+<p>and</p>
+
+<pre><code class="r">?haplinSlide
+</code></pre>
+
+<h1>Exemplary Haplin runs</h1>
+
+<p>To test that Haplin runs properly, you can use the exemplary data provided with Haplin.</p>
+
+<h2>Trial run no.1</h2>
+
+<p>Here, the data includes only genotypes and the analysis is performed on all markers:</p>
+
+<pre><code class="r">dir.exmpl &lt;- system.file( &quot;extdata&quot;, package = &quot;Haplin&quot; )
+exemplary.file1 &lt;- paste0( dir.exmpl, &quot;/HAPLIN.trialdata.txt&quot; )
+
+trial.data1 &lt;- genDataRead( file.in = exemplary.file1, file.out = &quot;trial_data1&quot;,
+    dir.out = &quot;.&quot;, format = &quot;haplin&quot;, n.vars = 0, overwrite = T )
+</code></pre>
+
+<pre><code>## The output file(s) exist! 
+## Reading the data in chunks...
+##  -- chunk 1 --
+##  -- chunk 2 -- 
+## ... done reading.
+## Preparing data...
+## ... done preparing
+## Saving data...
+## ... saved to files: ./trial_data1_gen.ffData, ./trial_data1_gen.RData
+</code></pre>
+
+<pre><code class="r">trial.data1.prep &lt;- genDataPreprocess( data.in = trial.data1, design = &quot;triad&quot;,
+  file.out = &quot;trial_data1_prep&quot;, dir.out = &quot;.&quot;, overwrite = T )
+</code></pre>
+
+<pre><code>## The output file(s) exist! 
+## Reading the marker names...
+</code></pre>
+
+<pre><code>## Warning: No map file given or map file empty; will generate dummy marker
+## names.
+</code></pre>
+
+<pre><code>## ...done
+## Recoding genetic data (no. of loci: 2)...
+##    ...running on only one CPU core! This may take some time...
+##    ...checking alleles per SNP...
+</code></pre>
+
+<pre><code>## opening ff C:/Users/hkgjess/AppData/Local/Temp/Rtmpsz4SxW/ff1c905c7979b0.ff
+</code></pre>
+
+<pre><code>##    ...done, all alleles: 1 2 3 4 C T 
+##    ...recoding SNPs...
+##    ...done
+## Saving data... 
+## ... saved to files: ./trial_data1_prep_gen.ffData ,  ./trial_data1_prep_gen.RData
+</code></pre>
+
+<pre><code class="r">haplin( trial.data1.prep, use.missing = TRUE, maternal = TRUE )
+</code></pre>
+
+<pre><code>## 
+## ## HAPLIN, VERSION 7.0.0 ##
+</code></pre>
+
+<pre><code>## opening ff C:/Users/hkgjess/AppData/Local/Temp/Rtmpsz4SxW/ff1c906739224b.ff
+</code></pre>
+
+<pre><code>## There were 5 rows with missing data
+## All rows retained in analysis
+## No lines contained Mendelian inconsistencies
+## 
+## Running EM for preliminary estimates of haplotype frequencies...  Done
+## Removing unused haplotypes...  Done
+## 
+## Using EM to estimate model with no effect:
+## EM iter: 1    |GLM deviance: 3.77476e-15  |Coefficients: -2.72993e-17 3.23488e-18  2.54416e-18  1.87559e-18  9.51662e-19  
+## EM iter: 2    |GLM deviance: 345.258      |Coefficients: -0.899013    0.0911016    -1.40653     0.684214     -1.50184     
+## EM iter: 3    |GLM deviance: 344.375      |Coefficients: -0.90182     0.0914246    -1.41264     0.685363     -1.50184     
+## EM iter: 4    |GLM deviance: 344.373      |Coefficients: -0.901826    0.0914253    -1.41265     0.685366     -1.50184     
+## EM iter: 5    |GLM deviance: 344.373      |Coefficients: -0.901826    0.0914253    -1.41265     0.685366     -1.50184     
+## EM iter: 6    |GLM deviance: 344.373      |Coefficients: -0.901826    0.0914253    -1.41265     0.685366     -1.50184     
+## 
+## Done
+## 
+## Using EM to estimate full model:
+## EM iter: 1    |GLM deviance: 3.33067e-15  |Coefficients: -2.55357e-17 1.58508e-18  2.8239e-18   2.33863e-18  1.7631e-18   -1.29846e-18 -2.51908e-19 -5.40231e-19 2.72315e-20  1.81578e-17  -1.26833e-17 1.42593e-18  -1.26844e-18 -1.40799e-18 -1.29507e-18 -1.11419e-18 -5.36843e-19 2.89256e-20  1.89896e-17  -1.18177e-17 5.56879e-19  -1.26505e-18 -1.40799e-18 
+## EM iter: 2    |GLM deviance: 324.308      |Coefficients: -0.786562    0.234966     -1.23777     0.627763     -1.46355     -0.603638    -0.37483     -0.782319    -0.137819    0.942851     -0.262305    0.700751     -0.274264    0.972414     0.30563      0.245949     0.28865      0.00556478   -0.468796    -0.353194    0.717524     0.521617     -14.3119     
+## EM iter: 3    |GLM deviance: 324.026      |Coefficients: -0.785755    0.238644     -1.24484     0.632153     -1.46081     -0.609407    -0.3795      -0.77606     -0.14077     0.953784     -0.258198    0.703041     -0.281416    0.974712     0.301628     0.239555     0.284818     0.00131739   -0.462487    -0.346801    0.728309     0.512107     -14.3091     
+## EM iter: 4    |GLM deviance: 324.025      |Coefficients: -0.785716    0.238678     -1.24486     0.632184     -1.46078     -0.609489    -0.379552    -0.776042    -0.140807    0.953882     -0.258161    0.70306      -0.28148     0.974733     0.301582     0.239504     0.284766     0.00128555   -0.46244     -0.346727    0.728394     0.512041     -14.3091     
+## EM iter: 5    |GLM deviance: 324.025      |Coefficients: -0.785716    0.238678     -1.24486     0.632185     -1.46078     -0.60949     -0.379553    -0.776042    -0.140807    0.953884     -0.258161    0.70306      -0.281481    0.974733     0.301581     0.239504     0.284766     0.0012854    -0.46244     -0.346726    0.728394     0.51204      -14.3091     
+## EM iter: 6    |GLM deviance: 324.025      |Coefficients: -0.785716    0.238678     -1.24486     0.632185     -1.46078     -0.60949     -0.379553    -0.776042    -0.140807    0.953884     -0.258161    0.70306      -0.281481    0.974733     0.301581     0.239504     0.284766     0.0012854    -0.46244     -0.346726    0.728394     0.51204      -14.3091     
+## 
+## Done
+## 
+## Estimation finished, preparing output... Done
+</code></pre>
+
+<pre><code>## 
+## Note: Some relative risk estimates fall outside the default plotting range.
+## Consider replotting, with argument &quot;ylim&quot; set wider
+## 
+## #################################
+## ----Arguments supplied to haplin in this run:----
+## 
+## filespecs: markers = 1:2
+## model: design = &quot;triad&quot;, use.missing = TRUE, xchrom = FALSE, comb.sex = &quot;double&quot;, maternal = TRUE, poo = FALSE, test.maternal = FALSE, scoretest = &quot;no&quot;
+## variables: ccvar = NULL, strata = NULL, sex = NULL
+## haplos: reference = &quot;reciprocal&quot;, response = &quot;free&quot;, threshold = 0.01, max.haplos = NULL, haplo.file = NULL
+## control: resampling = &quot;no&quot;, max.EM.iter = 50, data.out = &quot;no&quot;, verbose = TRUE, printout = TRUE
+## 
+## ----Data summary:----
+## 
+## Number of triads in original file: 249 
+## 
+## Accounting for possible loss of triads:
+##                                                   
+##  Cause of loss     Triads removed Triads remaining
+##  Missing data                   0              249
+##  Mendelian incons.              0              249
+##  Unused haplotypes              5              244
+## 
+## Triads remaining for analysis: 244 
+## 
+## NOTE: In the following, the most frequent allele
+##  is printed as upper-case, all others are lower-case
+## 
+## Marker m1 (raw counts):
+## Missing alleles:  6 
+##  Allele Frequency Percent
+##  1       149       10.0  
+##  2       412       27.7  
+##  3        87        5.8  
+##  4       840       56.5  
+##  total  1488      100.0  
+## Chi-squared test for HWE, p-value:  0.6585 
+## 
+## Marker m2 (raw counts):
+## Missing alleles:  4 
+##  Allele Frequency Percent
+##  C      1397       93.8  
+##  t        93        6.2  
+##  total  1490      100.0  
+## Chi-squared test for HWE, p-value:  0.5721 
+## 
+## --------
+## Haplotypes removed because of low frequencies:
+## 1-t 2-t 3-t 
+## 
+## Haplotypes used in the analysis, with coding:
+## 1-C 2-C 3-C 4-C 4-t 
+##   1   2   3   4   5 
+## 
+## ----Estimation results:----
+## 
+## Date of call:
+## Sun May 27 12:48:13 2018 
+## 
+## Number of triads: 244
+## 
+## Number of haplotypes: 5
+## 
+## Haplotype frequencies with 95% confidence intervals:
+##  Haplotype Frequency(%) lower upper
+##  1-C       10.95         7.94 14.98
+##  2-C       30.64        25.79 35.86
+##  3-C        6.94         4.59 10.40
+##  4-C       45.37        39.95 50.81
+##  4-t        5.60         3.56  8.81
+## 
+## Single- and double dose effects (Relative Risk) with 95% confidence intervals:
+## Reference method: reciprocal
+## Response model: free
+## 
+## ----Child haplotypes----
+##  Haplotype Dose     Relative Risk Lower CI   Upper CI   P-value   
+##  1-C       Single   0.729         0.453      1.18       0.186     
+##  1-C       Double   1.22          0.396      3.77       0.731     
+##                                                                   
+##  2-C       Single   1.04          0.704      1.55       0.827     
+##  2-C       Double   0.642         0.314      1.34       0.229     
+##                                                                   
+##  3-C       Single   0.611         0.342      1.11       0.103     
+##  3-C       Double   0.67          0.0813     5.35       0.705     
+##                                                                   
+##  4-C       Single   1.62          1.02       2.55       0.0409    
+##  4-C       Double   1.89          1.03       3.35       0.0356    
+##                                                                   
+##  4-t       Single   1.25          0.702      2.23       0.447     
+##  4-t       Double   3.52          0.707      17.6       0.126     
+##                                                                   
+## ----Maternal haplotypes----
+##  Haplotype Dose     Relative Risk Lower CI   Upper CI   P-value   
+##  1-C       Single   1.18          0.746      1.87       0.486     
+##  1-C       Double   0.911         0.192      4.17       0.906     
+##                                                                   
+##  2-C       Single   1.07          0.716      1.59       0.755     
+##  2-C       Double   0.874         0.436      1.75       0.699     
+##                                                                   
+##  3-C       Single   1.13          0.651      2.03       0.654     
+##  3-C       Double   2.78          0.569      14.1       0.211     
+##                                                                   
+##  4-C       Single   0.797         0.529      1.19       0.269     
+##  4-C       Double   1.05          0.617      1.76       0.868     
+##                                                                   
+##  4-t       Single   0.828         0.461      1.51       0.536     
+##  4-t       Double   2.99e-05      0          Inf        1         
+##                                                                   
+## 
+## Overall test for difference between null model (no effects) and full model:
+## ------------
+## LIKELIHOOD RATIO TEST:                                     
+##  Loglike null model:       -1228.0728
+##  Loglike full model:       -1217.7436
+##  df:                          18.0000
+##  Likelihood ratio p-value:     0.2970
+## 
+## (NOTE: The test may be sensitive to rare haplotypes)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="Results of trial run no.1"/></p>
+
+<p>First, the information about the calculation process is printed:</p>
+
+<ul>
+<li>how many rows contained missing data and how many were dropped (if <code>use.missing = F</code>);</li>
+<li>information about any other reasons to drop data, e.g., Mandelian inconsistencies;</li>
+<li>process of EM estimation - for each iteration, the deviance and values of the coefficients of the model; <strong>NB:</strong> there should not be many iterations, which would indicate some problems with the chosen model or with the input data</li>
+</ul>
+
+<p>Next, the default is to print the summary of the results:</p>
+
+<ul>
+<li>the full information about the input data and arguments;</li>
+<li>summary of all the data parts dropped due to some inconsistencies;</li>
+<li>the frequency of alleles in the markers and the results of testing for Hardy-Weinberg equilibrium (HWE);</li>
+<li>summary of the haplotypes found;</li>
+<li>and finally, the model estimations with relative risks for each of the haplotypes.</li>
+</ul>
+
+<p>As you can see, a lot of information is printed out by default. One can change it by setting options <code>verbose</code> and/or <code>printout</code> to <code>FALSE</code>. Moreover, it&#39;s usually quite useful to save the results into an object:</p>
+
+<pre><code class="r">my.results &lt;- haplin( trial.data1.prep, use.missing = TRUE, maternal = TRUE,
+  verbose = FALSE, printout = FALSE )
+my.results
+</code></pre>
+
+<pre><code>## This is the result of a haplin run.
+## Number of data lines used: 244 | Number of haplotypes used: 5
+## Please use the &quot;summary&quot;, &quot;plot&quot;, &quot;haptable&quot; or &quot;output&quot; functions to obtain
+##  more details.
+</code></pre>
+
+<p>To access the details of the results, we can use the following functions with the saved object <code>my.results</code> as the argument:</p>
+
+<ul>
+<li><code>summary</code>, which outputs all the results in a nicely formatted text (as outputted above) or,</li>
+<li><code>haptable</code>, which gives the same data only in a matrix format,</li>
+<li><code>plot</code>, which replots the figure with the results,</li>
+<li><code>output</code>, which saves the results to text and JPG files.</li>
+</ul>
+
+<hr/>
+
+<h2>Trial run no.2</h2>
+
+<p>This example shows analysis of data where apart from genotypes, there are two covariate columns (<code>n.vars = 2</code>), one coding for the case-control status (<code>ccvar = 2</code>). In the analysis, we take into account all the available data, imputing the parts that are missing (<code>use.missing = TRUE</code>). The estimation will be based on the dose-response model (<code>response = &quot;mult&quot;</code>).</p>
+
+<pre><code class="r">exemplary.file2 &lt;- paste0( dir.exmpl, &quot;/HAPLIN.trialdata2.txt&quot; )
+
+trial.data2 &lt;- genDataRead( file.in = exemplary.file2, file.out = &quot;trial_data2&quot;,
+    dir.out = &quot;.&quot;, format = &quot;haplin&quot;, allele.sep = &quot;&quot;, n.vars = 2, overwrite = T )
+</code></pre>
+
+<pre><code>## The output file(s) exist! 
+## The format of the file is &#39;haplin&#39; with covariate data but no names of the covariate data is given. Will generate dummy names.
+## Reading the data in chunks...
+##  -- chunk 1 --
+##  -- chunk 2 -- 
+## ... done reading.
+## Preparing data...
+## ... done preparing
+## Saving data...
+## ... saved to files: ./trial_data2_gen.ffData, ./trial_data2_gen.RData
+</code></pre>
+
+<pre><code class="r">trial.data2.prep &lt;- genDataPreprocess( data.in = trial.data2, design = &quot;triad&quot;,
+  file.out = &quot;trial_data2_prep&quot;, dir.out = &quot;.&quot;, overwrite = T )
+</code></pre>
+
+<pre><code>## The output file(s) exist! 
+## Reading the marker names...
+</code></pre>
+
+<pre><code>## Warning: No map file given or map file empty; will generate dummy marker
+## names.
+</code></pre>
+
+<pre><code>## ...done
+## Recoding covariate data...
+## ...done
+## Recoding genetic data (no. of loci: 2)...
+##    ...running on only one CPU core! This may take some time...
+##    ...checking alleles per SNP...
+</code></pre>
+
+<pre><code>## opening ff C:/Users/hkgjess/AppData/Local/Temp/Rtmpsz4SxW/ff1c90def6a1.ff
+</code></pre>
+
+<pre><code>##    ...done, all alleles: A G B 
+##    ...recoding SNPs...
+##    ...done
+## Saving data... 
+## ... saved to files: ./trial_data2_prep_gen.ffData ,  ./trial_data2_prep_gen.RData
+</code></pre>
+
+<pre><code class="r">haplin( trial.data2.prep, use.missing = TRUE, ccvar = 2, design =
+  &quot;cc.triad&quot;, reference = &quot;ref.cat&quot;, response = &quot;mult&quot; )
+</code></pre>
+
+<pre><code>## 
+## ## HAPLIN, VERSION 7.0.0 ##
+</code></pre>
+
+<pre><code>## opening ff C:/Users/hkgjess/AppData/Local/Temp/Rtmpsz4SxW/ff1c903e301b43.ff
+</code></pre>
+
+<pre><code>## There were 508 rows with missing data
+## All rows retained in analysis
+## The following 5 data lines were dropped due to Mendelian inconsistencies:
+##  240 257 302 320 780 
+## 
+## Running EM for preliminary estimates of haplotype frequencies...  Done
+## Removing unused haplotypes...  Done
+## 
+## Note:
+## The selected case/control variable is column 2: &#39;cov.2.c&#39;
+## The following case/control coding and frequencies have been found:
+## controls(0): 762, cases(1): 377
+## 
+## Using EM to estimate model with no effect:
+## EM iter: 1    |GLM deviance: 0            |Coefficients: -4.15766e-18 6.00122e-18  -1.39031e-18 -1.12431e-18 
+## EM iter: 2    |GLM deviance: 359.799      |Coefficients: -0.713055    -1.18646     0.320706     1.27225      
+## EM iter: 3    |GLM deviance: 104.965      |Coefficients: -0.713055    -1.90555     0.224806     1.34845      
+## EM iter: 4    |GLM deviance: 101.348      |Coefficients: -0.713055    -2.02624     0.2036       1.3596       
+## EM iter: 5    |GLM deviance: 101.879      |Coefficients: -0.713055    -2.04019     0.19944      1.36137      
+## EM iter: 6    |GLM deviance: 101.978      |Coefficients: -0.713055    -2.04171     0.198655     1.36167      
+## EM iter: 7    |GLM deviance: 101.994      |Coefficients: -0.713055    -2.04188     0.198509     1.36172      
+## EM iter: 8    |GLM deviance: 101.997      |Coefficients: -0.713055    -2.04189     0.198483     1.36173      
+## EM iter: 9    |GLM deviance: 101.998      |Coefficients: -0.713055    -2.0419      0.198478     1.36173      
+## EM iter: 10   |GLM deviance: 101.998      |Coefficients: -0.713055    -2.0419      0.198477     1.36173      
+## EM iter: 11   |GLM deviance: 101.998      |Coefficients: -0.713055    -2.0419      0.198477     1.36173      
+## EM iter: 12   |GLM deviance: 101.998      |Coefficients: -0.713055    -2.0419      0.198477     1.36173      
+## EM iter: 13   |GLM deviance: 101.998      |Coefficients: -0.713055    -2.0419      0.198477     1.36173      
+## 
+## Done
+## 
+## Using EM to estimate full model:
+## EM iter: 1    |GLM deviance: 0            |Coefficients: 7.82515e-18  5.58287e-18  -9.59616e-19 -1.35705e-18 -1.70687e-17 -4.32478e-18 
+## EM iter: 2    |GLM deviance: 310.934      |Coefficients: -0.808547    -1.05734     0.26884      1.27994      -1.28603     0.328171     
+## EM iter: 3    |GLM deviance: 89.7213      |Coefficients: -0.893282    -1.79929     0.167796     1.36204      -0.501711    0.387945     
+## EM iter: 4    |GLM deviance: 86.3708      |Coefficients: -0.905895    -1.9526      0.145439     1.37468      -0.342099    0.402278     
+## EM iter: 5    |GLM deviance: 87.1614      |Coefficients: -0.908033    -1.97423     0.140962     1.37675      -0.319404    0.405527     
+## EM iter: 6    |GLM deviance: 87.3163      |Coefficients: -0.908428    -1.97705     0.140093     1.3771       -0.316378    0.40624      
+## EM iter: 7    |GLM deviance: 87.3418      |Coefficients: -0.908505    -1.97742     0.139926     1.37716      -0.315974    0.406393     
+## EM iter: 8    |GLM deviance: 87.346       |Coefficients: -0.90852     -1.97747     0.139895     1.37717      -0.315919    0.406426     
+## EM iter: 9    |GLM deviance: 87.3468      |Coefficients: -0.908524    -1.97747     0.139889     1.37718      -0.315911    0.406432     
+## EM iter: 10   |GLM deviance: 87.3469      |Coefficients: -0.908524    -1.97747     0.139888     1.37718      -0.31591     0.406434     
+## EM iter: 11   |GLM deviance: 87.3469      |Coefficients: -0.908524    -1.97747     0.139888     1.37718      -0.315909    0.406434     
+## EM iter: 12   |GLM deviance: 87.3469      |Coefficients: -0.908524    -1.97747     0.139887     1.37718      -0.315909    0.406434     
+## EM iter: 13   |GLM deviance: 87.3469      |Coefficients: -0.908524    -1.97747     0.139887     1.37718      -0.315909    0.406434     
+## 
+## Done
+## 
+## Estimation finished, preparing output... Done
+</code></pre>
+
+<pre><code>## 
+## #################################
+## ----Arguments supplied to haplin in this run:----
+## 
+## filespecs: markers = 1:2
+## model: design = &quot;cc.triad&quot;, use.missing = TRUE, xchrom = FALSE, comb.sex = &quot;double&quot;, maternal = FALSE, poo = FALSE, test.maternal = FALSE, scoretest = &quot;no&quot;
+## variables: ccvar = 2, strata = NULL, sex = NULL
+## haplos: reference = &quot;ref.cat&quot;, response = &quot;mult&quot;, threshold = 0.01, max.haplos = NULL, haplo.file = NULL
+## control: resampling = &quot;no&quot;, max.EM.iter = 50, data.out = &quot;no&quot;, verbose = TRUE, printout = TRUE
+## 
+## ----Data summary:----
+## 
+## Number of triads in original file: 1139 
+## 
+## Accounting for possible loss of triads:
+##                                                   
+##  Cause of loss     Triads removed Triads remaining
+##  Missing data                   0             1139
+##  Mendelian incons.              5             1134
+##  Unused haplotypes              0             1134
+## 
+## Triads remaining for analysis: 1134 
+## 
+## NOTE: In the following, the most frequent allele
+##  is printed as upper-case, all others are lower-case
+## 
+## Marker m1 (raw counts):
+## Missing alleles:  1424 
+##  Allele Frequency Percent
+##  a      1290       23.8  
+##  G      4120       76.2  
+##  total  5410      100.0  
+## Chi-squared test for HWE, p-value:  0.6875 
+## 
+## Marker m2 (raw counts):
+## Missing alleles:  954 
+##  Allele Frequency Percent
+##  a       142        2.4  
+##  B      5738       97.6  
+##  total  5880      100.0  
+## Chi-squared test for HWE, p-value:  0.01014 
+## 
+## --------
+## Haplotypes removed because of low frequencies:
+## a-a 
+## 
+## Haplotypes used in the analysis, with coding:
+## G-a a-B G-B 
+##   1   2   3 
+## 
+## ----Estimation results:----
+## 
+## Date of call:
+## Sun May 27 12:48:15 2018 
+## 
+## Number of triads: 1134
+## 
+## Number of haplotypes: 3
+## 
+## Haplotype frequencies with 95% confidence intervals:
+##  Haplotype Frequency(%) lower upper
+##  G-a        2.64         2.15  3.23
+##  a-B       21.88        20.47 23.40
+##  G-B       75.46        73.90 76.96
+## 
+## Single- and double dose effects (Relative Risk) with 95% confidence intervals:
+## Reference method: ref.cat
+## Reference category: 3 (Haplotype G-B)
+## Response model: mult
+## 
+## ----Child haplotypes----
+##  Haplotype Dose     Relative Risk Lower CI   Upper CI   P-value   
+##  G-a       Single   0.729         0.408      1.33       0.295     
+##  G-a       Double   0.532         0.166      1.76       0.295     
+##                                                                   
+##  a-B       Single   1.5           1.23       1.83       5.35e-05  
+##  a-B       Double   2.24          1.52       3.35       5.35e-05  
+##                                                                   
+##  G-B       Single   REF                                           
+##  G-B       Double   1             1          1          NA        
+##                                                                   
+## 
+## Overall test for difference between null model (no effects) and full model:
+## ------------
+## LIKELIHOOD RATIO TEST:                                        
+##  Loglike null model:       -3117.5699752
+##  Loglike full model:       -3108.4934459
+##  df:                           2.0000000
+##  Likelihood ratio p-value:     0.0001143
+## 
+## (NOTE: The test may be sensitive to rare haplotypes)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="Results of trial run no.2"/></p>
+
+<hr/>
+
+<h1>Running analysis on GWAS data: HaplinSlide</h1>
+
+<p>This is very similar to running <code>haplin</code>, but the results are a list of haptable. This type of analysis is usually performed when we have much bigger data. Let&#39;s read a proper .ped file:</p>
+
+<pre><code class="r">exemplary.file3 &lt;- paste0( dir.exmpl, &quot;/exmpl_data.ped&quot; )
+
+hapSlide.data &lt;- genDataRead( exemplary.file3, file.out = &quot;hapSlide_data&quot;,
+    format = &quot;ped&quot;, overwrite = T )
+</code></pre>
+
+<pre><code>## The output file(s) exist! 
+## &#39;n.vars&#39; was not given explicitly and will be set to 6 based on the format given.
+## Reading the data in chunks...
+##  -- chunk 1 --
+##  -- chunk 2 -- 
+## ... done reading.
+## Preparing data...
+## ... done preparing
+## Saving data...
+## ... saved to files: ./hapSlide_data_gen.ffData, ./hapSlide_data_gen.RData
+</code></pre>
+
+<pre><code class="r">hapSlide.data
+</code></pre>
+
+<pre><code>## This is raw genetic data read in through genDataRead.
+## 
+## It contains the following parts:
+##   cov.data, gen.data, aux
+## 
+## with following dimensions:
+</code></pre>
+
+<pre><code>## 
+##   - covariate variables = id.fam, id.c, id.f, id.m, sex, cc
+##       (total 6 covariate variables),
+</code></pre>
+
+<pre><code>##   - number of markers = 429,
+</code></pre>
+
+<pre><code>##   - number of data lines = 1659
+</code></pre>
+
+<p>The preprocessing of this file would take a while. Let&#39;s focus then on first 100 markers:</p>
+
+<pre><code class="r">hapSlide.subset.data &lt;- genDataGetPart( hapSlide.data, design = &quot;cc&quot;,
+    markers = 1:100, file.out = &quot;hapSlide_subset_data&quot;, overwrite = T )
+</code></pre>
+
+<pre><code>## The output file(s) exist! 
+## Provided arguments:
+##  --- chosen markers: 1, 2, 3, 4, 5, 6 ... 95, 96, 97, 98, 99, 100 
+## INFO: Will select 1659 rows and 200 columns.
+</code></pre>
+
+<pre><code>## opening ff C:/Users/hkgjess/AppData/Local/Temp/Rtmpsz4SxW/ff1c9054ac569d.ff
+</code></pre>
+
+<pre><code>## Saving data... 
+## ... saved to files: ./hapSlide_subset_data_gen.ffData, ./hapSlide_subset_data_gen.RData
+</code></pre>
+
+<pre><code class="r">hapSlide.subset.data.prep &lt;- genDataPreprocess( hapSlide.subset.data,
+    design = &quot;cc.triad&quot;, file.out = &quot;hapSlide_subset_prep&quot;, overwrite = T )
+</code></pre>
+
+<pre><code>## The output file(s) exist! 
+## Reading the marker names...
+</code></pre>
+
+<pre><code>## Warning: No map file given or map file empty; will generate dummy marker
+## names.
+</code></pre>
+
+<pre><code>## ...done
+## Converting PED format to internal haplin...
+##    Creating unique IDs for individuals...
+##    ...done.
+##    Sorting and re-coding families...
+## 
+## Checking family and id variables...
+</code></pre>
+
+<pre><code>## Warning: Found family size larger than 3! Will extract trios from general
+## pedigree.
+</code></pre>
+
+<pre><code>## opening ff C:/Users/hkgjess/AppData/Local/Temp/Rtmpsz4SxW/ff1c90560a6302.ff
+</code></pre>
+
+<pre><code>## Recoding covariate data...
+## ...done
+## Recoding genetic data (no. of loci: 100)...
+##    ...running on only one CPU core! This may take some time...
+##    ...checking alleles per SNP...
+##    ...done, all alleles: C G A T 
+##    ...recoding SNPs...
+##    ...done
+## Saving data... 
+## ... saved to files: ./hapSlide_subset_prep_gen.ffData ,  ./hapSlide_subset_prep_gen.RData
+</code></pre>
+
+<p>We run the haplinSlide analysis:</p>
+
+<pre><code class="r">hapSlide.res1 &lt;- haplinSlide( hapSlide.subset.data.prep, use.missing = TRUE,
+    ccvar = 10, design = &quot;cc.triad&quot;, reference = &quot;ref.cat&quot;, response = &quot;mult&quot; )
+</code></pre>
+
+<pre><code>## INFO: No parallel environment selected. Will run in sequential mode.
+## Running Haplin on Window &#39;m1&#39; (1/100)...:
+</code></pre>
+
+<pre><code>## opening ff C:/Users/hkgjess/AppData/Local/Temp/Rtmpsz4SxW/ff1c90692d15ad.ff
+</code></pre>
+
+<pre><code>## done
+## Running Haplin on Window &#39;m2&#39; (2/100)...: done
+## Running Haplin on Window &#39;m3&#39; (3/100)...: done
+## Running Haplin on Window &#39;m4&#39; (4/100)...: done
+## Running Haplin on Window &#39;m5&#39; (5/100)...: done
+## Running Haplin on Window &#39;m6&#39; (6/100)...: done
+## Running Haplin on Window &#39;m7&#39; (7/100)...: done
+## Running Haplin on Window &#39;m8&#39; (8/100)...: done
+## Running Haplin on Window &#39;m9&#39; (9/100)...: done
+## Running Haplin on Window &#39;m10&#39; (10/100)...: done
+## Running Haplin on Window &#39;m11&#39; (11/100)...: done
+## Running Haplin on Window &#39;m12&#39; (12/100)...: done
+## Running Haplin on Window &#39;m13&#39; (13/100)...: done
+## Running Haplin on Window &#39;m14&#39; (14/100)...: done
+## Running Haplin on Window &#39;m15&#39; (15/100)...: done
+## Running Haplin on Window &#39;m16&#39; (16/100)...: done
+## Running Haplin on Window &#39;m17&#39; (17/100)...: done
+## Running Haplin on Window &#39;m18&#39; (18/100)...: done
+## Running Haplin on Window &#39;m19&#39; (19/100)...: done
+## Running Haplin on Window &#39;m20&#39; (20/100)...: done
+## Running Haplin on Window &#39;m21&#39; (21/100)...: done
+## Running Haplin on Window &#39;m22&#39; (22/100)...: done
+## Running Haplin on Window &#39;m23&#39; (23/100)...: done
+## Running Haplin on Window &#39;m24&#39; (24/100)...: done
+## Running Haplin on Window &#39;m25&#39; (25/100)...: done
+## Running Haplin on Window &#39;m26&#39; (26/100)...: done
+## Running Haplin on Window &#39;m27&#39; (27/100)...: done
+## Running Haplin on Window &#39;m28&#39; (28/100)...: done
+## Running Haplin on Window &#39;m29&#39; (29/100)...: done
+## Running Haplin on Window &#39;m30&#39; (30/100)...: done
+## Running Haplin on Window &#39;m31&#39; (31/100)...: done
+## Running Haplin on Window &#39;m32&#39; (32/100)...: done
+## Running Haplin on Window &#39;m33&#39; (33/100)...: done
+## Running Haplin on Window &#39;m34&#39; (34/100)...: done
+## Running Haplin on Window &#39;m35&#39; (35/100)...: done
+## Running Haplin on Window &#39;m36&#39; (36/100)...: done
+## Running Haplin on Window &#39;m37&#39; (37/100)...: done
+## Running Haplin on Window &#39;m38&#39; (38/100)...: done
+## Running Haplin on Window &#39;m39&#39; (39/100)...: done
+## Running Haplin on Window &#39;m40&#39; (40/100)...: done
+## Running Haplin on Window &#39;m41&#39; (41/100)...: done
+## Running Haplin on Window &#39;m42&#39; (42/100)...: done
+## Running Haplin on Window &#39;m43&#39; (43/100)...: done
+## Running Haplin on Window &#39;m44&#39; (44/100)...: done
+## Running Haplin on Window &#39;m45&#39; (45/100)...: done
+## Running Haplin on Window &#39;m46&#39; (46/100)...: done
+## Running Haplin on Window &#39;m47&#39; (47/100)...: done
+## Running Haplin on Window &#39;m48&#39; (48/100)...: done
+## Running Haplin on Window &#39;m49&#39; (49/100)...: done
+## Running Haplin on Window &#39;m50&#39; (50/100)...: done
+## Running Haplin on Window &#39;m51&#39; (51/100)...: done
+## Running Haplin on Window &#39;m52&#39; (52/100)...: done
+## Running Haplin on Window &#39;m53&#39; (53/100)...: done
+## Running Haplin on Window &#39;m54&#39; (54/100)...: done
+## Running Haplin on Window &#39;m55&#39; (55/100)...: done
+## Running Haplin on Window &#39;m56&#39; (56/100)...: done
+## Running Haplin on Window &#39;m57&#39; (57/100)...: done
+## Running Haplin on Window &#39;m58&#39; (58/100)...: done
+## Running Haplin on Window &#39;m59&#39; (59/100)...: done
+## Running Haplin on Window &#39;m60&#39; (60/100)...: done
+## Running Haplin on Window &#39;m61&#39; (61/100)...: done
+## Running Haplin on Window &#39;m62&#39; (62/100)...: done
+## Running Haplin on Window &#39;m63&#39; (63/100)...: done
+## Running Haplin on Window &#39;m64&#39; (64/100)...: done
+## Running Haplin on Window &#39;m65&#39; (65/100)...: done
+## Running Haplin on Window &#39;m66&#39; (66/100)...: done
+## Running Haplin on Window &#39;m67&#39; (67/100)...: done
+## Running Haplin on Window &#39;m68&#39; (68/100)...: done
+## Running Haplin on Window &#39;m69&#39; (69/100)...: done
+## Running Haplin on Window &#39;m70&#39; (70/100)...: done
+## Running Haplin on Window &#39;m71&#39; (71/100)...: done
+## Running Haplin on Window &#39;m72&#39; (72/100)...: done
+## Running Haplin on Window &#39;m73&#39; (73/100)...: done
+## Running Haplin on Window &#39;m74&#39; (74/100)...: done
+## Running Haplin on Window &#39;m75&#39; (75/100)...: done
+## Running Haplin on Window &#39;m76&#39; (76/100)...: done
+## Running Haplin on Window &#39;m77&#39; (77/100)...: done
+## Running Haplin on Window &#39;m78&#39; (78/100)...: done
+## Running Haplin on Window &#39;m79&#39; (79/100)...: done
+## Running Haplin on Window &#39;m80&#39; (80/100)...: done
+## Running Haplin on Window &#39;m81&#39; (81/100)...: done
+## Running Haplin on Window &#39;m82&#39; (82/100)...: done
+## Running Haplin on Window &#39;m83&#39; (83/100)...: done
+## Running Haplin on Window &#39;m84&#39; (84/100)...: done
+## Running Haplin on Window &#39;m85&#39; (85/100)...: done
+## Running Haplin on Window &#39;m86&#39; (86/100)...: done
+## Running Haplin on Window &#39;m87&#39; (87/100)...: done
+## Running Haplin on Window &#39;m88&#39; (88/100)...: done
+## Running Haplin on Window &#39;m89&#39; (89/100)...: done
+## Running Haplin on Window &#39;m90&#39; (90/100)...: done
+## Running Haplin on Window &#39;m91&#39; (91/100)...: done
+## Running Haplin on Window &#39;m92&#39; (92/100)...: done
+## Running Haplin on Window &#39;m93&#39; (93/100)...: done
+## Running Haplin on Window &#39;m94&#39; (94/100)...: done
+## Running Haplin on Window &#39;m95&#39; (95/100)...: done
+## Running Haplin on Window &#39;m96&#39; (96/100)...: done
+## Running Haplin on Window &#39;m97&#39; (97/100)...: done
+## Running Haplin on Window &#39;m98&#39; (98/100)...: done
+## Running Haplin on Window &#39;m99&#39; (99/100)...: done
+## Running Haplin on Window &#39;m100&#39; (100/100)...: done
+## 
+##  --- haplinSlide has completed ---
+</code></pre>
+
+<p>Here, the output is stored as a list of tables, where each table contains results of the <code>haplin</code> run on a certain marker or a set of markers, called a window. The length of the window can be controlled by the <code>winlength</code> argument (see the haplinSlide help for details). Here, the default window length was used, 1 marker.</p>
+
+<p>Due to the size of <code>haplinSlide</code> results, it is best to narrow down the visualization of the results. If you have installed the <a href="https://CRAN.R-project.org/package=ggplot2">ggplot2</a> package, you can use the functions <code>plotPValues</code> and <code>plot.haplinSlide</code>. First, we advise to plot only the p-values of the estimation we&#39;re interested in, using the <code>plotPValues</code> function:</p>
+
+<pre><code class="r">all.p.values &lt;- plotPValues( hapSlide.res1 )
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="Results of haplinSlide analysis in a plot of the overall p-values"/></p>
+
+<p>By default, all the windows are plotted, but we can choose to plot results for the windows only with p-values below a certain threshold:</p>
+
+<pre><code class="r">all.p.values &lt;- plotPValues( hapSlide.res1, plot.signif.only = TRUE,
+    signif.thresh = 0.25 )
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="Results of haplinSlide analysis in a plot of the overall p-values, for windows with p-values below 0.25"/></p>
+
+<p>The object <code>all.p.values</code> holds the table with p-values for all the windows plotted.</p>
+
+<pre><code class="r">head( all.p.values )
+</code></pre>
+
+<pre><code>##    marker haplos   est.name       est. lower upper    p.value star
+## m1     m1     m1 pv.overall 0.15404214    NA    NA 0.15404214     
+## m2     m2     m2 pv.overall 0.05300921    NA    NA 0.05300921     
+## m4     m4     m4 pv.overall 0.07280665    NA    NA 0.07280665     
+## m5     m5     m5 pv.overall 0.03280638    NA    NA 0.03280638    *
+## m6     m6     m6 pv.overall 0.24185705    NA    NA 0.24185705     
+## m7     m7     m7 pv.overall 0.24607721    NA    NA 0.24607721
+</code></pre>
+
+<p>If we ran analysis with estimation of the maternal or POO effects, then we can choose to plot these p-values:</p>
+
+<pre><code class="r">hapSlide.res2 &lt;- haplinSlide( hapSlide.subset.data.prep, use.missing = TRUE,
+  ccvar = 10, design = &quot;cc.triad&quot;, poo = TRUE, reference = &quot;ref.cat&quot;,
+  response = &quot;mult&quot; )
+</code></pre>
+
+<pre><code>## INFO: No parallel environment selected. Will run in sequential mode.
+## Running Haplin on Window &#39;m1&#39; (1/100)...: done
+## Running Haplin on Window &#39;m2&#39; (2/100)...: done
+## Running Haplin on Window &#39;m3&#39; (3/100)...: done
+## Running Haplin on Window &#39;m4&#39; (4/100)...: done
+## Running Haplin on Window &#39;m5&#39; (5/100)...: done
+## Running Haplin on Window &#39;m6&#39; (6/100)...: done
+## Running Haplin on Window &#39;m7&#39; (7/100)...: done
+## Running Haplin on Window &#39;m8&#39; (8/100)...: done
+## Running Haplin on Window &#39;m9&#39; (9/100)...: done
+## Running Haplin on Window &#39;m10&#39; (10/100)...: done
+## Running Haplin on Window &#39;m11&#39; (11/100)...: done
+## Running Haplin on Window &#39;m12&#39; (12/100)...: done
+## Running Haplin on Window &#39;m13&#39; (13/100)...: done
+## Running Haplin on Window &#39;m14&#39; (14/100)...: done
+## Running Haplin on Window &#39;m15&#39; (15/100)...: done
+## Running Haplin on Window &#39;m16&#39; (16/100)...: done
+## Running Haplin on Window &#39;m17&#39; (17/100)...: done
+## Running Haplin on Window &#39;m18&#39; (18/100)...: done
+## Running Haplin on Window &#39;m19&#39; (19/100)...: done
+## Running Haplin on Window &#39;m20&#39; (20/100)...: done
+## Running Haplin on Window &#39;m21&#39; (21/100)...: done
+## Running Haplin on Window &#39;m22&#39; (22/100)...: done
+## Running Haplin on Window &#39;m23&#39; (23/100)...: done
+## Running Haplin on Window &#39;m24&#39; (24/100)...: done
+## Running Haplin on Window &#39;m25&#39; (25/100)...: done
+## Running Haplin on Window &#39;m26&#39; (26/100)...: done
+## Running Haplin on Window &#39;m27&#39; (27/100)...: done
+## Running Haplin on Window &#39;m28&#39; (28/100)...: done
+## Running Haplin on Window &#39;m29&#39; (29/100)...: done
+## Running Haplin on Window &#39;m30&#39; (30/100)...: done
+## Running Haplin on Window &#39;m31&#39; (31/100)...: done
+## Running Haplin on Window &#39;m32&#39; (32/100)...: done
+## Running Haplin on Window &#39;m33&#39; (33/100)...: done
+## Running Haplin on Window &#39;m34&#39; (34/100)...: done
+## Running Haplin on Window &#39;m35&#39; (35/100)...: done
+## Running Haplin on Window &#39;m36&#39; (36/100)...: done
+## Running Haplin on Window &#39;m37&#39; (37/100)...: done
+## Running Haplin on Window &#39;m38&#39; (38/100)...: done
+## Running Haplin on Window &#39;m39&#39; (39/100)...: done
+## Running Haplin on Window &#39;m40&#39; (40/100)...: done
+## Running Haplin on Window &#39;m41&#39; (41/100)...: done
+## Running Haplin on Window &#39;m42&#39; (42/100)...: done
+## Running Haplin on Window &#39;m43&#39; (43/100)...: done
+## Running Haplin on Window &#39;m44&#39; (44/100)...: done
+## Running Haplin on Window &#39;m45&#39; (45/100)...: done
+## Running Haplin on Window &#39;m46&#39; (46/100)...: done
+## Running Haplin on Window &#39;m47&#39; (47/100)...: done
+## Running Haplin on Window &#39;m48&#39; (48/100)...: done
+## Running Haplin on Window &#39;m49&#39; (49/100)...: done
+## Running Haplin on Window &#39;m50&#39; (50/100)...: done
+## Running Haplin on Window &#39;m51&#39; (51/100)...: done
+## Running Haplin on Window &#39;m52&#39; (52/100)...: done
+## Running Haplin on Window &#39;m53&#39; (53/100)...: done
+## Running Haplin on Window &#39;m54&#39; (54/100)...: done
+## Running Haplin on Window &#39;m55&#39; (55/100)...: done
+## Running Haplin on Window &#39;m56&#39; (56/100)...: done
+## Running Haplin on Window &#39;m57&#39; (57/100)...: done
+## Running Haplin on Window &#39;m58&#39; (58/100)...: done
+## Running Haplin on Window &#39;m59&#39; (59/100)...: done
+## Running Haplin on Window &#39;m60&#39; (60/100)...: done
+## Running Haplin on Window &#39;m61&#39; (61/100)...: done
+## Running Haplin on Window &#39;m62&#39; (62/100)...: done
+## Running Haplin on Window &#39;m63&#39; (63/100)...: done
+## Running Haplin on Window &#39;m64&#39; (64/100)...: done
+## Running Haplin on Window &#39;m65&#39; (65/100)...: done
+## Running Haplin on Window &#39;m66&#39; (66/100)...: done
+## Running Haplin on Window &#39;m67&#39; (67/100)...: done
+## Running Haplin on Window &#39;m68&#39; (68/100)...: done
+## Running Haplin on Window &#39;m69&#39; (69/100)...: done
+## Running Haplin on Window &#39;m70&#39; (70/100)...: done
+## Running Haplin on Window &#39;m71&#39; (71/100)...: done
+## Running Haplin on Window &#39;m72&#39; (72/100)...: done
+## Running Haplin on Window &#39;m73&#39; (73/100)...: done
+## Running Haplin on Window &#39;m74&#39; (74/100)...: done
+## Running Haplin on Window &#39;m75&#39; (75/100)...: done
+## Running Haplin on Window &#39;m76&#39; (76/100)...: done
+## Running Haplin on Window &#39;m77&#39; (77/100)...: done
+## Running Haplin on Window &#39;m78&#39; (78/100)...: done
+## Running Haplin on Window &#39;m79&#39; (79/100)...: done
+## Running Haplin on Window &#39;m80&#39; (80/100)...: done
+## Running Haplin on Window &#39;m81&#39; (81/100)...: done
+## Running Haplin on Window &#39;m82&#39; (82/100)...: done
+## Running Haplin on Window &#39;m83&#39; (83/100)...: done
+## Running Haplin on Window &#39;m84&#39; (84/100)...: done
+## Running Haplin on Window &#39;m85&#39; (85/100)...: done
+## Running Haplin on Window &#39;m86&#39; (86/100)...: done
+## Running Haplin on Window &#39;m87&#39; (87/100)...: done
+## Running Haplin on Window &#39;m88&#39; (88/100)...: done
+## Running Haplin on Window &#39;m89&#39; (89/100)...: done
+## Running Haplin on Window &#39;m90&#39; (90/100)...: done
+## Running Haplin on Window &#39;m91&#39; (91/100)...: done
+## Running Haplin on Window &#39;m92&#39; (92/100)...: done
+## Running Haplin on Window &#39;m93&#39; (93/100)...: done
+## Running Haplin on Window &#39;m94&#39; (94/100)...: done
+## Running Haplin on Window &#39;m95&#39; (95/100)...: done
+## Running Haplin on Window &#39;m96&#39; (96/100)...: done
+## Running Haplin on Window &#39;m97&#39; (97/100)...: done
+## Running Haplin on Window &#39;m98&#39; (98/100)...: done
+## Running Haplin on Window &#39;m99&#39; (99/100)...: done
+## Running Haplin on Window &#39;m100&#39; (100/100)...: done
+## 
+##  --- haplinSlide has completed ---
+</code></pre>
+
+<pre><code class="r">all.p.values2 &lt;- plotPValues( hapSlide.res2, which.p.val = &quot;poo&quot;,
+    plot.signif.only = TRUE, signif.thresh = 0.2 )
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAFoCAMAAACIU7TCAAACdlBMVEUAAAAAADoAAGYAAP8AOmYAOpAAZmYAZrYZF/8cGv8eHf8hIP8kJP8nJ/8pKf8qKv4rLP8tLv4tL/4vMf4yNP4zMzMzNv41N/41Of43Ov44PP45Pv46AAA6ADo6AGY6OmY6OpA6QP46ZrY6kNs7QP48Qv49RP4/Rv5ASP5ASf5BSv5CTP1DTv1EUP1FUv1GU/1HVf1IV/1JWP1KWv1KXP1LXv1MYP1MYv1NTU1NTW5NTY5NYvxNY/1Nbo5NbqtNjshOZf1OZ/xPaPxPavxQbPxRbfxRb/xScfxSc/xTdPxTdvtUePtUeftUe/tVfftVfvtWgPtWgftWg/tWhPtWrvdWr/dWsfdXhvpXh/pXifpXi/pXq/hXrPdXrfdYjPpYjvpYkPpYkfpYk/pYlflYlvlYmPlYmvlYm/lYnfhYnvlYn/hYoPhYovhYo/hYpPhYpvhYqPhYqfhZTU1ZXp1ebp1kTU1mAABmADpmAGZmOgBmOjpmOmZmOpBmZrZmkNtmtttmtv9pf2lpq+RuTU1uTW5uTY5ubo5ubqtunZ1uq7Vuq8huq+R5TU15WW95bquDbquOTU2OTW6OTY6Obk2ObquOjquOjsiOq+SOyMiOyOSOyP+QOgCQOjqQ2/+rbk2rbm6rbnmrboOrbo6rjk2rjqurq+SryKur5Mir5P+1b1m1q261//+2ZgC2Zjq2tv+2///Ig2/Ijk3Ijm7IjnnIjo7Iq27IyP/I/8jI/+TI///bkDrbkGbb25Db/9vb///kq27kq47kq6vkyI7k5Kvk/8jk/+Tk///r6+v/tmb/yHn/yI7/25D/5Kv//7b//8j//9v//+T///+ZZuq5AAAACXBIWXMAAAsSAAALEgHS3X78AAAX4UlEQVR4nO2diZ8cx1XHNzHG3MaAwEAINjaHuW/GMdFyCBJOcZrLgACBMDcBFEOAKCjh2pAoZpGTcSRCuBaQEWuc2BLgWcDeLKvVevs/orunq6vqveo3XfW6Z3tmfr+PrZ2e71bX66pfV72u7pldyyBIobXjDgBabMFAkEowEKQSDASpFGWgj1Dxd2YToMEgGAhIhWAgIBWCgYBUCAYCUiEYCEiFYCAgFYKBgFQIBgJSIRgISIVgICAV6s9AR1dH68XPw0uj190wGzDQsqH+DLS/kW2P85+TcTbZMBsw0LKh/gy0s1V4aOqlsdk4cWItV1kIP5fiZxcK7+jZ2kCHm7t2I8LtAz3ngLzt3gxUj0CHT95whqOIYAfaZEDedm8GMmnPwTtu2A0YaNlQfwYqL7zy2Wt7NBpt4CpsWVF/BmpQRLADbTIgbxsGAtIgGAiI6dFH25eCgYCoHn1UcBAMBDQLwUBAOoQpDGhuCAYCUiEYCEiFYCAgFYKBgFQIBlpV9NhjnewQBlpR9NhjgoNgIKBZCAYC0iFMYUBDQDAQkArBQEAqBAMBqRAMBKRCMBCQCsFAQCoEAwGpEAwEpEIwEJAKwUBAKgQDAakQDASkQjAQkArN3UAQRIURaIURDASkQjAQkArBQEAqBAMBqRAM1A96/PFBhAEDLSh6/HHBQYOIEAYaNIKBYCAdwhQGAwG1QTAQkArBQEAqtJgGOneuk4MH0qOFNNC5c4KDBtrQy4pgICAVWkgDYQobDlpMAwENBsFAQCoEAwGpEAwEpEIwEJAKwUBLjc6e7bsuGGiZ0dmzgoNgIKBZCAYC0iFMYUADRzAQkArBQEAqBAMBqRAMBKRCMBCQCvVnoKOro/Xpq8m42Hh4CwYqdebMIMIYvIH2N7LtcfFiezTODi+btyOCHWiTKdGZM4KDBhHhQAy0s1V4KMsOP5yPQAcXRyd3840TJ7qocKFVGOi4YxiYwgZ6tjJQOYXlrw6eKjci3D7Qc06LMIW1M9COa6AsMxsRwQ60yYC87d4MVOdAhYGKQWgMAy0h6s9A5VXY4eauuQqrLskigh1okwF5270ZqEERwQ60yYC8bRgISINgICAVgoGAVAgGAlIhGAhIhWAgIBWCgYBUqF2v37rvRRgIKIRgICAV4l753N9du6t4cfOB8v+ba/nmrfv+874XX3n/lWxvbQphIKBqmxnoc6688vSFrBx1csvk/95+4roxUDESXbsAAwHZbWag3CPF4JNlz1y59Xn59mvWXnXFGCgfgNbWHoCBgOx2s4H27soHm71XX7/95qmB8p97fP6CgVYbcQOZKSy7/Za3XM9dlO2VI9Brr+fEQhgIaLrNDFQm0Xnek2XX8vHm9vm1jz5/IR+Wrq191O8hiQZqNYVFCgZaYQQDAalQrFlgICB/GwYC0iDWwT9MBQMBCQgGAlIhGAhIhVgH/xAVDAQkINbBP0kFA80PnT49iDBiImQd/BNUMNDc0OnTgoMGGiHr4N+kgoHmhpbCQL9BBQPNDy3DFPbrVB0bCFpy/RrV7CIYgVYYsQ7+VSoYCEhArIN/hQoGAhIQ6+BfpoKBgATEOviXqGAgIAGxDv5FKhgISECsg89RwUBAAmId/AtUMBCQgFgH/zwVDAQkINbBZ6mKN1952nya5+aFYuNVV2AgoOk21c9RFW/uPVB9JP7a2oXs9h+QItZAt8+vvfX9VzJJEcEOtMmAvO2Aftaqeuc/rhQeyg3yr/kIdOs1a3d6H/2pDfTK0xeuXZjxuaCIYAfaZEDeNtXPUBVvPlMZqJzC8le3/jBooNtPXL92ofxQKwy0Koh18BkqdwQqDZRlZiM4Au3diRFohRDr4J+mqgxTfS1QbqBiEPK+YMHLgdZeLQ5AMNCSIdbBP0U1HVqKL1z4/RfNVZj/BQu4ClthxDr4x6lme8LmQOeLL6CSh6CIYAfaZEDeNtWPUUUYqNQe+wYzGGiJEevgH6WKNRCuwlYKsQ7+EapYA916LQy0Qoh18A9SRRhomgNhClslxDr4B6giDNRGEcEOtMmAvG2q76dqbaDp+IOrsNVCrIO/j6q1gdopItiBNhmQt011mirGQDcxAq0aYh38vVQRBrr95ivXLoS/jBwGWlLEOvh7qGIM9MT1mw9gHWilEOvg76aKMFDx1zTugoF6QadODSKM2Qb6LqoIA2V7d/7X01gH6gOdOiU4aFAG+k6qGAO1UESwg+i5gaDFMdB3UEUY6PZ5efSBgdLRwkxhb6SKMFA2/fuGUx1dHa1PX03GzkZEsMPoOSARMTe8gSrKQLn2qnWg/Y1se1y82B6N7QYMtGSIueHbqaIM5IxAO1uFbbLs8MP5CGQ2TpyYvTtoofVtVMWb9IOFDY+0ejnQs5VnyinMbkS4faDnHJC3TXWKqnjT+2ChfcKeGsjTjmugHRhoSVGo67/VqnrH+2Ch/YxP0EBmIdGmPRPkQMuLmHu+hap40/tg4TOygYzKC6/DzV1chS01Yv3+zVTuCFQaaMYINEMRwQ60yYC8bapvoire9D5YKORAxTNl8gdTYaAlQ6yDv5GqeLPlBwvLPwmOjzavFGId/A1U4njiG6jMn3E3fqUQ6+Cvp4owUHYtz43wQNlKIdbBX0cVYaA2j9VHBDvHdnnkkfnVtVyIdfDXUkUYqI0igp1fuzzyiOCggfbcQBDr4K+hgoHmFsYiItbBX021CgbCFJaMWAd/FdVKGAgoFbEO/koqGAhIQKyDv4IKBgISEOvgL6eCgYAExDr4y6hgICABsQ7+UioYCEhArIO/hAoGAhIQ6+AvpoKBgATEOviLqGAgIAGxDv5CKhgISECsg7+ACgYCEhDr4M+nKt40DyGWP/EH54CcbaoHqYo3zWPQ5U/hD87BQCuHQn382VbVO+aDGOXP5j84BwOtHmId/FlUxZvmo2Dlz+Y/OAcDrR5iHfyZVMWb3giUNf7BORho9RDr4M+gyjKSAwl/cA4GWjnEOvjTqYo3zefCzFUY/uAckNmm+jSq2Z6AgVYYsQ7+VCoYCEhArIM/hapjA0FLrk+mml0EI9AKI9bBn0QFAwEJiHXwJ1LBQEACYh38CVQwEJCAWAd/PBUMBCQg1sEfRwUDAQmIdfDHUsFAQAJiHfwxVDAQkIBgICAViul7GAgIBgLqFsFAQCoEAwGpEAwEpEIwEJAKLZ2BHnoopRRQKlo2Az30kOCggfbBQiMYCEiFls1AmMLmjJbOQEDzRTAQkArBQEAqBAMBqRAMBKRCMBCQCsFAQCoEAwGp0CoZ6MEHO94h0AAMdP/98zr44htD51XX6qDjNtD99zc7CAZaALRCBsIU1gfqz0BHV0fr9c/8n4e3Qgaa4xQG1Afqz0D7G9n22Pw8vGzejgh2oE0G5G33ZqCdrcI71c+Di6OTu/nGiRNdVAgtl8IGerYyUPkzf3XwVPl2hNsHes4Bedu9GcgbgbJs+g8MtGyoPwN5OdBknO2PYaAlRP0ZqLz6OtzcNVdh69liGujeewcRxlBRfwZqUESwg2iye+8VHDSICGGgYzv4NggGkhEMNAthChMRDASkQjAQkArBQEAqBAMBqRAMBKRCMBCQCsFAQCoEAwGpEAwEpEIwEJAKwUAKdM89gwgDBjqug1eie+4RHDSICGGgQSMY6CMwkAphChu0ge6+u++DB9Kj4Rro7rsFBw20NVcQwUBAKjRcA2EKWwg0YAMNtcmAvG0YCEiDYCAgFYKBgFQIBgJSIRgISIVgICAVgoGAVGjuBoIgKoxAK4xgICAVgoGAVAgGAlIhGAhIhWAgIBWCgYBUCAYCUiEYCEiFYCAgFYKBgFQIBgJSIRgISIVgICAVgoGAVAgGWnx0xx3HGAYMtPDojjsEB8FAQLMQDHRsB78kCFPYcR08kB7BQEAqBAMBqRAMBKRCMBCQCsFAQCoEAwGpEAwEpEIwEJAKwUBAKgQDAanQ3A3EdCKBAA0RJQsGAlIJBgJSCd9QBqkEA0EqwUCQSn0Y6OjqaDQ6udvDnocaRVpdQqk0dBzqwUD7D28V/47GAdZ89F03WVoUaSitLqFUGurexy3UvYEOL1cvnrvBWPPRJzZZx1GkobS6hFJpKK2hEkvVmmsO1Hz0iU3WcRTdh9F58J3XpY2wHwMdXByt97LjwUaRVpdQKg01qrfMqYcp7O+z7L9vFP8F1Xz0KU3W2C7JUSSgtLqEUmlICl6epzRnWg8j0GT08D/EtllikwntkhJFahhJdQml0pAUvDA1y46cqR4MtD0avf4vXxcMqPno05pMmL+TokhEaXUJpdKQUJegtFK1epnCiv+eDB1j89GnNVnXUaShtLqEUmloRkM1zVNJzWvVywhUTiwBNR99YpNlUrvER5Hecwl1CaXSkBy8MDVLzTtT872V0Xz0qU2WMn933XOJdXUuoS5xJlVF2K2Bjq42BtM5KtTQLuk7jC+VtMPOA5yl8DzVRV095ECbu4eX5nTeiRnlyQ+NkpZX9zdiS0xGo43s6IMkjlndEy5VoZN/2xB8Ul3aeUpQdwYySzK5gfKLIu8QZ99gOrzEe82Uam7oULuYHW7u7tNSZod52jQacdvlnfCPl0YjyloEv5kHefLloBV4XU470VIO2l8Pu0SqSzhn+Dzl1KU63zszUL0kk3uBGMhBtH8Meu/mh2iXWtTcZLxdnFLUQAa97+92s/1x0RNcBxfHZASqd8i95UaYHbz9jwNWOGJ12cZgpXzUcM401xU6Zxrl1kXP9yh1ZSB3SWYyWj+6Og6i7XG41L+/K2+AS273eIg0WangqG3r+md6Ono7PHgqPDjlnjz5P66BnOBJ7G5dRcn9wHlRWsGry9nfhJRy0H7hvatufXWAtJRXV8hAM9rpeXa+x2kgD5SFx4OpWJP5ik9Z9ouBZNst5q5oH1yM3iGVawVWV5Ja3dRvnsLEeYqc75Hq0kDukgyxdMd3DevMiacsXil6YjXdlpLvSLeLsP1J3LKdwuNWVF1CXtrVvebOprD2d5HchvGRe4QCsucjS1nahyH0Qcsw5FWoJisk3ycV1OTI5rxU6JNIdTYCdX6Dqd0tMJKyJNaVNZ+PbXfo+rj7W6jNAba8hUrnKeUdMKvODGSXZNiVq79a440YHvKzmZb3aEjKYkoFZn3xtlRjh7e4O8Zn0la3UCfrRcFxEJF1IBsgP640KyjvgFl1OIVVSzLsytUi1tI14n1gSwXXgZrPx2qHbNZ36mI5bd0J22UYG4Ed8v62iM2kdfew/nYaY3N3Z4tMKxaRdaA6QH5cnu1YEl21E0XOCpqwntlGagMVTimqr5dk6itXQ5zVGtPSHNV9wJBdOjPIno91p/JS9awf2KFZc3JQPW5lWVMp09+B4zIzaYU8K5Aw6kL5ibY/Lk+3YBNmpJRxJD0u33YbBNlxy0d+XU3LbG3Ux6cypCtXmrPMJoGlM3M+spPYVePVabFDsubkjFtZQ0Zp+zsofya13SOsspRTffjSmq4DuUvu9LhcK5B1IHfcalpjDDRvlOa+DtS8zNJE+DqQOR9ndGqDAmtOdSdM6BTmhmf7O2LtSbfKwgKUqyJTmDy7mVLyMtssdZYD1ZO9eWXnVpZV23SC3TX0EGuOaee6yUfZqU6mYWqt32Kpi1XDPbHMi4v+kpOtmQhNXdJyXR1GfVh1KZOSObmZ+aVAhOYtlq1xObNbdT12+Bf/Mo2wuzveSgPVzelN9sWrD7zLzK1OVj1txve66cQ0W3T6wEFTA1Zt70wvdV5i28VJDMpaTTzP2x3WPV/tkN+nqrvHZrH1L9VN7mZr+8aspi46X7Hj8rKRqlSVknm5WflLL/AITTwv1a1Rn6jWkeZA7bhlVoR+q4rQycXTH1sopR6BqjtETnI3ffWB+haWvR9UNePf/JWbPmbuAb3gZpZ195Rt/3wgPzHt8iY3syxrNfG84MxyJlRnh9V9KjM+8O5xLwlMk9uMuYqwqqu+rWS7kB2XYyBTyqRkNjczv2QjdMet8q3nnZaz1xhVhPSuXWbWpF+yETot1v4WbEDd5UB2sp++snNrnVWbnOV/63TCZIv1AdlMw7RZneiE8hP7yEdVua21eounqvUO67jc8WHaYzaLNb/kpsNVtmbPXVN9HYbpQn5czgk//e16gHFGGvNLdeW2l81bpjVsEiwl7LyXzIvhGMhIurEkXHg4ySZJUXkhIa9JisIm49IVZPNlnXQrLaUUQ864xUo5STB9DKJVonPMU5ifBU/PkWpe8fNj9+gnDNXZzDv9BUUXmQQwsARHWqpAdtaniO+wtlTdPf/kW9QpFUB1XW9jxm4o5bXT25rRm4yVbS8b9Kcsv67r+rff8edP55f8rDzsyDhpk+jQs3PlvPL6dwfI9Oj/b/RHDNl2oU90sQSQX70HbzZXs34AsR2GEFtgEpCty0WeFVqX8hF7zM6gl/382qvrt03ez+a00HWDKZX4yIneQFl45S1MjLc4qp+Y4guKJAHkcxBpKe++ZigxYDucvlu8qruHLzAJqPqF7kpVwftLnt6NGfqkmnNczsWBmdMO3l4sq/Dn22yp4/p6lzrbZOsSNeFTsYAyk6IG71iRdMKeSnVKyJ8QctJGetOneZHPy+X9laoa8eA9Y/vjqJtEk+flLWJ324TH7IRsjaOjv97Kdoq1BOeSoHHPcepwITFrfoy36epARIHhu5LphEAD84ea3Qjjb/oE5+hZwYcfdGuxv+YbM1nKo5furjP/sSShdeOkN9C2WXrLqIG2q1wuMIu0QOyOlYuq5UfbUdt1h7Ep0NkhveljSgVWfN1S0cETGx+844bUThUKzmVVqZAjw8ity2meMv9ez9wwaOumqZO78YXsKk013wYmGFZIQIHRxUfVsg3doZkCTRQW8Zs+BgVyy3qDP9/Ogy86bb96eqNCjo0nZYJhkN0fi9DOgAFkHMmPy1029OtyUOGbdRu8NDnGSW0g92QqD7Geb/lg7F80uKXsAbFSAVQvP4ZLFTuso2izQ3e5uWmHM+rKe/ZPvLqqxcY8Q/3z8s3mduIRhlDlSKFUuC76O82tkabOpjB39T6bBmomiDpvdE5QMwvYW2n+/oKJjikVWLoI77C6czZrh+6Kr7zDtnVllUsO31NnNc3t5JYqFUTVtUVMXaElnnBd6epsCrODrJlvnRmnyht5b9RPmJF2dUpxFFi6YDu0s36LHdqPjL2T1dUcIa3r5G49QdjkIx8V3ld2anM7BUoxRD6dFi7F6gos8bBSQsLfSvoR6DkyyNr59jk7Qdg7k6RQVco5D2gpjkJLF3SHNoo2OzQt/WeBuhojFOrykujtaaTN7VQjnrIY5Fghpq7AEg+t6/hHoEtkkOXEXfZhhaalnHSYlgogMYqZYYR26HzKvX2EQl3+tWCRZDe3U6vj4lZoV5fUUNM3jttAJo6uvzu33T0amk3O83t65R02PF/Zy/cZt/gwLWmo7r5+uPMvVwgcSueo8zA63mGbbwPvKsBEKyjvgFl1//Uu80CVzJNfne2wqwil7unrbzpIVgg0VFdfHD2QL1eIVXUxuq27guhPQ/lLL5ON6gG33hqqDwOFl7lmoKhCxRlVnlNCChgXhVkeSYp9HshYIaqUfSOtoVpoMUegw82XP/hC8jEHd/hSYDockNJ6uVw76eOL7az6+I7Exp5oRrGFJhuT6WLI/mh9Epr9I3dYOTIp9rkgY4XIHe6PzPMhCQ3VSh0aSJhvzQTRjEKTdLVDaf7OD/8yOTGFUmJdE/vZ+LZhVKu4YyHCAEprJ2OFuLpsqKyhhLpi1J2BhPnWThDNiE/S9Q7F+fuly/4YLZRqmzm1DmO6uv6yt7hNCoWOOKWdhAhbJjqkoVrV1UIdXsY3z7dCyiKgVhO4HaNVYQiSdljMKU8Gdjl9tqXhWr3jAKW6HNGG6iqN7HAKE+bbOmUREJ+k6x02zd/Bs0coNTNzig2jRJN1jpy4WKm0dmqOUKor9Esxdc1WP5fxLDGZjZIKSRcmaTtcVpTWUC3Ul4EaB+kmlFRIvG2YtsNlRUkN1UK9rAOxxKQNSirUeRRLiwSllarU10p0NEoq1HkUS4sEDeUqzCrmkVxdoc6jWFokKD3/KdTLCBTxPJOuUOdRLC0SlFbKaDHvhUGDEQwEqQQDQSrBQJBKMBCkEgwEqQQDQSrBQJBKMBCk0v8DYU9I4Znv/30AAAAASUVORK5CYII=" alt="Results of haplinSlide analysis in a plot of the &#39;maternal&#39; p-values, for windows with p-values below 0.2"/></p>
+
+<pre><code class="r">head( all.p.values2 )
+</code></pre>
+
+<pre><code>##     marker                            haplos   est.name      est.
+## 724    m31 m31:\nc (40.5%),\n ref: G (59.5%) RRcm_RRcf1 1.4906789
+## 725    m32 m32:\na (35.9%),\n ref: T (64.1%) RRcm_RRcf1 1.5472118
+## 729    m36 m36:\na (45.3%),\n ref: T (54.7%) RRcm_RRcf1 0.7431661
+## 736    m46 m46:\nc (37.8%),\n ref: T (62.2%) RRcm_RRcf1 0.6638964
+## 740    m50     m50:\na (36%),\n ref: T (64%) RRcm_RRcf1 0.6640618
+## 745    m55 m55:\nc (44.2%),\n ref: G (55.8%) RRcm_RRcf1 1.4191366
+##         lower    upper    p.value star
+## 724 0.9909917 2.217170 0.05256185     
+## 725 1.0339468 2.290932 0.03257608    *
+## 729 0.4831559 1.129129 0.16393250     
+## 736 0.4280048 1.017188 0.06214700     
+## 740 0.4342559 1.001985 0.05340188     
+## 745 0.9415219 2.111067 0.09117895
+</code></pre>
+
+<p><em>NOTE:</em> here, the <code>star</code> column marks the significant p-values:</p>
+
+<ul>
+<li><code>*</code> marks p-value \(< 0.05\),</li>
+<li><code>**</code> marks p-value \(< 0.01\),</li>
+<li><code>***</code> marks p-value \(< 0.001\).</li>
+</ul>
+
+<p>And then, we can plot the relative risks:</p>
+
+<pre><code class="r">plot( hapSlide.res2, plot.signif.only = TRUE )
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="Results of haplinSlide analysis in a plot of the relative risks, for windows with p-values below 0.05. Coding of symbols: &#39;cdd&#39; means a double allele dose (both parents gave the same allele), while &#39;cm_cf&#39; is the ratio of the risks calculated for when the minor allele came from the mother to the risk when the minor allele came from the father (RRR = RR_cm / RR_cf)."/></p>
+
+<p>Here&#39;s also how the results look like when we estimate the maternal effects, with the window length set to two:</p>
+
+<pre><code class="r">hapSlide.res3 &lt;- haplinSlide( hapSlide.subset.data.prep, use.missing = TRUE,
+  ccvar = 10, design = &quot;cc.triad&quot;, maternal = TRUE, reference = &quot;ref.cat&quot;,
+  response = &quot;mult&quot;, winlength = 2 )
+</code></pre>
+
+<pre><code>## 
+## Important: Remember that SNPs must be in correct physical ordering
+## for a sliding window approach to be meaningful!
+## INFO: No parallel environment selected. Will run in sequential mode.
+## Running Haplin on Window &#39;m1-m2&#39; (1/99)...: done
+## Running Haplin on Window &#39;m2-m3&#39; (2/99)...: done
+## Running Haplin on Window &#39;m3-m4&#39; (3/99)...: done
+## Running Haplin on Window &#39;m4-m5&#39; (4/99)...: done
+## Running Haplin on Window &#39;m5-m6&#39; (5/99)...: done
+## Running Haplin on Window &#39;m6-m7&#39; (6/99)...: done
+## Running Haplin on Window &#39;m7-m8&#39; (7/99)...: done
+## Running Haplin on Window &#39;m8-m9&#39; (8/99)...: done
+## Running Haplin on Window &#39;m9-m10&#39; (9/99)...: done
+## Running Haplin on Window &#39;m10-m11&#39; (10/99)...: done
+## Running Haplin on Window &#39;m11-m12&#39; (11/99)...: done
+## Running Haplin on Window &#39;m12-m13&#39; (12/99)...: done
+## Running Haplin on Window &#39;m13-m14&#39; (13/99)...: done
+## Running Haplin on Window &#39;m14-m15&#39; (14/99)...: done
+## Running Haplin on Window &#39;m15-m16&#39; (15/99)...: done
+## Running Haplin on Window &#39;m16-m17&#39; (16/99)...: done
+## Running Haplin on Window &#39;m17-m18&#39; (17/99)...: done
+## Running Haplin on Window &#39;m18-m19&#39; (18/99)...: done
+## Running Haplin on Window &#39;m19-m20&#39; (19/99)...: done
+## Running Haplin on Window &#39;m20-m21&#39; (20/99)...: done
+## Running Haplin on Window &#39;m21-m22&#39; (21/99)...: done
+## Running Haplin on Window &#39;m22-m23&#39; (22/99)...: done
+## Running Haplin on Window &#39;m23-m24&#39; (23/99)...: done
+## Running Haplin on Window &#39;m24-m25&#39; (24/99)...: done
+## Running Haplin on Window &#39;m25-m26&#39; (25/99)...: done
+## Running Haplin on Window &#39;m26-m27&#39; (26/99)...: done
+## Running Haplin on Window &#39;m27-m28&#39; (27/99)...: done
+## Running Haplin on Window &#39;m28-m29&#39; (28/99)...: done
+## Running Haplin on Window &#39;m29-m30&#39; (29/99)...: done
+## Running Haplin on Window &#39;m30-m31&#39; (30/99)...: done
+## Running Haplin on Window &#39;m31-m32&#39; (31/99)...: done
+## Running Haplin on Window &#39;m32-m33&#39; (32/99)...: done
+## Running Haplin on Window &#39;m33-m34&#39; (33/99)...: done
+## Running Haplin on Window &#39;m34-m35&#39; (34/99)...: done
+## Running Haplin on Window &#39;m35-m36&#39; (35/99)...: done
+## Running Haplin on Window &#39;m36-m37&#39; (36/99)...: done
+## Running Haplin on Window &#39;m37-m38&#39; (37/99)...: done
+## Running Haplin on Window &#39;m38-m39&#39; (38/99)...: done
+## Running Haplin on Window &#39;m39-m40&#39; (39/99)...: done
+## Running Haplin on Window &#39;m40-m41&#39; (40/99)...: done
+## Running Haplin on Window &#39;m41-m42&#39; (41/99)...: done
+## Running Haplin on Window &#39;m42-m43&#39; (42/99)...: done
+## Running Haplin on Window &#39;m43-m44&#39; (43/99)...: done
+## Running Haplin on Window &#39;m44-m45&#39; (44/99)...: done
+## Running Haplin on Window &#39;m45-m46&#39; (45/99)...: done
+## Running Haplin on Window &#39;m46-m47&#39; (46/99)...: done
+## Running Haplin on Window &#39;m47-m48&#39; (47/99)...: done
+## Running Haplin on Window &#39;m48-m49&#39; (48/99)...: done
+## Running Haplin on Window &#39;m49-m50&#39; (49/99)...: done
+## Running Haplin on Window &#39;m50-m51&#39; (50/99)...: done
+## Running Haplin on Window &#39;m51-m52&#39; (51/99)...: done
+## Running Haplin on Window &#39;m52-m53&#39; (52/99)...: done
+## Running Haplin on Window &#39;m53-m54&#39; (53/99)...: done
+## Running Haplin on Window &#39;m54-m55&#39; (54/99)...: done
+## Running Haplin on Window &#39;m55-m56&#39; (55/99)...: done
+## Running Haplin on Window &#39;m56-m57&#39; (56/99)...: done
+## Running Haplin on Window &#39;m57-m58&#39; (57/99)...: done
+## Running Haplin on Window &#39;m58-m59&#39; (58/99)...: done
+## Running Haplin on Window &#39;m59-m60&#39; (59/99)...: done
+## Running Haplin on Window &#39;m60-m61&#39; (60/99)...: done
+## Running Haplin on Window &#39;m61-m62&#39; (61/99)...: done
+## Running Haplin on Window &#39;m62-m63&#39; (62/99)...: done
+## Running Haplin on Window &#39;m63-m64&#39; (63/99)...: done
+## Running Haplin on Window &#39;m64-m65&#39; (64/99)...: done
+## Running Haplin on Window &#39;m65-m66&#39; (65/99)...: done
+## Running Haplin on Window &#39;m66-m67&#39; (66/99)...: done
+## Running Haplin on Window &#39;m67-m68&#39; (67/99)...: done
+## Running Haplin on Window &#39;m68-m69&#39; (68/99)...: done
+## Running Haplin on Window &#39;m69-m70&#39; (69/99)...: done
+## Running Haplin on Window &#39;m70-m71&#39; (70/99)...: done
+## Running Haplin on Window &#39;m71-m72&#39; (71/99)...: done
+## Running Haplin on Window &#39;m72-m73&#39; (72/99)...: done
+## Running Haplin on Window &#39;m73-m74&#39; (73/99)...: done
+## Running Haplin on Window &#39;m74-m75&#39; (74/99)...: done
+## Running Haplin on Window &#39;m75-m76&#39; (75/99)...: done
+## Running Haplin on Window &#39;m76-m77&#39; (76/99)...: done
+## Running Haplin on Window &#39;m77-m78&#39; (77/99)...: done
+## Running Haplin on Window &#39;m78-m79&#39; (78/99)...: done
+## Running Haplin on Window &#39;m79-m80&#39; (79/99)...: done
+## Running Haplin on Window &#39;m80-m81&#39; (80/99)...: done
+## Running Haplin on Window &#39;m81-m82&#39; (81/99)...: done
+## Running Haplin on Window &#39;m82-m83&#39; (82/99)...: done
+## Running Haplin on Window &#39;m83-m84&#39; (83/99)...: done
+## Running Haplin on Window &#39;m84-m85&#39; (84/99)...: done
+## Running Haplin on Window &#39;m85-m86&#39; (85/99)...: done
+## Running Haplin on Window &#39;m86-m87&#39; (86/99)...: done
+## Running Haplin on Window &#39;m87-m88&#39; (87/99)...: done
+## Running Haplin on Window &#39;m88-m89&#39; (88/99)...: done
+## Running Haplin on Window &#39;m89-m90&#39; (89/99)...: done
+## Running Haplin on Window &#39;m90-m91&#39; (90/99)...: done
+## Running Haplin on Window &#39;m91-m92&#39; (91/99)...: done
+## Running Haplin on Window &#39;m92-m93&#39; (92/99)...: done
+## Running Haplin on Window &#39;m93-m94&#39; (93/99)...: done
+## Running Haplin on Window &#39;m94-m95&#39; (94/99)...: done
+## Running Haplin on Window &#39;m95-m96&#39; (95/99)...: done
+## Running Haplin on Window &#39;m96-m97&#39; (96/99)...: done
+## Running Haplin on Window &#39;m97-m98&#39; (97/99)...: done
+## Running Haplin on Window &#39;m98-m99&#39; (98/99)...: done
+## Running Haplin on Window &#39;m99-m100&#39; (99/99)...: done
+## 
+##  --- haplinSlide has completed ---
+</code></pre>
+
+<pre><code class="r">plot( hapSlide.res3, plot.signif.only = TRUE, signif.thresh = 0.01 )
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="Results of haplinSlide analysis in a plot of the relative risks, for windows with p-values below 0.05. The top panels show the relative risks (RR) when a given haplotype was found in the child, while the bottom panels show RR of the disease in the child, when a given haplotype occured in the mother. Coding of symbols: &#39;c&#39; and &#39;cdd&#39; means a single and double haplotype dose in the child, respectively; while &#39;m&#39; and &#39;mdd&#39; is a single and double haplotype dose in the mother."/></p>
+
+<hr/>
+
+<h1>Analysis of gene-environment interactions (GxE) with haplinStrat</h1>
+
+<p>If we have data on environmental exposure of (usually) the mother, we can add it to our dataset and analyse it with <code>haplinStrat</code>, that calculates relative risks for strata defined by the categories of the environmental exposure variable.</p>
+
+<pre><code class="r">hapStrat.res &lt;- haplinStrat( data = trial.data2.prep, strata = 1, use.missing = TRUE,
+  ccvar = 2, design = &quot;cc.triad&quot;, reference = &quot;ref.cat&quot;, response = &quot;mult&quot; )
+</code></pre>
+
+<pre><code>## 
+## ## Running haplinStrat ##
+## 
+## Selected stratification variable: cov.1.c
+## Frequency distribution of stratification variable:
+##   0   1   2   3   4 
+## 565 164 235 122  53 
+## 
+## Running Haplin on full data file...Done
+## 
+## Running Haplin on stratum &quot;0&quot;...Done
+## 
+## Running Haplin on stratum &quot;1&quot;...Done
+## 
+## Running Haplin on stratum &quot;2&quot;...Done
+## 
+## Running Haplin on stratum &quot;3&quot;...Done
+## 
+## Running Haplin on stratum &quot;4&quot;...Done
+</code></pre>
+
+<p>The difference from running haplin is that we need to tell <code>haplinStrat</code> which column contains the environmental variable. This is done by setting the argument <code>strata</code> to a specific column number in the <code>gen.data$cov.data</code> part of data. The result of <code>haplinStrat</code> run is a list of haplin objects: one for the haplin run on the entire data, and then one for every stratum.</p>
+
+<pre><code class="r">lapply( hapStrat.res, haptable )
+</code></pre>
+
+<pre><code>## $all
+##   marker alleles    counts     HWE.pv Original After.rem.NA
+## 1     m1     a/G 1290/4120 0.68753925     1139         1139
+## 2     m2     a/B  142/5738 0.01013796     1139         1139
+## 3   &lt;NA&gt;    &lt;NA&gt;      &lt;NA&gt;         NA     1139         1139
+##   After.rem.Mend.inc. After.rem.unused.haplos   pv.overall haplos
+## 1                1134                    1134 0.0001143177    G-a
+## 2                1134                    1134 0.0001143177    a-B
+## 3                1134                    1134 0.0001143177    G-B
+##    haplofreq haplofreq.lower haplofreq.upper reference  RR.est.  RR.lower
+## 1 0.02637715      0.02147445      0.03228444        -  0.729373 0.4079393
+## 2 0.21878318      0.20469703      0.23398201        -  1.498203 1.2322773
+## 3 0.75462805      0.73895724      0.76964068       ref 1.000000 1.0000000
+##   RR.upper   RR.p.value RRdd.est. RRdd.lower RRdd.upper RRdd.p.value
+## 1 1.327277 2.947870e-01  0.531985  0.1664145   1.761664 2.947870e-01
+## 2 1.829178 5.347616e-05  2.244612  1.5185074   3.345894 5.347616e-05
+## 3 1.000000           NA  1.000000  1.0000000   1.000000           NA
+## 
+## $`0`
+##   marker alleles   counts     HWE.pv Original After.rem.NA
+## 1     m1     a/G 611/2051 0.54762530      565          565
+## 2     m2     a/B  83/2825 0.08595161      565          565
+## 3   &lt;NA&gt;    &lt;NA&gt;     &lt;NA&gt;         NA      565          565
+##   After.rem.Mend.inc. After.rem.unused.haplos pv.overall haplos  haplofreq
+## 1                 563                     563 0.05946876    G-a 0.02997506
+## 2                 563                     563 0.05946876    a-B 0.21870984
+## 3                 563                     563 0.05946876    G-B 0.75095176
+##   haplofreq.lower haplofreq.upper reference   RR.est.  RR.lower RR.upper
+## 1      0.02304509       0.0395624        -  0.5902762 0.2316093 1.484740
+## 2      0.19874418       0.2397148        -  1.3738991 0.9931826 1.896475
+## 3      0.72885346       0.7717262       ref 1.0000000 1.0000000 1.000000
+##   RR.p.value RRdd.est. RRdd.lower RRdd.upper RRdd.p.value
+## 1 0.25915926  0.348426  0.0536429   2.204452   0.25915926
+## 2 0.05084234  1.887599  0.9864117   3.596617   0.05084234
+## 3         NA  1.000000  1.0000000   1.000000           NA
+## 
+## $`1`
+##   marker alleles  counts      HWE.pv Original After.rem.NA
+## 1     m1     a/G 196/574 0.428881321      164          164
+## 2     m2     a/B  23/813 0.002084963      164          164
+## 3   &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;          NA      164          164
+##   After.rem.Mend.inc. After.rem.unused.haplos pv.overall haplos  haplofreq
+## 1                 163                     163 0.04349637    G-a 0.02585087
+## 2                 163                     163 0.04349637    a-B 0.21986259
+## 3                 163                     163 0.04349637    G-B 0.75323598
+##   haplofreq.lower haplofreq.upper reference  RR.est.  RR.lower RR.upper
+## 1      0.01500796       0.0458127        -  1.638403 0.5106674 5.122134
+## 2      0.18256901       0.2614902        -  1.880685 1.1420259 3.009592
+## 3      0.70947240       0.7920373       ref 1.000000 1.0000000 1.000000
+##   RR.p.value RRdd.est. RRdd.lower RRdd.upper RRdd.p.value
+## 1 0.40743557  2.684363  0.2607812  26.236259   0.40743557
+## 2 0.01171209  3.536976  1.3042231   9.057643   0.01171209
+## 3         NA  1.000000  1.0000000   1.000000           NA
+## 
+## $`2`
+##   marker alleles  counts    HWE.pv Original After.rem.NA
+## 1     m1     a/G 281/873 0.3411622      235          235
+## 2     m2     a/B 20/1218 0.6828818      235          235
+## 3   &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;        NA      235          235
+##   After.rem.Mend.inc. After.rem.unused.haplos pv.overall haplos  haplofreq
+## 1                 233                     233  0.1878774    G-a 0.01970935
+## 2                 233                     233  0.1878774    a-B 0.22348409
+## 3                 233                     233  0.1878774    G-B 0.75600156
+##   haplofreq.lower haplofreq.upper reference   RR.est.  RR.lower RR.upper
+## 1      0.01136969      0.03349155        -  0.6061775 0.1373868 2.766825
+## 2      0.19239438      0.25762541        -  1.3973086 0.9365884 2.057394
+## 3      0.72105225      0.78851132       ref 1.0000000 1.0000000 1.000000
+##   RR.p.value RRdd.est. RRdd.lower RRdd.upper RRdd.p.value
+## 1 0.51474061 0.3674512 0.01887512   7.655323   0.51474061
+## 2 0.09994355 1.9524714 0.87719783   4.232869   0.09994355
+## 3         NA 1.0000000 1.00000000   1.000000           NA
+## 
+## $`3`
+##   marker alleles  counts    HWE.pv Original After.rem.NA
+## 1     m1     a/G 137/447 0.5291981      122          122
+## 2     m2     a/B  12/610 0.7286501      122          122
+## 3   &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;        NA      122          122
+##   After.rem.Mend.inc. After.rem.unused.haplos pv.overall haplos  haplofreq
+## 1                 122                     122  0.3866152    G-a 0.02090845
+## 2                 122                     122  0.3866152    a-B 0.20875425
+## 3                 122                     122  0.3866152    G-B 0.76898886
+##   haplofreq.lower haplofreq.upper reference  RR.est.  RR.lower RR.upper
+## 1      0.01001552      0.04405697        -  1.071714 0.2161509 5.158964
+## 2      0.16614791      0.25782947        -  1.465536 0.8538418 2.527633
+## 3      0.71835994      0.81245686       ref 1.000000 1.0000000 1.000000
+##   RR.p.value RRdd.est. RRdd.lower RRdd.upper RRdd.p.value
+## 1  0.9390324  1.148571 0.04672122   26.61491    0.9390324
+## 2  0.1656002  2.147797 0.72904588    6.38893    0.1656002
+## 3         NA  1.000000 1.00000000    1.00000           NA
+## 
+## $`4`
+##   marker alleles counts    HWE.pv Original After.rem.NA
+## 1     m1     a/G 65/175 0.1952259       53           53
+## 2     m2     a/B  4/272 0.8628440       53           53
+## 3   &lt;NA&gt;    &lt;NA&gt;   &lt;NA&gt;        NA       53           53
+##   After.rem.Mend.inc. After.rem.unused.haplos pv.overall haplos  haplofreq
+## 1                  53                      53 0.06436654    G-a 0.02845996
+## 2                  53                      53 0.06436654    a-B 0.22419990
+## 3                  53                      53 0.06436654    G-B 0.74378651
+##   haplofreq.lower haplofreq.upper reference     RR.est. RR.lower RR.upper
+## 1      0.01077831      0.07395674        -  0.000746149 0.000000      Inf
+## 2      0.15893553      0.30457495        -  2.011376702 0.930743 4.329449
+## 3      0.65902097      0.81404929       ref 1.000000000 1.000000 1.000000
+##   RR.p.value    RRdd.est. RRdd.lower RRdd.upper RRdd.p.value
+## 1 1.00000000 6.419717e-07  0.0000000        Inf   1.00000000
+## 2 0.07208091 4.045636e+00  0.8662826   18.74412   0.07208091
+## 3         NA 1.000000e+00  1.0000000    1.00000           NA
+</code></pre>
+
+<p>We can plot the results easily with the <code>plot</code> function (provided that the <a href="https://CRAN.R-project.org/package=ggplot2">ggplot2</a> package is installed on your system!):</p>
+
+<pre><code class="r">plot( hapStrat.res )
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="Results of haplinStrat run."/></p>
+
+<p>To check whether there is any significant interaction between the environmental exposure and genotypes, we use the <code>gxe</code> function:</p>
+
+<pre><code class="r">gxe( hapStrat.res )
+</code></pre>
+
+<pre><code>##           gxe.test      chisq df      pval
+## 1       haplo.freq 2.74586596  8 0.9492800
+## 2            child 3.45632944  8 0.9025524
+## 3 haplo.freq.trend 0.08145869  2 0.9600889
+## 4      child.trend 0.29423427  2 0.8631929
+</code></pre>
+
+</body>
+
+</html>

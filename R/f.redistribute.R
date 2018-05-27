@@ -13,7 +13,6 @@ f.redistribute <- function(pred, data, pos, freqsum, expand = T){
 #
 ## RESCALE PREDICTED FREQUENCIES WITHIN EACH TRIAD:
 .predsum <- f.groupsum(X = .pred, INDICES = data$orig.lines)
-
 .pred.redist <- .pred/.predsum * freqsum
 #
 if(!expand) return(.pred.redist)
