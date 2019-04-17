@@ -104,7 +104,7 @@ Norwegian Institute of Public Health\cr
 
 \email{hakon.gjessing@uib.no}}
 
-\seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinSlide}}, \code{\link[Haplin]{hapSim}}, \code{\link[Haplin]{haptable}}, \code{\link[Haplin]{suest}}, \code{\link[Haplin]{hapPower}}}
+\seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinSlide}}, \code{\link[Haplin]{hapSim}}, \code{\link[Haplin]{haptable}}, \code{\link[Haplin]{suest}}, \code{\link[Haplin]{hapPower}}, \code{\link[Haplin]{hapPowerAsymp}}}
 
 \examples{
 \dontrun{
@@ -139,8 +139,8 @@ n.sim = 100, ask = FALSE)
 ## We have a combination of 100 case triads and 
 ## 100 control triads with no missing data. 
 ## No environmental effects are considered.
-hapRun(nall = c(2), n.strata = 2, cases = c(mfc=100), controls = c(mfc=100),
+hapRun(nall = c(2), n.strata = 1, cases = c(mfc=100), controls = c(mfc=100),
 haplo.freq = rep(0.5,2), RR = c(1.5,1), RRstar = c(1,1),
-hapfunc = "haplinStrat", n.sim = 100, dire = "simfiles", ask = FALSE)
+hapfunc = "haplin", n.sim = 100, dire = "simfiles", ask = FALSE)
 }
 }

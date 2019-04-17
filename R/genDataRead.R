@@ -2,12 +2,12 @@
 #'
 #' This function will read in data from PED or haplin formatted file.
 #'
-#' The function reads in all the data in the file, creates \link[ff]{ff} objects to store the
-#'  genetic information and \link{data.frame} to store covariate data (if any). These
+#' The function reads in all the data in the file, creates \link[ff]{ff} objects to store
+#'  the genetic information and \link{data.frame} to store covariate data (if any). These
 #'  objects are saved in \code{.RData} and \code{.ffData} files, which can be later on
 #'  easily uploaded to R (with \link{genDataLoad}) and re-used.
 #'
-#' @param file.in The name of the input file.
+#' @param file.in The name of the main input file with genotype information.
 #' @param file.out The base for the output filename (by default, constructed from the
 #'   input file name).
 #' @param dir.out The path to the directory where the output files will be saved.
@@ -16,22 +16,31 @@
 #'     \item \emph{haplin} - data already in one row per family,
 #'     \item \emph{ped} - data from .ped file, each row represents an individual.
 #'   }.
-#' @param header Whether the first line of the input file contains column names;
-#'   default: FALSE.
-#' @param n.vars The number of columns with covariate data (if any).
+#' @param header Whether the first line of the main input file contains column names;
+#'   default: FALSE; NB: this is useful only for 'haplin'-formatted files!
+#' @param n.vars The number of columns with covariate data (if any) in the main file;
+#'   NB: if the main file is in PED format, it is assumed that the first 6 columns contain
+#'   the standard PED-covariates (i.e., family ID, ID of the child, father and mother,
+#'   sex and case-control status), so in this case setting 'n.vars' is useful only
+#'   if the PED file contains more than 6 covariate columns.
+#' @param cov.file.in Name of the file containing additional covariate data, if any. 
+#'   Caution: unless the 'cov.header' argument is used, it is assumed that the first line 
+#'   of this file contains the header (i.e., the column names of the additional data).
 #' @param cov.header The character vector containing the names of covariate columns
-#'   (both, columns in the main data and in the file with additional covariate data,
-#'   if given by the 'cov.file.in' argument).
+#'   (in the file with additional covariate data if given by the 'cov.file.in' argument;
+#'   or in the main file, if it's a "haplin"-formatted file).
 #' @param allele.sep Character: separator between two alleles (default: ";").
 #' @param na.strings Character or NA: how the missing data is coded (default: "NA").
 #' @param col.sep Character: separator between the columns (i.e., markers; default: any
 #'   whitespace character).
-#' @param cov.file.in Name of the file containing additional covariate data, if any. 
-#'   Caution: unless the 'cov.header' argument is used, it is assumed that the first line 
-#'   of this file contains the header (i.e., the column names of the additional data).
 #' @param overwrite Whether to overwrite the output files: if NULL (default), will prompt
 #'   the user to give answer; set to TRUE, will automatically overwrite any existing files;
 #'   and set to FALSE, will stop if the output files exist.
+#'
+#' @section Usage note:
+#' When reading in a covariate file together with the genotype information, it is advised
+#'   to include the header in the file, so that there is no doubt to the naming of
+#'   the data columns.
 #'
 #' @examples
 #'   # The argument 'overwrite' is set to TRUE!
@@ -58,7 +67,7 @@
 #'     \item \emph{aux} - a list with meta-data and important parameters.
 #'   }
 #'
-genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALSE ), file.out = NULL, dir.out = ".", format = stop( "Format parameter is required!" ), header = FALSE, n.vars, cov.header, allele.sep = ";", na.strings = "NA", col.sep = "", cov.file.in, overwrite = NULL ){
+genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALSE ), file.out = NULL, dir.out = ".", format = stop( "Format parameter is required!" ), header = FALSE, n.vars, cov.file.in, cov.header, allele.sep = ";", na.strings = "NA", col.sep = "", overwrite = NULL ){
 	## checking the input arguments
 	if( !file.exists( file.in ) ){
 		stop( "The given file (", file.in, ") doesn't exist! Check and try again.", call. = FALSE )
@@ -82,8 +91,14 @@ genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALS
 		}
 		
 		split <- F
-		if( col.sep != "" & col.sep == allele.sep ){
+		if( ( col.sep != "" & col.sep == allele.sep ) | allele.sep == " " ){
 			split <- T
+		}
+	}
+	
+	if( !missing( cov.header ) ){
+		if( class( cov.header ) != "character" ){
+			stop( "'cov.header' is specified, but it's not a character vector!", call. = FALSE )
 		}
 	}
 	
@@ -223,41 +238,70 @@ genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALS
 	cat( "... done preparing\n" )
 
 	rm( gen.data.in.ffdf )
-# 	gc()
 
 	cov.data.colnames <- c()
 	if( n.vars > 0 ){
 		if( format == "ped" ){
 			## lookup in the package environment
 			cov.data.colnames <- get( ".cov.data.colnames", envir = .haplinEnv )
+		} else if( !missing( header ) ) {
+			cov.data.colnames <- header.line[ 1:n.vars ]
 		} else {
 			cov.data.colnames <- paste0( "cov.", 1:n.vars )
 		}
 	}
 	
 	## reading additional data (if given)
+	cov.n.vars <- 0
 	if( !missing( cov.file.in ) ){
 		cat( "Reading covariate file... \n" )
-		cov.add.data <- as.matrix( read.table( cov.file.in, header = TRUE, stringsAsFactors = FALSE ) )
+		if( missing( cov.header ) ){
+			cat( "    'cov.header' not given - assuming the first line is the header...\n" )
+			cov.file.header <- TRUE
+		} else {
+			cov.file.header <- FALSE
+		}
+
+		cov.add.data <- read.table( cov.file.in, header = cov.file.header, stringsAsFactors = FALSE )
+		if( missing( cov.header ) ){
+			cov.header <- colnames( cov.add.data )
+		}
+		cov.data.colnames <- c( cov.data.colnames, cov.header )
 		if( nrow( cov.add.data ) != nb.rows.tot ){
 			stop( "The number of rows in the additional covariate data (", nrow( cov.add.data ), ") doesn't match the number of rows in the main file with genetic data (", nb.rows.tot, ")!", call. = FALSE )
 		}
-		cov.data.in <- cbind( cov.data.in, cov.add.data )
-		cov.data.colnames <- c( cov.data.colnames, colnames( cov.add.data ) )
 		
-		n.vars <- n.vars + ncol( cov.add.data )
-		cat( "...done\n" )
-	}
-	
-	if( !missing( cov.header ) ){
-		if( length( cov.data.colnames ) != length( cov.header ) ){
-			stop( "The length of given 'cov.header' names (", length( cov.header ), ") doesn't match the number of all the covariate data columns (", length( cov.data.colnames ), ")! Check and try again." )
-		}else{
-			cov.data.colnames <- cov.header
+		if( !cov.file.header & ( ncol( cov.add.data ) != length( cov.header ) ) ){
+			stop( "The length of given 'cov.header' names (", length( cov.header ), ") doesn't match the number of all the covariate data columns (", ncol( cov.add.data ), ")! Check and try again." )
 		}
-	} else if( header ){
-		cov.data.colnames <- header.line[ 1:length( cov.data.colnames ) ]
+		
+		if( length( cov.data.in ) != 0 ){
+			cov.data.in <- cbind( cov.data.in, cov.add.data )
+		} else {
+			cov.data.in <- cov.add.data
+		}
+		cov.n.vars <- ncol( cov.add.data )
+		cat( "...done\n" )
+	} else if( !missing( cov.header ) ) {
+		# if no additional file with covariates is read but there are some covariates in the
+		# main file with genotypes and one wants to override the default values
+		if( format == "haplin" ){
+			cov.n.vars <- 0
+			if( n.vars != length( cov.header ) ){
+				stop( "The length of given 'cov.header' names (", length( cov.header ), ") doesn't match the number of all the covariate data columns (", n.vars, ")! Check and try again." )
+			}else{
+				cov.data.colnames <- cov.header
+			}
+		} else if( format == "ped" ){
+			cov.n.vars <- n.vars - 6
+			if( cov.n.vars != length( cov.header ) ){
+				stop( "The length of given 'cov.header' names (", length( cov.header ), ") doesn't match the number of all the covariate data columns (", cov.n.vars, ")! Check and try again." )
+			}else{
+				cov.data.colnames[ 7:n.vars ] <- cov.header
+			}
+		}
 	}
+	n.vars <- n.vars + cov.n.vars
 	
 	## saving the data in the .RData and .ffData files
 	cat( "Saving data...\n" )

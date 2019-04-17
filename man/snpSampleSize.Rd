@@ -51,7 +51,7 @@ Norwegian Institute of Public Health\cr
 \seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{snpPower}}}
 
 \examples{
-\dontrun{
+
 ## Compute sample sizes for a single SNP,
 ## when the specified case family design is a full triad, there are no control families,
 ## RR = 1.1, MAF = 0.1, alpha = 0.05 and power = 0.9
@@ -64,6 +64,6 @@ RR = 1.1, MAF = 0.1, alpha = 0.05, power = 0.9)
 ## control children, fraction = 0.5, RR = 1.2, MAF = 0.1, alpha = 0.05 and power = 0.9
 snpSampleSize(fam.cases = "mfc", fam.controls = c("mfc", "c"), 
 RR = 1.2, MAF = 0.1, alpha = 0.05, power = c(0.8, 0.9))
-}
+
 }
 

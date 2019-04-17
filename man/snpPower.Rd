@@ -50,7 +50,6 @@ Norwegian Institute of Public Health\cr
 \seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{snpSampleSize}}, \code{\link[Haplin]{hapRun}}, \code{\link[Haplin]{hapPower}}, \code{\link[Haplin]{hapPowerAsymp}}}
 
 \examples{
-\dontrun{
 ## Compute power for a single SNP,
 ## for the combination of 1000 case triads, RR = 1.2, MAF = 0.1 and alpha = 0.05
 snpPower(cases = list(mfc = 1000), controls = list(mfc = 0), RR = 1.2, MAF = 0.1)
@@ -68,6 +67,6 @@ RR = 1.1, MAF = 0.1, alpha = 0.05)
 ## relative risk of 1.1 and minor allele frequency of 0.1
 snpPower(cases = list(mfc = c(500, 1000)), controls = list(mfc = 10000),
 RR = c(1.2, 1.1), MAF = 0.1)
-}
+
 }
 

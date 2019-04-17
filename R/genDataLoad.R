@@ -25,16 +25,10 @@ genDataLoad <- function( filename = stop( "'filename' must be given!" ), dir.in 
 		stop( "The file(s) doesn't seem to exist!", call. = FALSE )
 	}
 	
-	tempdir <- ".tmpff"
-	if( !file.exists( tempdir ) ){
-		dir.create( tempdir )
-	}
-	options( fftempdir = paste0( "./", tempdir ) )
-
 	gen.cols.name <- get( ".gen.cols.name", envir = .haplinEnv )
 	file.in.base <- paste( dir.in, "/", filename, "_gen", sep = "" )
 	
-	suppressWarnings( ff::ffload( file.in.base, rootpath = paste0( "./", tempdir ), overwrite = TRUE ) )
+	suppressWarnings( ff::ffload( file.in.base, overwrite = TRUE ) )
 	loaded.objects <- ls( pattern = paste0( gen.cols.name, ".[[:digit:]]" ) )
 	loaded.aux <- ls( pattern = "aux" )
 	if( length( loaded.aux ) == 0 ){

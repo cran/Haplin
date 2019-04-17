@@ -22,11 +22,16 @@ Haplin reads data in two formats:
 2. PED format.
 
 Both types of data are read in through the use of `genDataRead` function:
-```{r eval=FALSE}
-my.gen.data <- genDataRead( file.in = "my_gen_data.ped", file.out =
-  "my_saved_gen_data", dir.out = ".", format = "ped" )
-my.gen.data.haplin <- genDataRead( file.in = "my_gen_data_hap.dat",
-  file.out = "my_saved_gen_data_hap", dir.out = ".", format = "haplin", n.vars = 0 )
+```{r}
+dir.exmpl <- system.file( "extdata", package = "Haplin" )
+exemplary.file1 <- paste0( dir.exmpl, "/HAPLIN.trialdata.txt" )
+
+my.gen.data.haplin <- genDataRead( file.in = exemplary.file1, file.out = "trial_data1",
+	dir.out = ".", format = "haplin", n.vars = 0 )
+
+exemplary.file3 <- paste0( dir.exmpl, "/exmpl_data.ped" )
+my.gen.data <- genDataRead( exemplary.file3, file.out = "ped_data", dir.out = ".",
+	format = "ped" )
 ```
 
 The function reads in all the data in the file, creates `ff` objects to store the genetic information and `data.frame` to store covariate data (if any). These objects are saved in `.RData` and `.ffData` files, which can be later on easily uploaded to R (with `genDataLoad`) and re-used.
@@ -36,7 +41,8 @@ _CAUTION:_ This can take a long time for large datasets (such as from GWAS analy
 The `genDataRead` function returns a list object with two elements:
 
 *  _cov.data_ - a `data.frame` with covariate data (if available in the input file);
-*  _gen.data_ - the genetic part of data.
+*  _gen.data_ - the genetic part of data;
+*  _aux_ - additional, meta-information, used internal.
 
 The above function reads in also any additional covariate data the user has through the parameter `cov.file.in`:
 ```{r eval=FALSE}
@@ -51,7 +57,85 @@ To see all the available arguments and usage examples, type:
 ?genDataRead
 ```
 (this works also with any other function)
-  
+
+## Reading covariate data
+
+Together with the genotype data, the user can read covariates that are in a separate file. This is done at the same time as reading genotype data.
+
+```{r add_cov_data_read}
+add.cov.file <- paste0( dir.exmpl, "/add_cov_data2.dat" )
+my.gen.data.haplin3 <- genDataRead( file.in = exemplary.file1, file.out = "trial_data3",
+	dir.out = ".", format = "haplin", n.vars = 0, cov.file.in = add.cov.file )
+my.gen.data.haplin3
+
+add.cov.file2 <- paste0( dir.exmpl, "/add_cov_data.dat" )
+my.gen.data2 <- genDataRead( exemplary.file3, file.out = "ped_data2", dir.out = ".",
+	format = "ped", cov.file.in = add.cov.file2 )
+my.gen.data2
+```
+
+# Accessing the information in the loaded data
+
+The object created by `genDataRead` includes a lot of information. We have created functions that will help the user to navigate it.
+
+## Displaying and extracting phenotype information
+
+First of all, when you type in the name of the object, a short summary will be displayed:
+
+```{r show_summary}
+my.gen.data
+```
+
+If you want to show and/or extract part of phenotype information, you can use the `showPheno` function:
+
+```{r showPheno_demo}
+showPheno( my.gen.data ) # by default - showing first 5 entries
+head( showPheno( my.gen.data, n = "all" ), n = 20 )
+showPheno( my.gen.data, from = 4, to = 15 )
+head( showPheno( my.gen.data, sex = 2 ), n = 20 ) # show information about females only
+```
+
+The output can be saved to an object:
+
+```{r showPheno_demo2}
+females.pheno <- showPheno( my.gen.data, sex = 2 )
+head( females.pheno )
+```
+
+With the functions `nindiv` and `nfam`, you can get the number of individuals or number of families in your data:
+
+```{r nindiv_demo}
+nindiv( my.gen.data )
+nfam( my.gen.data )
+```
+
+Note that the `nfam` function assumes that your dataset is from a triad study, i.e., includes at least child and one parent information.
+
+## Displaying and extracting genotype information
+
+The function `nsnps` will tell us how many markers/SNPs there is in the data. Be careful, as a default it assumes that the data is triad data (i.e., mother, father and child were genotyped), so if your data is from a case-control study, be sure to specify that with argument `design = "cc"`.
+
+```{r nsnps}
+nsnps( my.gen.data )
+```
+
+To extract and/or show genotypes for specific individuals or markers, use the `showGen` function:
+
+```{r showGen_demo}
+showGen( my.gen.data, markers = c( 10,15,121 ) ) # by default - showing first 5 entries
+showGen( my.gen.data, from = 31, to = 231 )
+```
+
+As above, this output can be saved to an object:
+
+```{r showGen_demo2}
+subset.genes <- showGen( my.gen.data, from = 31, to = 231, markers = c( 10,15,121 ) )
+subset.genes
+```
+
+Note that these functions work only with objects resulting from `genDataRead`, and not `genDataPreprocess`, as the preprocessing disturbs the coding of the data, thus making the output not easy to understand.
+
+
 # Preparing your data
 
 After loading the data, it is necessary to pre-process it to the internal format used by haplin. This is done by evoking the command:
@@ -73,7 +157,7 @@ If you know that you want to focus your analysis on a certain region of the enti
 
 ```{r eval=FALSE}
 gen.data.subset <- genDataGetPart( data.in = my.gen.data, markers = c( 3:15,22 ),
-  file.out = "my_gen_data_subset", dir.out = "." )
+  design = "triad", file.out = "my_gen_data_subset", dir.out = "." )
 ```
 
 This function allows you to specify the subset in various ways:

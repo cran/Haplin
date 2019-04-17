@@ -40,7 +40,7 @@ Norwegian Institute of Public Health\cr
 
 \email{hakon.gjessing@uib.no}}
 
-\seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinSlide}}, \code{\link[Haplin]{hapSim}}, \code{\link[Haplin]{hapRun}}, \code{\link[Haplin]{snpPower}}}
+\seealso{\code{\link[Haplin]{haplin}}, \code{\link[Haplin]{haplinSlide}}, \code{\link[Haplin]{hapSim}}, \code{\link[Haplin]{hapRun}}, \code{\link[Haplin]{snpPower}}, \code{\link[Haplin]{snpSampleSize}} , \code{\link[Haplin]{hapPowerAsymp}}}
 
 \examples{
 \dontrun{
@@ -69,9 +69,9 @@ RR.mat = c(1.5,1,1,1), RRstar.mat = c(1,1,1,1), gen.missing.cases = list(NULL,0.
 use.missing = TRUE, hapfunc = "haplinStrat", n.sim = 100, ask = FALSE)
 hapPower(hapRun.res)
 
-## Simulate power at the 10% significance level from 100 files using haplin.
+## Simulate power at the 0.1 significance level from 1000 files using haplin.
 ## The files consist of fetal effects at one diallelic locus,
-## corresponding to haplo.freq = c(0.1,0.9), RR = c(1.5,1) and RRstar = c(1,1).
+## corresponding to haplo.freq = c(0.1,0.9), RR = c(2,1) and RRstar = c(1,1).
 ## The data consists of a combination of 100 case triads and 100 control triads.
 hapRun.res <- hapRun(nall = c(2), cases = c(mfc=100), controls = c(mfc=100),
 haplo.freq = c(0.1,0.9), RR = c(2,1), RRstar = c(1,1),

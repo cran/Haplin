@@ -23,7 +23,7 @@ verbose = FALSE, add.file.number = FALSE, blank.lines.skip = FALSE)
 }
 
 \details{
-	The function \code{\link[base]{rbind}} combines R objects by rows. However, reading large data files may require a large amount of memory and be extremely time consuming.
+	The function \code{\link[base:cbind]{rbind}} combines R objects by rows. However, reading large data files may require a large amount of memory and be extremely time consuming.
 	\code{rbindFiles} avoids reading the full files into memory. It reads the files line by line, possibly modifies each line, then writes to outfile. 
 	If however, \code{header}, \code{verbose}, \code{add.file.number} and \code{blank.lines.skip} are all set to "FALSE" 
 	(their default values), the files are appended directly, thus evading line-by-line modifications. 

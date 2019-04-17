@@ -1,0 +1,112 @@
+---
+title: "Relative efficiency in Haplin"
+author: "Miriam Gjerdevik and Hakon K. Gjessing"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: Styrke_artikkel_rmd.bib
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Relative efficiency}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup,include=FALSE}
+knitr::opts_chunk$set( echo = TRUE )
+library( Haplin, quietly = TRUE )
+```
+
+
+## Background
+A variety of child-parent configurations are amenable to genetic association studies, including (but not limited to) cases in combination with unrelated controls, case-parent triads, and case-parent triads in combination with unrelated control-parent triads. Because genome-wide association studies (GWAS) are frequently underpowered due to the large number of single-nucleotide polymorphisms being tested, power calculations are necessary to choose an optimal study design and to maximize scientific gains from high genotyping and assay costs.
+
+The statistical power is an important aspect of design comparison. Frequently, study designs are compared directly through a power analysis, without considering the total number of individuals that needs to be genotyped. For example, a fixed number of complete case-parent triads could be compared with the same number of case-mother or case-father dyads. However, such an approach ignores the costs of data collection. A much more general and informative design comparison can be achieved by studying the relative efficiency, which we define as the ratio of variances of two different parameter estimators, corresponding to two separate designs. Using log-linear modeling, we derive the relative efficiency from the asymptotic variance formulas of the parameters. The relative efficiency estimate takes into account the fact that different designs impose different costs relative to the number of genotyped individuals. The relative efficiency calculations are implemented as an easy-to-use function in our R package Haplin [@Gjessing2006a]) .
+
+We use the releative efficiency estimates to select the study design that attains the highest statistical power using the smallest sample collection and assay costs. The results will depend on the genetic effect being assessed, and our analyses include regular autosomal (offspring or child) effects, parent-of-origin effects and maternal effects (a definition of the genetic effects are provided in [@Gjerdevik2019]). We here show example commands for various scenarios.
+
+
+
+## Regular autosomal effects
+The relative efficiency of two designs are calculated by the Haplin function `hapRelEff`.
+The commands are very similar to the Haplin power calculation function `hapPowerAsymp`, which are explained in detail in our previously published paper [@Gjerdevik2019].
+In general, one only needs to specify the study designs to be compared, the allele frequencies, and the type of genetic effect and its magnitude.
+
+The following command calculates the efficiency of the standard case-control design with an equal number of case and control children relative to the case-parent triad design.
+```{r eval=TRUE}
+     hapRelEff(cases.comp = c(c=1), 
+            controls.comp = c(c=1), cases.ref = c(mfc=1),
+            haplo.freq = c(0.1,0.9), RR = c(1,1))
+```
+
+The arguments `cases.comp` and  `controls.comp` specify the comparison designs, whereas  `cases.ref` and  `controls.ref` specify the reference design. We use the following abbreviations to describe the family designs. We let the letters c, m and f denote a child, mother and a father, respectively. Thus, the case-parent triad design is specified by `cases.comp = c(mfc=1)` or `cases.ref = c(mfc=1)`, whereas the standard case-control design is specified by `cases.comp = c(c=1)` and `controls.comp = c(c=1)`
+or `cases.ref = c(c=1)` and `controls.ref = c(c=1)`. To specify a case-control design with twice as many controls than cases, one could use the combination `cases.comp = c(c=1)` and `controls.comp = c(c=2)`.
+
+The genetic effects are determined by the choice of relative risk parameter(s),
+which also specifies the effect sizes. A reguar autosomal effect is specified by the relative risk
+argument `RR`. The relative efficiency estimated under the null hypothesis, i.e., when all relative risks are equal to one, is known as the Pitman efficiency [@Noether1955]. However, other relative risk values can be used. Allele frequencies are specified by the argument `haplo.freq`. Note that the order and length of the specified relative risk parameter vectors should always match the corresponding allele frequencies.
+
+We see that the relative efficiency for the standard case-control design is 1.5, compared with the case-parent triad design. This result is well-known from the literature [@Cordell2005].
+
+To compare the full hybrid design consisting of both case-parent triads and control-parent triads, we can use a command similar to  
+```{r eval=FALSE}
+     hapRelEff(cases.comp = c(mfc=1), 
+            controls.comp = c(mfc=1), cases.ref = c(mfc=1),
+            haplo.freq = c(0.2,0.8), RR = c(1,1))
+```
+
+## Parent-of-origin (PoO) effects
+
+The relative efficiency for PoO effects is computed by replacing the argument `RR`
+by the two relative risk arguments `RRcm` and `RRcf` denoting parental origin m (mother) and f (father).
+The command 
+```{r eval=FALSE}
+     hapRelEff(cases.comp = c(mfc=1), 
+            controls.comp = c(mfc=1), cases.ref = c(mfc=1),
+            haplo.freq = c(0.2,0.8), RRcm = c(1,1), RRcf = c(1,1))
+```
+calculates the efficiency for the full hybrid design, relative to the case-parent triad design.
+We refer to our previous paper [@Gjerdevik2019] for an explanation of the full output.
+
+## Maternal effects
+
+Since children and their mothers have an allele in common, a maternal
+effect might be statistically confounded with a regular autosomal effect or a PoO effect. The relative efficiency for maternal effects can be analyzed jointly with that of a regular autosomal effect or a PoO effect by adding the relative risk argument `RR.mat` to the original command. 
+
+The command
+```{r eval=TRUE}
+     hapRelEff(cases.comp = list(c(mc=1)), 
+            cases.ref=list(c(mfc=1)), haplo.freq = c(0.1,0.9), 
+            RR = c(1,1), RR.mat=c(1,1))
+```
+calculates the efficiency of the case-mother dyad design relative to the case-mother dyad design, assessing both regular autosomal and maternal effects. In this example, we see that the relative efficiency estimates for regular autosomal and maternal effects are identical when adjusting for possible confounding of the effects with one another [@Gjerdevik2019].
+
+
+## Haplotype effects
+
+The default commands correspond to analyses of single-SNPs. However, the extention to haplotypes is straightforward. The number of markers and haplotypes is determined by the vector `nall`, where the number of markers is equal to `length(nall)`, and the number of different haplotypes is equal to `prod(nall)`. Thus, two diallelic markers are denoted by `nall = c(2,2)`. The length of the arguments `haplo.freq` and `RR` should correspond to the number of haplotypes, as shown in the example below.
+
+```{r eval=TRUE}
+     hapRelEff(nall = c(2,2), cases.comp = c(c=1), 
+            controls.comp = c(c=1), cases.ref = c(mfc=1),
+            haplo.freq = c(0.1,0.2,0.3,0.4), RR = c(1,1,1,1))
+```
+We recommend consulting our paper [@Gjerdevik2019] for a more detailed description of haplotype analysis.
+
+## Analysis of X-linked markers
+Different X-chromosome models are implemented in Haplin, depending on the underlying assumptions of allele-effects in males versus females. The various models may include sex-specific baseline risks, common or distinct relative risks for males and females, as well as X-inactivation in  females.  Corresponding relative efficiency estimates are readily available in `hapRelEff`. In addition to the arguments needed to perform analyses on autosomal markers, three arguments must be specified for relative efficiency estimates on the X chromosome. First, to indicate an X-chromosome analysis, the argument `xchrom` must be set to `TRUE`. Second, the argument `sim.comb.sex` specifies how to deal with sex differences on the X-chromosome, i.e., X-inactivation or not. Finally, the argument `BR.girls` specifies the ratio of baseline risk for females relative to males. A detailed description of the parameterization models is provided elsewhere [@Jugessur2012a; @Skare2017; @Skare2018].
+
+The command
+```{r eval=FALSE}
+     hapRelEff(cases.comp = c(mfc=1), controls.comp = c(mfc=1), 
+            cases.ref = c(mfc=1),
+            haplo.freq = c(0.8,0.2), 
+            RRcm = c(1,2), RRcf = c(1,1),
+            xchrom = T, sim.comb.sex = "double",
+            BR.girls = 1)
+```
+estimates the PoO relative efficiency for the full hybrid design versus the case-parent triad design, accounting for X-inactivation in females (`sim.comb.sex = "double"`) and assuming the same baseline risk in females and males (`BR.girls = 1`). We refer to our previously published paper [@Gjerdevik2019] for further details.
+
+
+
+-----
+
+

@@ -68,6 +68,10 @@ cov.data.extracted <- data.read$cov.data[ .ind.sub, ]
 .sum.na <- rowSums( is.na( gen.data.extracted ) )
 .is.na <- .sum.na > 0.1
 .rows.with.na <- sum( .is.na )
+if( .rows.with.na == 0){
+	# this is the same as if missing=T
+	use.missing = TRUE
+}
 #
 ## REMOVE ROWS WITH MISSING, IF REQUESTED:
 if( !use.missing ){

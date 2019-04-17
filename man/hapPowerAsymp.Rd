@@ -9,7 +9,7 @@
 }
 
 \usage{
-hapPowerAsymp(nall, n.strata = 1, cases, controls, haplo.freq,
+hapPowerAsymp(nall = 2, n.strata = 1, cases, controls, haplo.freq,
 RR, RRcm, RRcf, RRstar, RR.mat, RRstar.mat,
 xchrom = F, sim.comb.sex = "double", BR.girls, 
 response = "mult", alpha = 0.05, ...)
@@ -17,17 +17,17 @@ response = "mult", alpha = 0.05, ...)
 %- maybe also 'usage' for other objects documented here.
 
 \arguments{
-	\item{nall}{A vector of the number of alleles at each locus.}
+	\item{nall}{A vector of the number of alleles at each locus. By default a diallellic SNP.}
 	\item{n.strata}{The number of strata.}
-	\item{cases}{A list of the number of case families. Each element is a vector of the number of families of the specified family design(s) in the corresponding stratum. The possible family designs, i.e., the possible names of the elements, are \code{"mfc"} (full triad), \code{"mc"} (mother-child dyad), \code{"fc"} (father-child dyad) or \code{"c"} (a single case child).}
-	\item{controls}{A list of the number of control families. Each element is a vector of the number of families of the specified family design(s) in the corresponding stratum. The possible family designs are \code{"mfc"} (full triad), \code{"mc"} (mother-child-dyad), \code{"fc"} (father-child dyad), \code{"mf"} (mother-father dyad), \code{"c"} (a single control child), \code{"m"} (a single control mother) or \code{"f"} (a single control father).}
+	\item{cases}{A list of the number of case families. Each element is a vector of the number of families of the specified family design in the corresponding stratum. The possible family designs, i.e., the possible names of the elements, are \code{"mfc"} (full triad), \code{"mc"} (mother-child dyad), \code{"fc"} (father-child dyad) or \code{"c"} (a single case child).}
+	\item{controls}{A list of the number of control families. Each element is a vector of the number of families of the specified family design in the corresponding stratum. The possible family designs are \code{"mfc"} (full triad), \code{"mc"} (mother-child-dyad), \code{"fc"} (father-child dyad), \code{"mf"} (mother-father dyad), \code{"c"} (a single control child), \code{"m"} (a single control mother) or \code{"f"} (a single control father).}
 	\item{haplo.freq}{A list of which each element is a numeric vector of the haplotype frequencies in each stratum. The frequencies are normalized and sum to one. The Details section shows how to implement this argument in agreement with the possible haplotypes.}
 	\item{RR}{A list of which each element is a numeric vector of the relative risks in each stratum. The Details section shows how to implement this argument in agreement with the possible haplotypes.}
 	\item{RRcm}{A list of numeric vectors. Each vector contains the relative risks associated with the haplotypes transmitted from the mother for this stratum. See Details for description of how to implement this argument in agreement with the possible haplotypes.}
 	\item{RRcf}{A list of numeric vectors. Each vector contains the relative risks associated with the haplotypes transmitted from the father for this stratum. See Details for description of how to implement this argument in agreement with the possible haplotypes.}
 	\item{RRstar}{A list of numeric vectors. Estimates how much double-dose children would deviate from the risk expected in a multiplicative dose-response relationship.}
-	\item{RR.mat}{The interpretation is similar to \code{RR} when simulating genetic data with maternal effects.}
-	\item{RRstar.mat}{The interpretation is similar to \code{RRstar} when simulating genetic data with maternal effects.}
+	\item{RR.mat}{The interpretation is similar to \code{RR} but for maternal genetic effects.}
+	\item{RRstar.mat}{The interpretation is similar to \code{RRstar} but for maternal genetic effects.}
 	\item{xchrom}{Logical. Equals \code{FALSE} by default, which indicates analyses of autosomal markers. If \code{TRUE}, \code{hapPowerAsymp} performs power analyses of X-linked markers.}
 	\item{sim.comb.sex}{To be used with \code{xchrom = TRUE}. A character value that specifies how to handle gender differences on the X-chromosome. If \code{"single"}, the effect of a (single) allele in males is equal to the effect of a single allele dose in females, and similarly, if \code{"double"}, a single allele in males has the same effect as a double allele dose in females. Default is "double", which corresponds to X-inactivation.} 
 	\item{BR.girls}{To be used with \code{xchrom = TRUE}. Gives the ratio of baseline risk for females relative to the baseline risk for males.}
@@ -53,7 +53,7 @@ The haplotypes are determined by creating all possible haplotypes from the given
 The simplest example would be with \code{nall = c(2)} and \code{RR = c(1,2)}, which would simulate a single SNP where the second allele has a double risk.
 
 Specifying genetic effects:\cr
-Standard fetal effects are specified by the arguments \code{RR} and \code{RRstar}, whereas parent-of-origin effects are addressed by the arguments \code{RRcm}, \code{RRcf} and \code{RRstar}.  Maternal effects is included by the additional arguments \code{RRmat} and \code{RRstar.mat}.
+Standard fetal effects are specified by the arguments \code{RR} and \code{RRstar}, whereas parent-of-origin effects are addressed by the arguments \code{RRcm}, \code{RRcf} and \code{RRstar}.  Maternal effects are included by the additional arguments \code{RRmat} and \code{RRstar.mat}.
 
 }
 
@@ -76,7 +76,7 @@ Norwegian Institute of Public Health\cr
 
 
 \examples{
-\dontrun{
+
 ## Calculate the asymptotic power for a triad design 
 ## when the minor allele increases the fetal risk by twofold.
 ## Assumes a multiplicative dose-response relationship.
@@ -96,6 +96,6 @@ hapPowerAsymp(nall = c(2,2), n.strata = 2, cases = c(mfc=500),
 haplo.freq = c(0.1,0.2,0.3,0.4), 
 RRcm = list(c(3,1,1,1), c(1,1,1,1)), RRcf = c(1,1,1,1), RRstar = c(1,1,1,1),
 RR.mat = list(c(1.5,1,1,1),c(1,1,1,1)), RRstar.mat = c(1,1,1,1))
-}
+
 }
 

@@ -60,6 +60,10 @@ if(.hapfunc == "haplin"){
 .names <- sub("p.value","power",.names)
 .names <- sub("pv.overall","overall.power",.names)
 names(.power) <- .names
+if(.hapfunc == "haplinSlide"){
+	names(.power) <- "Power (corrected for multiple testing)"
+	warning("\"haplinSlide\" is only partially implemented, and the results should be interpreted with caution. Please see the \"hapRun\" help file for more information", call. = F)
+}
 #
 cat(paste("\nThe power was calculated using ", .no.files, " of ", .n.sim, " files\n", sep = ""))
 #

@@ -25,8 +25,8 @@ if(.missing.controls) controls <- c(mfc=0)
 #
 if(xchrom & sim.comb.sex %in% c("females","males")) BR.girls <- 1
 #
-if((n.strata==1 && length(cases)>1) | (n.strata!=1 && any(sapply(cases, length)>1))) stop("Each element of list cases can only have length 1", call. = F)
-if(!.missing.controls && (n.strata==1 && length(controls)>1) | (n.strata!=1 && any(sapply(controls, length)>1))) stop("Each element of list controls can only have length 1", call. = F)
+if((n.strata==1 && length(cases)>1) | any(sapply(cases, length)>1)) stop("Each element of list cases can only have length 1", call. = F)
+if(!.missing.controls && (n.strata==1 && length(controls)>1) | any(sapply(controls, length)>1)) stop("Each element of list controls can only have length 1", call. = F)
 #
 ## Defining arguments for each stratum
 .arg <- list(nall=nall, n.strata=n.strata, cases=cases, controls=controls, haplo.freq=haplo.freq, sim.maternal=.sim.maternal, sim.poo=.sim.poo, xchrom=xchrom, sim.comb.sex=sim.comb.sex, nhaplo=.nhaplo, nloci=.nloci, n.sim=10)

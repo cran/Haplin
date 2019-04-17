@@ -37,6 +37,8 @@ Haplin is dependent on several other R packages:
 
 These are automatically installed together with Haplin (see below).
 
+If you are using Windows, you should install [RTools](https://cran.r-project.org/bin/windows/Rtools/) before installing Haplin in R. RTools include the __zip__ command, which is required by the __ff__ package.
+
 Moreover, if you want to use the plotting functions for plotting the results of __haplinSlide__ and __haplinStrat__, you should install the [ggplot2](https://CRAN.R-project.org/package=ggplot2) package separately. You can still use Haplin if you don't have this package, though!
 
 For running on a cluster, you would need the [Rmpi](https://CRAN.R-project.org/package=Rmpi) package installed, see the vignette __"Running Haplin on cluster"__.

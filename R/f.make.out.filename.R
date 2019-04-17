@@ -21,7 +21,7 @@ f.make.out.filename <- function( file.in, file.out, dir.out, root = "gen", overw
 		cat( "The output file(s) exist! \n" )
 		if( is.null( overwrite ) ){
 			answer <- readline( paste( "Do you want to overwrite file(s)? (y/n)" ) )
-			if( answer != "y" ){
+			if( tolower( answer ) != "y" ){
 				stop( "Stopped without overwriting files.", call. = FALSE )
 				return( NULL )
 			}

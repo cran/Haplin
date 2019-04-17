@@ -5,8 +5,9 @@
 \title{Extracting part of genetic data.}
 \usage{
 genDataGetPart(data.in = stop("No data given!", call. = FALSE),
-  design = stop("Design type must be given!"), markers, indiv.ids, rows, cc,
-  sex, file.out = "my_data_part", dir.out = ".", overwrite = NULL, ...)
+  design = stop("Design type must be given!"), markers, indiv.ids, rows,
+  cc, sex, file.out = "my_data_part", dir.out = ".",
+  overwrite = NULL, ...)
 }
 \arguments{
 \item{data.in}{The data object (in format as the output of \link{genDataRead}).}

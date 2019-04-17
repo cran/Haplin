@@ -77,12 +77,13 @@ if( identical( .info$filespecs$markers, "ALL" ) ){
 .info$filespecs$n.vars <- 0
 if( class( mcall$data ) == "haplin.ready" ){
 	if( !is.null( mcall$data$cov.data ) ){
-		.info$filespecs$n.vars <- ncol( mcall$data$cov.data )		
+		.info$filespecs$n.vars <- ncol( mcall$data$cov.data )
 		if( .xchrom ){
 			if( any( .haplinEnv$sex.column %in% colnames( mcall$data$cov.data ) ) ){
 				.info$variables$sex <- match( .haplinEnv$sex.column, colnames( mcall$data$cov.data ) )
-			} else { 
-				stop( "The 'xchrom' parameter is set but the data does not contain information about sex!", call. = FALSE )
+			} else {
+				.info$variables$sex <- mcall$sex
+# 				stop( "The 'xchrom' parameter is set but the data does not contain information about sex!", call. = FALSE )
 			}
 		}
 		if( .ccdesign ){

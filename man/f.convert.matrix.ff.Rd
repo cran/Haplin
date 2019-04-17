@@ -4,8 +4,8 @@
 \alias{f.convert.matrix.ff}
 \title{Converting Haplin-formatted matrix into the new format}
 \usage{
-f.convert.matrix.ff(data = stop("You must give the data to convert!", call. =
-  FALSE),
+f.convert.matrix.ff(data = stop("You must give the data to convert!",
+  call. = FALSE),
   n.vars = stop("You must explicitly give the number of columns with covariates!",
   call. = FALSE), cov.header, gen.levels)
 }

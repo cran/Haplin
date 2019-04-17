@@ -6,12 +6,12 @@
 \usage{
 genDataRead(file.in = stop("Filename must be given!", call. = FALSE),
   file.out = NULL, dir.out = ".",
-  format = stop("Format parameter is required!"), header = FALSE, n.vars,
-  cov.header, allele.sep = ";", na.strings = "NA", col.sep = "",
-  cov.file.in, overwrite = NULL)
+  format = stop("Format parameter is required!"), header = FALSE,
+  n.vars, cov.file.in, cov.header, allele.sep = ";", na.strings = "NA",
+  col.sep = "", overwrite = NULL)
 }
 \arguments{
-\item{file.in}{The name of the input file.}
+\item{file.in}{The name of the main input file with genotype information.}
 
 \item{file.out}{The base for the output filename (by default, constructed from the
 input file name).}
@@ -24,14 +24,22 @@ input file name).}
   \item \emph{ped} - data from .ped file, each row represents an individual.
 }.}
 
-\item{header}{Whether the first line of the input file contains column names;
-default: FALSE.}
+\item{header}{Whether the first line of the main input file contains column names;
+default: FALSE; NB: this is useful only for 'haplin'-formatted files!}
 
-\item{n.vars}{The number of columns with covariate data (if any).}
+\item{n.vars}{The number of columns with covariate data (if any) in the main file;
+NB: if the main file is in PED format, it is assumed that the first 6 columns contain
+the standard PED-covariates (i.e., family ID, ID of the child, father and mother,
+sex and case-control status), so in this case setting 'n.vars' is useful only
+if the PED file contains more than 6 covariate columns.}
+
+\item{cov.file.in}{Name of the file containing additional covariate data, if any. 
+Caution: unless the 'cov.header' argument is used, it is assumed that the first line 
+of this file contains the header (i.e., the column names of the additional data).}
 
 \item{cov.header}{The character vector containing the names of covariate columns
-(both, columns in the main data and in the file with additional covariate data,
-if given by the 'cov.file.in' argument).}
+(in the file with additional covariate data if given by the 'cov.file.in' argument;
+or in the main file, if it's a "haplin"-formatted file).}
 
 \item{allele.sep}{Character: separator between two alleles (default: ";").}
 
@@ -39,10 +47,6 @@ if given by the 'cov.file.in' argument).}
 
 \item{col.sep}{Character: separator between the columns (i.e., markers; default: any
 whitespace character).}
-
-\item{cov.file.in}{Name of the file containing additional covariate data, if any. 
-Caution: unless the 'cov.header' argument is used, it is assumed that the first line 
-of this file contains the header (i.e., the column names of the additional data).}
 
 \item{overwrite}{Whether to overwrite the output files: if NULL (default), will prompt
 the user to give answer; set to TRUE, will automatically overwrite any existing files;
@@ -63,11 +67,18 @@ A list object with three elements:
 This function will read in data from PED or haplin formatted file.
 }
 \details{
-The function reads in all the data in the file, creates \link[ff]{ff} objects to store the
- genetic information and \link{data.frame} to store covariate data (if any). These
+The function reads in all the data in the file, creates \link[ff]{ff} objects to store
+ the genetic information and \link{data.frame} to store covariate data (if any). These
  objects are saved in \code{.RData} and \code{.ffData} files, which can be later on
  easily uploaded to R (with \link{genDataLoad}) and re-used.
 }
+\section{Usage note}{
+
+When reading in a covariate file together with the genotype information, it is advised
+  to include the header in the file, so that there is no doubt to the naming of
+  the data columns.
+}
+
 \examples{
   # The argument 'overwrite' is set to TRUE!
   examples.dir <- system.file( "extdata", package = "Haplin" )
