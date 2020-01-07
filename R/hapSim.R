@@ -110,7 +110,7 @@ if(.n.strata > 1) .colnames <- c("strat", .colnames)
 	if(verbose) on.exit(if(!is.data.frame(.return) && is.na(.return)){cat("Run failed\n")}, add = T)	
 	#
 	## Haplin must be made available in each run
-	suppressPackageStartupMessages(require(Haplin, quietly = T))
+	suppressPackageStartupMessages(loadNamespace("Haplin"))
 	#
 	suppressMessages(.hapSim <- lapply(1:.n.strata, function(x){
 		.hapSim <- do.call(f.hapSim, args = .f.hapSim.arg[x,])

@@ -16,7 +16,7 @@ if( !is.null( attr( data, "sel.markers" ) ) ){
 	.info$control$sel.markers <- attr( data, "sel.markers" )
 }
 
-if( !( class( data ) %in% c( "haplin.ready", "prep.data" ) ) ){
+if( !(is(data, "haplin.ready") | is(data, "prep.data")) ){
 	stop( "The given input data is not ready for haplin analysis! Please use 'genDataPreprocess' function first!", call. = FALSE )
 }
 
@@ -121,7 +121,7 @@ for(i in seq(along = .strata.list)){
 
 	## RUN HAPLIN
 	.ut.list[[i + 1]] <- try(do.call("haplin", .args))
-	if(class(.ut.list[[i + 1]]) != "try-error"){
+	if(!is(.ut.list[[i + 1]], "try-error")){
 		## RESET reference.method TO ORIGINAL
 		if(.ut.list[[i + 1]]$info$haplos$reference.method != "ref.cat") stop("Something's wrong with the choice of reference...", call. = F) # should never kick in
 		.ut.list[[i + 1]]$info$haplos$reference.method <- .reference.method

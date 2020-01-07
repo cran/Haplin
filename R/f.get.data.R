@@ -21,7 +21,7 @@ if(missing(data)){
 } else{
 	## PREPARE DATA DIRECTLY FROM R OBJECT
 	##
-	if(class(data) == "gwaa.data"){
+	if(is(data, "gwaa.data")){
 		## CONVERT FROM GenABEL-OBJECT TO HAPLIN DATA MATRIX
 ###		if(identical(info$filespecs$markers, "ALL")) info$filespecs$markers <- seq(length.out = nsnps(data))
 		## GI FEILMELDING DERSOM markers ER UTENFOR RANGE?

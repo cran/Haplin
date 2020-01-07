@@ -2,7 +2,7 @@ output <- function(object, dirname = ".", ask = T){
 ##
 ## WRITES SUMMARY RESULTS OF haplin object TO A DIRECTORY SPECIFIED BY DIRNAME
 ##
-if(class(object) != "haplin") stop("Intended only for haplin objects", call. = F)
+if(is( object, "haplin") ) stop("Intended only for haplin objects", call. = F)
 #
 ##
 .table <- haptable(object)

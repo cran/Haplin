@@ -14,7 +14,7 @@
 	
 	# base name for the objects holding the gen.data chunks
 	assign( ".gen.cols.name", "gen.cols", envir = .haplinEnv )
-	assign( ".env.cols.name", "env.cols", envir = .haplinEnv )
+#	assign( ".env.cols.name", "env.cols", envir = .haplinEnv )
 	
 	# names of columns for the covariate data of PED-formatted data
 	assign( ".cov.data.colnames", c( "id.fam", "id.c", "id.f", "id.m", "sex", "cc" ), envir = .haplinEnv )

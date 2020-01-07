@@ -37,7 +37,7 @@ if(winlength > 1) cat("\nImportant: Remember that SNPs must be in correct physic
 .info$model$use.missing <- T ## ENFORCE
 #
 ## WITH A gwaa.data OBJECT, DELAY CONVERSION, ELSE READ AND CONVERT
-.is.gwaa <- !.missdata && (class(data) == "gwaa.data")
+.is.gwaa <- !.missdata && (is(data, "gwaa.data") )
 if(.is.gwaa){
 	## ONLY REDUCE NUMBER OF MARKERS, BUT DO NOT CONVERT YET
 	.data.read <- data[, .info$filespecs$markers]
@@ -94,7 +94,7 @@ cat("\n")
 		.res <- try(do.call("haplin0", args_), silent = T)
 		#
 		## CHECK IF ERRORS
-		if(class(.res) == "try-error") cat("RUN FAILED\n")
+		if(is(.res, "try-error")) cat("RUN FAILED\n")
 		else{
 			if(table.output) .res <- haptable(.res)
 			cat("done\n")
@@ -102,12 +102,12 @@ cat("\n")
 	}else{
 		.res <- try(do.call("haplinStrat0", args_), silent = T)
 		## CHECK IF ERRORS
-		if(class(.res) == "try-error"){
+		if(is(.res, "try-error")){
 			cat("RUN FAILED\n")
 		}else{
 			if(table.output){
 				.gxe.res <- try(gxe(.res))
-				if(class(.gxe.res) == "try-error"){
+				if(is(.gxe.res, "try-error")){
 					cat("RUN FAILED\n")
 					.res <- .gxe.res # somewhat ad hoc, but at least picks up the error message
 				}else{
@@ -140,27 +140,9 @@ if(!.run.para){
 	if(.para == "parallel"){
 		## parallel
 		w <- parallel::makeCluster(spec = cpus, outfile = slaveOutfile)
+		on.exit( parallel::stopCluster( w ) )
 		#on.exit(stopCluster(w))
 		#
-		## shut down nodes explicitly
-		.plat <- .Platform$OS.type
-		if(.plat == "windows") .cmds <- "taskkill /pid "
-		if(.plat == "unix") .cmds <- "kill "
-		# get process id's
-		.pids <- sapply(w, function(x){
-			snow::sendCall(x, eval, list(quote(Sys.getpid())))
-			snow::recvResult(x)
-		})
-		.cmds <- paste(.cmds, .pids, sep = "")
-		on.exit({
-			if(!missing(slaveOutfile)) sink(file = slaveOutfile, append = T)
-				sapply(.cmds, system)
-				for(.w in w){
-					try(snow::postNode(.w, "DONE"), silent = T)
-					try(snow::closeNode(.w), silent = T)
-				}
-			if(!missing(slaveOutfile)) sink()
-		})
 	}
 	#
 	## RUN BY SPLITTING ON CPUS
@@ -172,7 +154,7 @@ if(!.run.para){
 	#
 	## CHECK FOR HAPLIN FAILURES
 	.ftest <- function(x){
-		return(identical(class(x), "try-error"))
+		return(is(x, "try-error"))
 	}
 	if(.para == "parallel") .errs <- unlist(parLapply(w, .res.list, .ftest))
 }

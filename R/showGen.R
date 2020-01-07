@@ -27,7 +27,8 @@
 
 showGen <- function( data.in, design = "triad", n = 5, from, to, sex, markers = 1:5 ){
 	# check if input data is in correct format
-	if( ( class( data.in ) != "haplin.data" ) || !all( names( data.in ) == .haplinEnv$.haplin.data.names ) ){
+	if( !is( data.in, "haplin.data" ) ||
+	  !all( names( data.in ) == .haplinEnv$.haplin.data.names ) ){
 		stop( "The input data is not in the correct format!", call. = FALSE )
 	}
 	
@@ -39,7 +40,7 @@ showGen <- function( data.in, design = "triad", n = 5, from, to, sex, markers = 
 
 	if( !missing( sex ) ){
 		# check if there is any phenotypic info
-		if( is.null( data.in$cov.data ) ){
+		if( is.null( cov.data ) ){
 			stop( "There is no phenotypic/covariate information in your data!", call. = FALSE )
 		}
 		if( !( "sex" %in% colnames( cov.data ) ) ){
@@ -54,7 +55,7 @@ showGen <- function( data.in, design = "triad", n = 5, from, to, sex, markers = 
 		if( !missing( n ) ){
 			n.given <- TRUE
 			if( is.numeric( n ) ){
-				if( n < 1 | n > nrow( data.in$cov.data ) ){
+				if( n < 1 | n > nrow( gen.data[[ 1 ]] ) ){
 					stop( "Your specification of 'n' (number of rows to display) was wrong!", call. = FALSE )
 				}
 				# n is numeric and in correct range
@@ -62,7 +63,7 @@ showGen <- function( data.in, design = "triad", n = 5, from, to, sex, markers = 
 				stop( "Could not understand the choice of 'n'", call. = FALSE )
 			} else {
 				# n == "all"
-				n <- nrow( cov.data )
+				n <- nrow( gen.data[[ 1 ]] )
 			}
 		}
 
@@ -91,7 +92,7 @@ showGen <- function( data.in, design = "triad", n = 5, from, to, sex, markers = 
 			to <- from + n - 1
 		} else if( from.given ) {
 		# only 'from' is specified
-			to <- nrow( cov.data )
+			to <- nrow( gen.data[[ 1 ]] )
 		} else if( n.given ) {
 		# only 'n' is specified
 			from <- 1
@@ -99,10 +100,10 @@ showGen <- function( data.in, design = "triad", n = 5, from, to, sex, markers = 
 		} else {
 			# nothing specified: print the first 5 entries
 			from <- 1
-			to <- n
+			to <- min( n, nrow( gen.data[[ 1 ]] ) )
 		}
 
-		if( from < 1 | to > nrow( cov.data ) | from > to ){
+		if( from < 1 | to > nrow( gen.data[[ 1 ]] ) | from > to ){
 			stop( paste0( "Wrong specification of 'from' (", from ,") and 'to' (", to, ")!" ), call. = FALSE )
 		}
 		which.rows.show <- from:to
@@ -115,15 +116,22 @@ showGen <- function( data.in, design = "triad", n = 5, from, to, sex, markers = 
 		family <- "mfc"
 		ncols.per.marker <- 6
 	}
-	all.markers <- nsnps( data.in )*ncols.per.marker
 
+	max.markers <- nsnps( data.in )
+	all.markers <- max.markers*ncols.per.marker
 	if( is.numeric( markers ) ){
 		markers.by.name <- FALSE
+		if( max( markers ) > max.markers ){
+			warning( "It appears that your data has less markers (", max.markers,") than requested (", max( markers ), "), adjusting accordingly." )
+			orig.markers <- markers
+			which.markers.higher.max <- orig.markers > max.markers
+			markers <- orig.markers[ !which.markers.higher.max ]
+		}
 
 		markers <- f.sel.markers( n.vars = 0, markers = markers, family = family, split = TRUE, ncols = all.markers )
 	} else if( length( markers ) == 1 & markers == "all" ){
 		markers.by.name <- FALSE
-		if( length( data.in$gen.data ) > 1 ){
+		if( length( gen.data ) > 1 ){
 			answer <- readline( paste( "You are requesting a lot of data. Are you sure? (y/n)" ) )
 			if( tolower( answer ) != "y" ){
 				stop( "Stopped as per request.", call. = FALSE )

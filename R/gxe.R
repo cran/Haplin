@@ -7,7 +7,9 @@ gxe <- function(object.list) {
 #### PREPARE: ###################
 #
 ## PRELIMINARY CHECKS
-if(class(object.list) != "haplinStrat") stop("Argument 'object.list' should be the result from running 'haplinStrat'", call. = F)
+if(!is(object.list, "haplinStrat") ){
+	stop("Argument 'object.list' should be the result from running 'haplinStrat'", call. = F)
+}
 if(any(is.na(object.list))) {
 	warning("NA element in list of estimation results. Interaction test not performed", call. = F)
 	return(object.list) # JUST PASS RIGHT THROUGH IF AT LEAST ONE NA 

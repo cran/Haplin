@@ -25,6 +25,5 @@ make.ff.data.out <- function( covd, gend, covd.names, gend.names, data.as.is = F
 		colnames( data$gen.data ) <- gend.names
 	}
 
-#class(data) <- "haplin.ready" # xxx tja
 	return( data )
 }

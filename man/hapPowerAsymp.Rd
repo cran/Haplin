@@ -86,11 +86,12 @@ haplo.freq = c(0.1,0.9), RR = c(2,1), RRstar = c(1,1))
 ## Calculate the asymptotic power for the hybrid design when 
 ## the minor allele increases the fetal risk by twofold 
 ## in the first stratum and no effect is seen in the second
+## i.e., gene-environment interaction (GxE) effects.
 hapPowerAsymp(nall = c(2), n.strata = 2, cases = list(c(mfc=100)), 
 controls = list(c(mfc=100)), haplo.freq = c(0.1,0.9), 
 RR = list(c(2,1), c(1,1)), RRstar = c(1,1))
 
-## Calculate the asymptotic power assessing maternal- and
+## Calculate the asymptotic GxE power assessing maternal- and
 ## parent-of-origin effects at two diallelic loci.
 hapPowerAsymp(nall = c(2,2), n.strata = 2, cases = c(mfc=500), 
 haplo.freq = c(0.1,0.2,0.3,0.4), 

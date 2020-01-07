@@ -13,4 +13,3 @@ f.mat.asymp <- function(b, w, ncells){
 	}
 	return(.matsum)
 }
-#

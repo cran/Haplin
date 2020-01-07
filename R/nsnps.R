@@ -15,7 +15,8 @@
 #'
 nsnps <- function( data.in, design = "triad" ){
 	# check if input data is in correct format
-	if( ( class( data.in ) != "haplin.data" ) || !all( names( data.in ) == .haplinEnv$.haplin.data.names ) ){
+	if( !is( data.in, "haplin.data" ) ||
+	  !all( names( data.in ) == .haplinEnv$.haplin.data.names ) ){
 		stop( "The input data is not in the correct format!", call. = FALSE )
 	}
 	

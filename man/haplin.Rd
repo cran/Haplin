@@ -66,14 +66,15 @@ Norwegian Institute of Public Health\cr
 \examples{
 # setting up the directory with exemplary data
 dir.in <- system.file( "extdata", package = "Haplin" )
-file.in <- paste0( dir.in, "/data.dat" )
+file.in <- file.path( dir.in, "data.dat" )
 
 # reading data in
 data.in <- genDataRead( file.in, file.out = "poo_exmpl_data_read", format = "haplin",
-  n.vars = 1, allele.sep = " ", col.sep = " ", overwrite = TRUE )
+  dir.out = tempdir( check = TRUE ), n.vars = 1, allele.sep = " ", col.sep = " ",
+  overwrite = TRUE )
 # preprocessing the data
 data.preproc <- genDataPreprocess( data.in, design = "triad",
-  file.out = "poo_exmpl_data_preproc", overwrite = TRUE )
+  file.out = "poo_exmpl_data_preproc", dir.out = tempdir( check = TRUE ), overwrite = TRUE )
 
 # running haplin, calculating POO
 res.POO <- haplin( data.preproc, markers = 2, poo = TRUE, response = "mult",

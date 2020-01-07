@@ -29,6 +29,8 @@
 #' @param cov.header The character vector containing the names of covariate columns
 #'   (in the file with additional covariate data if given by the 'cov.file.in' argument;
 #'   or in the main file, if it's a "haplin"-formatted file).
+#' @param map.file Filename (with path if the file is not in current directory) of the
+#'   .map file holding the SNP names, if available (see Details).
 #' @param allele.sep Character: separator between two alleles (default: ";").
 #' @param na.strings Character or NA: how the missing data is coded (default: "NA").
 #' @param col.sep Character: separator between the columns (i.e., markers; default: any
@@ -36,6 +38,11 @@
 #' @param overwrite Whether to overwrite the output files: if NULL (default), will prompt
 #'   the user to give answer; set to TRUE, will automatically overwrite any existing files;
 #'   and set to FALSE, will stop if the output files exist.
+#'
+#' @section Details:
+#' The .map file should contain at least two columns, where the second one contains SNP 
+#'   names. Any additional columns should be separated by a whitespace character, but will 
+#'   be ignored. The file should contain a header.
 #'
 #' @section Usage note:
 #' When reading in a covariate file together with the genotype information, it is advised
@@ -46,15 +53,16 @@
 #'   # The argument 'overwrite' is set to TRUE!
 #'   examples.dir <- system.file( "extdata", package = "Haplin" )
 #'   # ped format:
-#'   example.file2 <- paste0( examples.dir, "/exmpl_data.ped" )
+#'   example.file2 <- file.path( examples.dir, "exmpl_data.ped" )
 #'   ped.data.read <- genDataRead( example.file2, file.out = "exmpl_ped_data", 
-#'    format = "ped", overwrite = TRUE )
+#'    dir.out = tempdir( check = TRUE ), format = "ped", overwrite = TRUE )
 #'   ped.data.read
 #'   # haplin format:
-#'   example.file1 <- paste0( examples.dir, "/HAPLIN.trialdata2.txt" )
-#'   haplin.data.read <- genDataRead( file.in = example.file1, dir.out = ".",
+#'   example.file1 <- file.path( examples.dir, "HAPLIN.trialdata2.txt" )
+#'   haplin.data.read <- genDataRead( file.in = example.file1,
 #'    file.out = "exmpl_haplin_data", format = "haplin", allele.sep = "", n.vars = 2, 
-#'    cov.header = c( "smoking", "sex" ), overwrite = TRUE )
+#'    cov.header = c( "smoking", "sex" ), overwrite = TRUE,
+#'    dir.out = tempdir( check = TRUE ) )
 #'   haplin.data.read
 #'
 #' @return A list object with three elements:
@@ -67,7 +75,7 @@
 #'     \item \emph{aux} - a list with meta-data and important parameters.
 #'   }
 #'
-genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALSE ), file.out = NULL, dir.out = ".", format = stop( "Format parameter is required!" ), header = FALSE, n.vars, cov.file.in, cov.header, allele.sep = ";", na.strings = "NA", col.sep = "", overwrite = NULL ){
+genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALSE ), file.out = NULL, dir.out = ".", format = stop( "Format parameter is required!" ), header = FALSE, n.vars, cov.file.in, cov.header, map.file, allele.sep = ";", na.strings = "NA", col.sep = "", overwrite = NULL ){
 	## checking the input arguments
 	if( !file.exists( file.in ) ){
 		stop( "The given file (", file.in, ") doesn't exist! Check and try again.", call. = FALSE )
@@ -77,6 +85,12 @@ genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALS
 			stop( "The given file (", cov.file.in, ") doesn't exist! Check and try again.", call. = FALSE )
 		}
 	}
+	if( !missing( map.file ) ){
+		if( !file.exists( map.file ) ){
+			stop( "The given map.file (", map.file, ") doesn't exist! Check and try again.", call. = FALSE )
+		}
+	}
+	map.file <- NULL
 
 	files.list <- f.make.out.filename( file.in, file.out, dir.out = dir.out, overwrite = overwrite )
 	
@@ -97,7 +111,7 @@ genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALS
 	}
 	
 	if( !missing( cov.header ) ){
-		if( class( cov.header ) != "character" ){
+		if( !is.character( cov.header ) ){
 			stop( "'cov.header' is specified, but it's not a character vector!", call. = FALSE )
 		}
 	}
@@ -221,17 +235,29 @@ genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALS
 	nb.col.chunks <- ceiling( nb.cols.gen.data / nb.cols.per.chunk )
 	gen.list.length <- length( gen.data.in.ffdf )
 	gen.data.col.wise <- list()
+	
+	design <- "cc"
+	if( format == "haplin" ){
+		design <- "triad"
+	}
+	tot.gen.ncol <- ncol( gen.data.in.ffdf[[ 1 ]] )
+	gen.data.colnames <- f.create.snp.names( map.file, ncol = tot.gen.ncol, format = format, design = design )
+	marker.names <- gen.data.colnames$marker.names
+	gen.data.colnames <- gen.data.colnames$gen.data.colnames
 
 	cat( "Preparing data...\n" )
 	for( i in 1:nb.col.chunks ){
 		cur.cols <- ( ( i-1 )*nb.cols.per.chunk + 1 ):( min( i*nb.cols.per.chunk, nb.cols.gen.data ) )
 		tmp.gen.data <- ff::ff( vmode = .haplinEnv$.vmode.gen.data, levels = gen.levels, dim = c( nb.rows.tot, min( nb.cols.per.chunk, max( cur.cols ) - min( cur.cols ) + 1 ) ) )
+		
 		prev.rows <- 0
 		for( j in 1:gen.list.length ){
 			cur.rows <- ( prev.rows + 1 ):( prev.rows + nrow( gen.data.in.ffdf[[j]] ) )
 			tmp.gen.data[ cur.rows, ] <- gen.data.in.ffdf[[j]][ ,cur.cols ]
 			prev.rows <- max( cur.rows )
 		}
+		colnames( tmp.gen.data ) <- gen.data.colnames[ cur.cols ]
+		
 		gen.data.col.wise <- c( gen.data.col.wise, list( tmp.gen.data ) )
 		rm( tmp.gen.data )
 	}
@@ -334,10 +360,12 @@ genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALS
 	.info$filespecs$na.strings <- na.strings
 	.info$filespecs$format <- format
 	aux <- list( info = .info, class = "haplin.data" )
+	aux$marker.names <- marker.names
+	aux$map.filename <- map.file
 
 	save.list <- c( save.list, "aux" )
 	
-	ff::ffsave( list = save.list, file = paste0( dir.out, "/", files.list$file.out.base ) )
+	ff::ffsave( list = save.list, file = file.path( dir.out, files.list$file.out.base ) )
 	cat( "... saved to files: ", files.list$file.out.ff, ", ", files.list$file.out.aux, "\n", sep = "" )
 
 	data.out <- list( cov.data = cov.data.in, gen.data = gen.data.col.wise, aux = aux )

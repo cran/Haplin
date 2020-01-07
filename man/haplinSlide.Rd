@@ -55,12 +55,12 @@ Norwegian Institute of Public Health\cr
 
 # 1. Read the data:
 my.haplin.data <- genDataRead( file.in = "HAPLIN.trialdata.txt", file.out =
-  "trial_data1", dir.out = ".", format = "haplin", n.vars = 0 )
+  "trial_data1", dir.out = tempdir( check = TRUE ), format = "haplin", n.vars = 0 )
 
 # 2. Run pre-processing:
 haplin.data.prep <- genDataPreprocess( data.in = my.haplin.data,
   format = "haplin", design = "triad", file.out = "trial_data1_prep",
-  dir.out = "." )
+  dir.out = tempdir( check = TRUE ) )
 
 # 3. Analyze:
 # Analyzing the effect of fetal genes, including triads with missing data,

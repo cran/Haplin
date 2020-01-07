@@ -177,7 +177,7 @@ else .simfiles <- 1:n.sim
 ### Function running haplin0 (one version or another)
 .hapRun <- function(x){
 	## Haplin must be made available in each run
-	suppressPackageStartupMessages(require(Haplin, quietly = T))
+	suppressPackageStartupMessages(loadNamespace("Haplin"))
 	#
 	if(.dire) cat("\nSimulations using ", .simfiles[x], "\n", sep = "")
 	else cat("\nSimulations using file number ", .simfiles[x], "\n", sep = "")

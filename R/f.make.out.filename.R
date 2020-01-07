@@ -1,22 +1,18 @@
 f.make.out.filename <- function( file.in, file.out, dir.out, root = "gen", overwrite = NULL ){
 	if( is.null( file.out ) ){
-		fname.vec <- unlist( strsplit( file.in, split = "/", fixed = TRUE ) )
-		l.fname.vec <- length( fname.vec )
-		if( l.fname.vec > 1 ){
-			file.in <- fname.vec[ l.fname.vec ]
-		}
-		fname.vec <- unlist( strsplit( file.in, split = ".", fixed = TRUE ) )
+		file.in.base <- basename( file.in )
+		fname.vec <- unlist( strsplit( file.in.base, split = ".", fixed = TRUE ) )
 		l.fname.vec <- length( fname.vec )
 		if( l.fname.vec > 1 ){
 			file.out <- paste( fname.vec[ -l.fname.vec ], collapse = "_" )
 		} else {
-			file.out <- file.in
+			file.out <- file.in.base
 		}
 	}
 	
 	file.out.base <- paste0( file.out, "_", root )
-	file.out.ff <- paste0( dir.out, "/", file.out, "_", root, ".ffData")
-	file.out.aux <- paste0( dir.out, "/", file.out, "_", root, ".RData" )
+	file.out.ff <- file.path( dir.out, paste0( file.out.base, ".ffData") )
+	file.out.aux <- file.path( dir.out, paste0( file.out.base, ".RData" ) )
 	if( file.exists( file.out.ff ) | file.exists( file.out.aux ) ){
 		cat( "The output file(s) exist! \n" )
 		if( is.null( overwrite ) ){
@@ -29,7 +25,7 @@ f.make.out.filename <- function( file.in, file.out, dir.out, root = "gen", overw
 			stop( "Stopped without overwriting files.", call. = FALSE )
 			return( NULL )
 		} else if( overwrite ){
-			ff::ffdrop( paste0( dir.out, "/", file.out.base ) )
+			ff::ffdrop( file.path( dir.out, file.out.base ) )
 		}
 	}
 	

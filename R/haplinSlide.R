@@ -32,7 +32,9 @@ if( !missing( para.env ) ){
 		}
 		# if the Rmpi parallel mechanism was set up, get the CPU number from there
 		if( get( "Rmpi.spawned", envir = .haplinEnv ) ){
-			cpus <- Rmpi::mpi.comm.size( 1 )
+			# mpi.comm.size returns the number of members in communication channel;
+			# this includes the 'master' node, so the number of cpus is 1 less
+			cpus <- Rmpi::mpi.comm.size( 1 ) - 1
 		}
 	}
 }
@@ -142,34 +144,9 @@ if( !.run.para ){
 		invisible( parallel::clusterEvalQ( w, suppressPackageStartupMessages( loadNamespace( "Haplin" ) ) ) )
 # 		parallel::clusterExport( w, c( ".f.run", "f.sel.markers", "f.get.which.gen.el", "f.get.gen.data.cols", "make.ff.data.out", "f.args.from.info", "f.check.pars", "f.extract.ff.numeric" ), envir = environment( ) )
 		on.exit( parallel::stopCluster( w ) )
-
-		## shut down nodes explicitly
-		.plat <- .Platform$OS.type
-		if( .plat == "windows" ){
-			.cmds <- "taskkill /pid "
-		} else if( .plat == "unix" ){
-			.cmds <- "kill "
-		}
-		# get process id's
-		.pids <- sapply( w, function( x ){
-			snow::sendCall( x, eval, list( quote( Sys.getpid ( ) ) ) )
-			snow::recvResult( x )
-		} )
-		.cmds <- paste( .cmds, .pids, sep = "" )
-		on.exit( {
-			if( !missing( slaveOutfile ) ){
-				sink( file = slaveOutfile, append = T )
-			}
-			sapply( .cmds, system )
-			for( .w in w ){
-				try( snow::postNode( .w, "DONE" ), silent = T )
-				try( snow::closeNode( .w ), silent = T )
-			}
-			if( !missing( slaveOutfile ) ) sink( )
-		} )
 	} else if( .para == "snow" ){
 		## SNOW
-		stop( "NOT IMPLEMENTED, use \"parallel\"!", call. = FALSE )
+		stop( "'snow' package not implemented, please use \"parallel\"!", call. = FALSE )
 	} else if( .para == "Rmpi" ){
 		is.spawned <- get( "Rmpi.spawned", envir = .haplinEnv )
 		if( !is.spawned ){
@@ -191,7 +168,6 @@ if( !.run.para ){
 	} else if( .para == "Rmpi" ){
 		.res.list <- Rmpi::mpi.parLapply( seq( length.out = .nres ), .f.run, args = orig.args, job.num = .nres )
 	}
-#i#	if( .para == "snow" ) .res.list <- parLapply( w, seq( length.out = .nres ), .f.run )
 	names( .res.list ) <- .names
 	
 	## CHECK FOR HAPLIN FAILURES
@@ -203,7 +179,6 @@ if( !.run.para ){
 	} else if( .para == "Rmpi" ){
 		.errs <- unlist( Rmpi::mpi.parLapply( .res.list, .ftest ) )
 	}
-#i#	if( .para == "snow" ) .errs <- parLapply( w, .res.list, class ) == "try-error"
 }
 
 ## GO THROUGH POSSIBLE ERRORS

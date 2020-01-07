@@ -24,20 +24,25 @@
 #'   the user to give answer; set to TRUE, will automatically overwrite any existing files;
 #'   and set to FALSE, will stop if the output files exist.
 #'
+#' @section Details:
+#' The .map file should contain at least two columns, where the second one contains SNP 
+#'   names. Any additional columns should be separated by a whitespace character, but will 
+#'   be ignored. The file should contain a header.
+#'
 #' @examples
 #'   # The argument 'overwrite' is set to TRUE!
 #'   # First, read the data:
 #'   examples.dir <- system.file( "extdata", package = "Haplin" )
-#'   example.file <- paste0( examples.dir, "/exmpl_data.ped" )
+#'   example.file <- file.path( examples.dir, "exmpl_data.ped" )
 #'   ped.data.read <- genDataRead( example.file, file.out = "exmpl_ped_data", 
-#'    format = "ped", overwrite = TRUE )
+#'    dir.out = tempdir( check = TRUE ), format = "ped", overwrite = TRUE )
 #'   ped.data.read
 #'   # Take only part of the data (if needed)
 #'   ped.data.part <- genDataGetPart( ped.data.read, design = "triad", markers = 10:12,
-#'    file.out = "exmpl_ped_data_part", overwrite = TRUE )
+#'    dir.out = tempdir( check = TRUE ), file.out = "exmpl_ped_data_part", overwrite = TRUE )
 #'   # Preprocess as "triad" data:
 #'   ped.data.preproc <- genDataPreprocess( ped.data.part, design = "triad",
-#'    file.out = "exmpl_data_preproc", overwrite = TRUE )
+#'    dir.out = tempdir( check = TRUE ), file.out = "exmpl_data_preproc", overwrite = TRUE )
 #'   ped.data.preproc
 #'
 #' @return  A list object with three elements:
@@ -64,6 +69,10 @@ genDataPreprocess <- function( data.in = stop( "You have to give the object to p
 		if( !file.exists( map.file ) ){
 			stop( "It seems like the map.file (", map.file, ") doesn't exist! Check and try once more.", call. = FALSE )
 		}
+	} else if( !is.null( data.in$aux$map.filename ) ){
+		map.file <- data.in$aux$map.filename
+	} else {
+		map.file <- NULL
 	}
 	
 	.info <- data.in$aux$info
@@ -81,7 +90,8 @@ genDataPreprocess <- function( data.in = stop( "You have to give the object to p
 	files.list <- f.make.out.filename( file.out = file.out, dir.out = dir.out, overwrite = overwrite )
 	
 
-	if( (class( data.in ) != "haplin.data") || !all( names( data.in ) == .haplinEnv$.haplin.data.names ) ){
+	if( !is( data.in, "haplin.data" ) ||
+	  !all( names( data.in ) == .haplinEnv$.haplin.data.names ) ){
 		stop( "The input data is not in the correct format!", call. = FALSE )
 	}
 	
@@ -91,53 +101,18 @@ genDataPreprocess <- function( data.in = stop( "You have to give the object to p
 	}
 	#--------------------------------------------
 
-	if( .format == "ped" ){
-		ncol.per.locus <- 2
-	} else if( design %in% c( "triad", "cc.triad" ) ){
-		ncol.per.locus <- 6
-	} else {
-		ncol.per.locus <- 2
-	}
-	
-	# make colnames for gen.data:
-	cat( "Reading the marker names... \n" )
+	# creating SNP names (dummy names)
 	tot.gen.ncol <- sum( unlist( lapply( data.in$gen.data, ncol ) ) )
-	marker.names <- c()
-	if( !missing( map.file ) ){
-		marker.names <- read.table( map.file, header = TRUE, stringsAsFactors = FALSE )
-	}
-	if( length( marker.names ) == 0 ){
-		warning( "No map file given or map file empty; will generate dummy marker names.", call. = FALSE )
-		marker.names <- paste( "m", 1:( tot.gen.ncol/ncol.per.locus ), sep = "" )
-	} else {
-		marker.names <- marker.names[ ,2 ]
-		if( ( length( marker.names ) * ncol.per.locus ) != tot.gen.ncol ){
-			stop( "The length (", length( marker.names ),") of marker names in file ", map.file, " is different than the number of SNPs in the PED file (", tot.gen.ncol / ncol.per.locus,")!", call. = FALSE )
-		}
-	}
+	gen.data.colnames <- f.create.snp.names( map.file, tot.gen.ncol, format = .format, design = design )
+	marker.names <- gen.data.colnames$marker.names
+	gen.data.colnames <- gen.data.colnames$gen.data.colnames
 
-	# all the marker names will start with l_
-	gen.data.colnames <- paste( "l", as.character( marker.names ), sep = "_" )
-	markers1 <- paste( gen.data.colnames, "a", sep = "_" )
-	markers2 <- paste( gen.data.colnames, "b", sep = "_" )
-
-	if( .format == "ped" | ( .format == "haplin" & design == "cc" ) ){
-		gen.data.colnames <- as.vector( rbind( markers1, markers2 ) )
-	} else if( .format == "haplin" & design %in% c( "triad", "cc.triad" ) ){
-		labs <- c("m", "f", "c")
-		marker.names.a <- as.vector( t( outer( markers1, labs, paste, sep = "_" ) ) )
-		marker.names.b <- as.vector( t( outer( markers2, labs, paste, sep = "_" ) ) )
-		gen.data.colnames <- as.vector( rbind( marker.names.a, marker.names.b ) )
-	} else {
-		stop( "Problem with design and format!", call. = FALSE )
-	}
 	cur.col <- 1
 	for( i in 1:length( data.in$gen.data ) ){
 		cur.ncol <- ncol( data.in$gen.data[[ i ]] )
 		colnames( data.in$gen.data[[ i ]] ) <- gen.data.colnames[ cur.col:( cur.col + cur.ncol - 1 ) ]
 		cur.col <- cur.col + cur.ncol
 	}
-	cat( "...done\n" )
 
 	# re-organizing data from PED format to internal haplin
 	if( .format == "ped" ){
@@ -160,6 +135,7 @@ genDataPreprocess <- function( data.in = stop( "You have to give the object to p
 	data.recoded$aux$info <- .info
 	data.recoded$aux$class <- class( data.recoded )
 	data.recoded$aux$marker.names <- marker.names
+	data.recoded$aux$map.filename <- map.file
 	
 	## find rows with missing data, keep for future reference
 	sum.na.list <- lapply( data.recoded$gen.data, function( gen.el.ff ){
@@ -190,7 +166,7 @@ genDataPreprocess <- function( data.in = stop( "You have to give the object to p
 		cov.data.in <- data.recoded$cov.data
 		save.list <- c( save.list, "cov.data.in" )
 	}
-	ff::ffsave( list = save.list, file = paste0( dir.out, "/", files.list$file.out.base ) )
+	ff::ffsave( list = save.list, file = file.path( dir.out, files.list$file.out.base ) )
 	cat( "... saved to files:", files.list$file.out.ff, ", ", files.list$file.out.aux, "\n" )
 	return( data.recoded )
 }

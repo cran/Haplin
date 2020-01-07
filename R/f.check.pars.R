@@ -66,7 +66,7 @@ if( identical( .info$filespecs$markers, "ALL" ) ){
 		stop( "Given design: ", .info$model$design, " is not recognized!", call. = FALSE )
 	}
 	
-	if( class( mcall$data ) == "haplin.ready" ){
+	if( is( mcall$data, "haplin.ready" ) ){
 		.info$filespecs$markers <- seq( length.out = sum( unlist( lapply( mcall$data$gen.data, ncol ) ) )/ncol.per.marker )
 		attr( mcall$data, "sel.markers" ) <- FALSE
 	}
@@ -75,7 +75,7 @@ if( identical( .info$filespecs$markers, "ALL" ) ){
 
 # SET CORRECT VALUES FOR COLUMN NUMBERS
 .info$filespecs$n.vars <- 0
-if( class( mcall$data ) == "haplin.ready" ){
+if( is( mcall$data, "haplin.ready" ) ){
 	if( !is.null( mcall$data$cov.data ) ){
 		.info$filespecs$n.vars <- ncol( mcall$data$cov.data )
 		if( .xchrom ){

@@ -5,26 +5,11 @@ f.ped.to.mfc.new <- function( data.in, design ){
 	cat( "Converting PED format to internal haplin...\n" )
 	
 	# if the children codes are not unique
-	all.id.c <- table( data.in$cov.data[ ,"id.c" ] )
-	if( any( all.id.c > 1 ) ){
-		cat( "   Creating unique IDs for individuals...\n" )
-		orig.cov.colnames <- colnames( data.in$cov.data )
-		data.in$cov.data <- t( apply( data.in$cov.data, 1, function( x ){
-			if( x[ 4 ] == 0 | x[ 3 ] == 0 ){
-				new.ids <- c( paste( x[ 1 ], x[ 2 ], sep = "_" ), x[ 3:4 ] )
-			} else {
-				new.ids <- paste( x[ 1 ], x[ 2:4 ], sep = "_" )
-			}
-			return( c( x[ 1 ], new.ids, x[ 5:length( x ) ] ) )
-		} ) )
-		colnames( data.in$cov.data ) <- orig.cov.colnames
-		cat( "   ...done.\n" )
-	}
-	
-	id <- data.in$cov.data[ ,"id.c" ]
+	new.ids <- f.check.unique.ids( data.in$cov.data )
+	id <- new.ids$ids
+	pedIndex <- new.ids$pedIndex
 	# sort the families and check coding
 	cat( "   Sorting and re-coding families...\n" )
-	pedIndex <- f.prep.pedIndex( data.in$cov.data )
 
 	if( design %in% c( "triad", "cc.triad" ) ){
 		# SELECT LINES OF data CORRESPONDING TO EITHER MOTHER, FATHER OR CHILD

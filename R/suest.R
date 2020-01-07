@@ -1,6 +1,6 @@
 suest <- function(reslist){
 
-if(!identical(class(reslist[[1]]), "haplin")){
+if(!is(reslist[[1]], "haplin")){
 	stop('Each element of "reslist" must be the output from a "haplin" run. \n\nNote in particular that "haplinSlide" must be run with the argument "table.output" set to "FALSE".', call. = FALSE)
 }
 

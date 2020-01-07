@@ -58,7 +58,7 @@ if(!is.name(.info$filename)){
 }
 #
 ## SET VALUES IN THE gwaa.data CASE
-if(class(mcall$data) == "gwaa.data"){
+if( is( mcall$data, "gwaa.data" ) ){
 	#
 	## REPLACE "ALL" IF NECESSARY
 	# if(identical(.info$filespecs$markers, "ALL")) .info$filespecs$markers <- seq(length.out = nsnps(mcall$data))

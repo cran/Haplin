@@ -7,8 +7,8 @@
 genDataRead(file.in = stop("Filename must be given!", call. = FALSE),
   file.out = NULL, dir.out = ".",
   format = stop("Format parameter is required!"), header = FALSE,
-  n.vars, cov.file.in, cov.header, allele.sep = ";", na.strings = "NA",
-  col.sep = "", overwrite = NULL)
+  n.vars, cov.file.in, cov.header, map.file, allele.sep = ";",
+  na.strings = "NA", col.sep = "", overwrite = NULL)
 }
 \arguments{
 \item{file.in}{The name of the main input file with genotype information.}
@@ -41,6 +41,9 @@ of this file contains the header (i.e., the column names of the additional data)
 (in the file with additional covariate data if given by the 'cov.file.in' argument;
 or in the main file, if it's a "haplin"-formatted file).}
 
+\item{map.file}{Filename (with path if the file is not in current directory) of the
+.map file holding the SNP names, if available (see Details).}
+
 \item{allele.sep}{Character: separator between two alleles (default: ";").}
 
 \item{na.strings}{Character or NA: how the missing data is coded (default: "NA").}
@@ -72,6 +75,13 @@ The function reads in all the data in the file, creates \link[ff]{ff} objects to
  objects are saved in \code{.RData} and \code{.ffData} files, which can be later on
  easily uploaded to R (with \link{genDataLoad}) and re-used.
 }
+\section{Details}{
+
+The .map file should contain at least two columns, where the second one contains SNP 
+  names. Any additional columns should be separated by a whitespace character, but will 
+  be ignored. The file should contain a header.
+}
+
 \section{Usage note}{
 
 When reading in a covariate file together with the genotype information, it is advised
@@ -83,15 +93,16 @@ When reading in a covariate file together with the genotype information, it is a
   # The argument 'overwrite' is set to TRUE!
   examples.dir <- system.file( "extdata", package = "Haplin" )
   # ped format:
-  example.file2 <- paste0( examples.dir, "/exmpl_data.ped" )
+  example.file2 <- file.path( examples.dir, "exmpl_data.ped" )
   ped.data.read <- genDataRead( example.file2, file.out = "exmpl_ped_data", 
-   format = "ped", overwrite = TRUE )
+   dir.out = tempdir( check = TRUE ), format = "ped", overwrite = TRUE )
   ped.data.read
   # haplin format:
-  example.file1 <- paste0( examples.dir, "/HAPLIN.trialdata2.txt" )
-  haplin.data.read <- genDataRead( file.in = example.file1, dir.out = ".",
+  example.file1 <- file.path( examples.dir, "HAPLIN.trialdata2.txt" )
+  haplin.data.read <- genDataRead( file.in = example.file1,
    file.out = "exmpl_haplin_data", format = "haplin", allele.sep = "", n.vars = 2, 
-   cov.header = c( "smoking", "sex" ), overwrite = TRUE )
+   cov.header = c( "smoking", "sex" ), overwrite = TRUE,
+   dir.out = tempdir( check = TRUE ) )
   haplin.data.read
 
 }

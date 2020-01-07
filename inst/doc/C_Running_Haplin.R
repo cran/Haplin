@@ -14,14 +14,17 @@ library( Haplin, quietly = TRUE )
 ## ----eval=FALSE----------------------------------------------------------
 #  ?haplinSlide
 
+## ---- echo=FALSE---------------------------------------------------------
+unlink( c( "*.ffData", "*.RData" ) )
+
 ## ----haplinfig1,fig.keep='high',fig.show='hold',fig.width=6,fig.height=5,fig.pos='!hb',fig.cap="Results of trial run no.1"----
 dir.exmpl <- system.file( "extdata", package = "Haplin" )
 exemplary.file1 <- paste0( dir.exmpl, "/HAPLIN.trialdata.txt" )
 
 trial.data1 <- genDataRead( file.in = exemplary.file1, file.out = "trial_data1",
-	dir.out = ".", format = "haplin", n.vars = 0, overwrite = T )
+	dir.out = ".", format = "haplin", n.vars = 0 )
 trial.data1.prep <- genDataPreprocess( data.in = trial.data1, design = "triad",
-  file.out = "trial_data1_prep", dir.out = ".", overwrite = T )
+  file.out = "trial_data1_prep", dir.out = "." )
 haplin( trial.data1.prep, use.missing = TRUE, maternal = TRUE )
 
 ## ------------------------------------------------------------------------
@@ -33,9 +36,9 @@ my.results
 exemplary.file2 <- paste0( dir.exmpl, "/HAPLIN.trialdata2.txt" )
 
 trial.data2 <- genDataRead( file.in = exemplary.file2, file.out = "trial_data2",
-	dir.out = ".", format = "haplin", allele.sep = "", n.vars = 2, overwrite = T )
+	dir.out = ".", format = "haplin", allele.sep = "", n.vars = 2 )
 trial.data2.prep <- genDataPreprocess( data.in = trial.data2, design = "triad",
-  file.out = "trial_data2_prep", dir.out = ".", overwrite = T )
+  file.out = "trial_data2_prep", dir.out = "." )
 haplin( trial.data2.prep, use.missing = TRUE, ccvar = 2, design =
   "cc.triad", reference = "ref.cat", response = "mult" )
 
@@ -43,14 +46,14 @@ haplin( trial.data2.prep, use.missing = TRUE, ccvar = 2, design =
 exemplary.file3 <- paste0( dir.exmpl, "/exmpl_data.ped" )
 
 hapSlide.data <- genDataRead( exemplary.file3, file.out = "hapSlide_data",
-	format = "ped", overwrite = T )
+	format = "ped" )
 hapSlide.data
 
 ## ----haplinslide_subset--------------------------------------------------
 hapSlide.subset.data <- genDataGetPart( hapSlide.data, design = "cc",
-	markers = 1:100, file.out = "hapSlide_subset_data", overwrite = T )
+	markers = 1:100, file.out = "hapSlide_subset_data" )
 hapSlide.subset.data.prep <- genDataPreprocess( hapSlide.subset.data,
-	design = "cc.triad", file.out = "hapSlide_subset_prep", overwrite = T )
+	design = "cc.triad", file.out = "hapSlide_subset_prep" )
 
 ## ----haplinslide---------------------------------------------------------
 hapSlide.res1 <- haplinSlide( hapSlide.subset.data.prep, use.missing = TRUE,

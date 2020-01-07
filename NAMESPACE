@@ -1,3 +1,5 @@
+useDynLib("Haplin", .registration = TRUE)
+
 # export( haplin0, haplinSlide0 )
 export( haplin, haplinSlide )
 export( pedToHaplin, convertPed )
@@ -12,12 +14,14 @@ export( haplinStrat, gxe )
 export( genDataRead, genDataLoad, genDataGetPart, genDataPreprocess )
 export( initParallelRun, finishParallelRun )
 export( plotPValues )
-export( showPheno, showGen, nsnps, nindiv, nfam )
+export( showPheno, showGen, showSNPnames, nsnps, nindiv, nfam )
+export( getChildren, getFathers, getMothers, getFullTriads, getDyads )
+# export( JohnsonFit, pJohnson )
 
 import( ff )
 # import( GenABEL, DatABEL )
 import( parallel )
-importFrom( snow, sendCall, recvResult, postNode, closeNode )
+importFrom( rlang, caller_env )
 import( stats, graphics, grDevices, tools )
 
 importFrom( "utils", "capture.output", "head", "read.table", "str", "tail",
@@ -25,7 +29,8 @@ importFrom( "utils", "capture.output", "head", "read.table", "str", "tail",
 importFrom( ffbase, table )
 importFrom( mgcv, mroot )
 importFrom( MASS, mvrnorm )
-importFrom( SuppDists, JohnsonFit, pJohnson )
+# importFrom( SuppDists, JohnsonFit, pJohnson )
+importFrom("methods", "is")
 
 S3method( plot, haplin )
 S3method( print, haplin )

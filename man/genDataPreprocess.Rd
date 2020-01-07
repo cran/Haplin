@@ -60,20 +60,27 @@ A list object with three elements:
 \description{
 This function prepares the data to be used in Haplin analysis
 }
+\section{Details}{
+
+The .map file should contain at least two columns, where the second one contains SNP 
+  names. Any additional columns should be separated by a whitespace character, but will 
+  be ignored. The file should contain a header.
+}
+
 \examples{
   # The argument 'overwrite' is set to TRUE!
   # First, read the data:
   examples.dir <- system.file( "extdata", package = "Haplin" )
-  example.file <- paste0( examples.dir, "/exmpl_data.ped" )
+  example.file <- file.path( examples.dir, "exmpl_data.ped" )
   ped.data.read <- genDataRead( example.file, file.out = "exmpl_ped_data", 
-   format = "ped", overwrite = TRUE )
+   dir.out = tempdir( check = TRUE ), format = "ped", overwrite = TRUE )
   ped.data.read
   # Take only part of the data (if needed)
   ped.data.part <- genDataGetPart( ped.data.read, design = "triad", markers = 10:12,
-   file.out = "exmpl_ped_data_part", overwrite = TRUE )
+   dir.out = tempdir( check = TRUE ), file.out = "exmpl_ped_data_part", overwrite = TRUE )
   # Preprocess as "triad" data:
   ped.data.preproc <- genDataPreprocess( ped.data.part, design = "triad",
-   file.out = "exmpl_data_preproc", overwrite = TRUE )
+   dir.out = tempdir( check = TRUE ), file.out = "exmpl_data_preproc", overwrite = TRUE )
   ped.data.preproc
 
 }

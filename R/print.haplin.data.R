@@ -8,7 +8,7 @@ with following dimensions:" )
       (total ", ncol( x$cov.data ), " covariate variables),
 " )
 	} else {
-		cat( "  - no covariate variables," )
+		cat( "  - no covariate variables,\n" )
 	}
 	
 	format <- x$aux$info$filespecs$format
@@ -18,6 +18,6 @@ with following dimensions:" )
 		fam.size <- 6
 	}
 
-	cat( "  - number of markers = ", sum( unlist( lapply( x$gen.data, ncol ) ) )/fam.size, "," )
-	cat( "  - number of data lines = ", nrow( x$gen.data[[ 1 ]] ) )
+	cat( "  - number of markers = ", sum( unlist( lapply( x$gen.data, ncol ) ) )/fam.size, ",\n" )
+	cat( "  - number of data lines = ", nrow( x$gen.data[[ 1 ]] ), "\n" )
 }

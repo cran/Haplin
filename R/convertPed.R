@@ -30,7 +30,7 @@ if(!missing(map.infile)){
 	if(file.exists(map.outfile) && map.outfile == map.infile) stop("\"map.outfile\" is equal to \"map.infile\"", call. = F)
 	#
 	## Read map file
-	.map.infile = read.table(map.infile, header = TRUE, stringsAsFactors = FALSE, blank.lines.skip = blank.lines.skip)
+	.map.infile <- read.table(map.infile, header = TRUE, stringsAsFactors = FALSE, blank.lines.skip = blank.lines.skip)
 } else if(!missing(map.outfile)) warning("\"map.outfile\" is not needed when \"snp.select\" is equal to NULL and \"map.infile\" is missing", call. = F)
 
 #

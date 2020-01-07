@@ -3,7 +3,7 @@ f.get.marker.names <- function(data, n.vars){
 ## EXTRACT MARKER NAMES
 ##
 #
-if(class(data) == "gwaa.data"){
+if(is(data, "gwaa.data")){
 	## GWAA OBJECT
 	# .marker.names <- snpnames(data)
 }else{

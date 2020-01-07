@@ -27,9 +27,13 @@ f.get.gen.data.cols <- function( gen.data, cols, by.colname = FALSE ){
 		all.levels <- union( all.levels, ff::levels.ff( gen.data[[ i ]] ) )
 	}
 	
+	new.colnames <- c()
 	gen.data.out <- ff::ff( NA, levels = all.levels, dim = new.dim, vmode = ff::vmode( gen.data[[ 1 ]] ) )
 	for( i in 1:length( cols ) ){
 		gen.data.out[ ,i ] <- gen.data[[ which.gen.chunk[ i ] ]][ ,which.cols.chunk[ i ] ]
+		new.colnames <- c( new.colnames, 
+			colnames( gen.data[[ which.gen.chunk[ i ] ]] )[ which.cols.chunk[ i ] ] )
 	}
+	colnames( gen.data.out ) <- new.colnames
 	return( gen.data.out )
 }

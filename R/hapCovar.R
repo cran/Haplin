@@ -63,7 +63,7 @@ if(.design == "cc" & xchrom) stop("Design \"cc\" and xchrom is not yet implement
 ## Specify arguments to be passed to haplin
 .n.vars <- 0
 .ccvar <- NULL
-.sex = NULL
+.sex <- NULL
 if(xchrom) .n.vars <- .n.vars + 1
 if(.design!="triad") .n.vars <- .n.vars + 1
 if(.design != "triad" & !xchrom) .ccvar <- .n.vars
@@ -155,8 +155,8 @@ for(i in 1:n.strata){
 	#
 	.grid <- expand.grid(lapply(.design.grid, function(x){1:x}))
 	#
-	.case.design = .tmp.strat.arg$"case.design"
-	.control.design = .tmp.strat.arg$"control.design"
+	.case.design <- .tmp.strat.arg$"case.design"
+	.control.design <- .tmp.strat.arg$"control.design"
 	.grid <- f.grid.asymp(pos = nrow(.grid), design = .design, xchrom = xchrom, n.vars = .n.vars, nall = nall, case.design = .case.design, control.design = .control.design)
 	#
 	.ncells <- nrow(.grid)
@@ -187,8 +187,8 @@ for(i in 1:n.strata){
 	#
 	## Normalize
 	.var.covar.strat <- .var.covar.strat[names(.beta),names(.beta)]/(.strat.arg[i, "cases"]$cases + .strat.arg[i, "controls"]$controls)
-	if(.sim.poo) .var.covar.strat <- f.post.poo.diff(list(as.matrix(.beta)),list(as.matrix(.var.covar.strat)))
-	else .var.covar.strat <- f.post.diff(list(.beta),list(.var.covar.strat))
+	.var.covar.strat <- f.post.diff(list(.beta),list(.var.covar.strat))
+	if(.sim.poo) .var.covar.strat <- f.post.poo.diff(coeff = .var.covar.strat $coef, covar = .var.covar.strat$cov)
 	#
 	.var.covar[[i]] <- .var.covar.strat
 

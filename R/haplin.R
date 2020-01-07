@@ -39,7 +39,7 @@ if( !is.null( attr( data, "sel.markers" ) ) ){
 	.info$control$sel.markers <- attr( data, "sel.markers" )
 }
 
-if( !( class( data ) %in% c( "haplin.ready", "prep.data" ) ) ){
+if( !(is(data, "haplin.ready") | is(data, "prep.data")) ){
 	stop( "The given input data is not ready for haplin analysis! Please use 'genDataPreprocess' function first!", call. = FALSE )
 }
 

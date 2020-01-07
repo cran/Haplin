@@ -16,7 +16,7 @@ library( Haplin, quietly = TRUE )
 
 # Running the analysis
 
-The output of the `genDataPreprocess` function (or `genDataLoad`) is used to run the analysis.	Haplin analysis is run by the single command:
+By default, Haplin estimates the relative risk (RR) of a phenotype associated with a haplotype, based on triad or dyad genotype data. The output of the `genDataPreprocess` function (or `genDataLoad`) is used to run the analysis.	Haplin analysis is run by the single command:
 
 ```{r eval=FALSE}
 haplin( my.prepared.gen.data )
@@ -27,13 +27,16 @@ _CAUTION:_ this command will try to provide estimates based on __all__ the marke
 ```{r eval=FALSE}
 haplinSlide( my.prepared.gen.data, use.missing = TRUE, winlength = 3 )
 ```
+
 This performs haplin analysis on the marker window of length given by the `winlegth` argument above in order to search for the most significant regions in the dataset.
 	
 For more options and examples of how to run Haplin, see below or the haplin help file, obtained by writing in R:
+
 ```{r eval=FALSE}
 ?haplin
 ```
 and
+
 ```{r eval=FALSE}
 ?haplinSlide
 ```
@@ -46,14 +49,18 @@ To test that Haplin runs properly, you can use the exemplary data provided with 
 
 Here, the data includes only genotypes and the analysis is performed on all markers:
 
+```{r, echo=FALSE}
+unlink( c( "*.ffData", "*.RData" ) )
+```
+
 ```{r haplinfig1,fig.keep='high',fig.show='hold',fig.width=6,fig.height=5,fig.pos='!hb',fig.cap="Results of trial run no.1"}
 dir.exmpl <- system.file( "extdata", package = "Haplin" )
 exemplary.file1 <- paste0( dir.exmpl, "/HAPLIN.trialdata.txt" )
 
 trial.data1 <- genDataRead( file.in = exemplary.file1, file.out = "trial_data1",
-	dir.out = ".", format = "haplin", n.vars = 0, overwrite = T )
+	dir.out = ".", format = "haplin", n.vars = 0 )
 trial.data1.prep <- genDataPreprocess( data.in = trial.data1, design = "triad",
-  file.out = "trial_data1_prep", dir.out = ".", overwrite = T )
+  file.out = "trial_data1_prep", dir.out = "." )
 haplin( trial.data1.prep, use.missing = TRUE, maternal = TRUE )
 ```
 
@@ -96,9 +103,9 @@ This example shows analysis of data where apart from genotypes, there are two co
 exemplary.file2 <- paste0( dir.exmpl, "/HAPLIN.trialdata2.txt" )
 
 trial.data2 <- genDataRead( file.in = exemplary.file2, file.out = "trial_data2",
-	dir.out = ".", format = "haplin", allele.sep = "", n.vars = 2, overwrite = T )
+	dir.out = ".", format = "haplin", allele.sep = "", n.vars = 2 )
 trial.data2.prep <- genDataPreprocess( data.in = trial.data2, design = "triad",
-  file.out = "trial_data2_prep", dir.out = ".", overwrite = T )
+  file.out = "trial_data2_prep", dir.out = "." )
 haplin( trial.data2.prep, use.missing = TRUE, ccvar = 2, design =
   "cc.triad", reference = "ref.cat", response = "mult" )
 ```
@@ -113,7 +120,7 @@ This is very similar to running `haplin`, but the results are a list of haptable
 exemplary.file3 <- paste0( dir.exmpl, "/exmpl_data.ped" )
 
 hapSlide.data <- genDataRead( exemplary.file3, file.out = "hapSlide_data",
-	format = "ped", overwrite = T )
+	format = "ped" )
 hapSlide.data
 ```
 
@@ -121,9 +128,9 @@ The preprocessing of this file would take a while. Let's focus then on first 100
 
 ```{r haplinslide_subset}
 hapSlide.subset.data <- genDataGetPart( hapSlide.data, design = "cc",
-	markers = 1:100, file.out = "hapSlide_subset_data", overwrite = T )
+	markers = 1:100, file.out = "hapSlide_subset_data" )
 hapSlide.subset.data.prep <- genDataPreprocess( hapSlide.subset.data,
-	design = "cc.triad", file.out = "hapSlide_subset_prep", overwrite = T )
+	design = "cc.triad", file.out = "hapSlide_subset_prep" )
 ```
 
 We run the haplinSlide analysis:
@@ -134,6 +141,8 @@ hapSlide.res1 <- haplinSlide( hapSlide.subset.data.prep, use.missing = TRUE,
 ```
 
 Here, the output is stored as a list of tables, where each table contains results of the `haplin` run on a certain marker or a set of markers, called a window. The length of the window can be controlled by the `winlength` argument (see the haplinSlide help for details). Here, the default window length was used, 1 marker.
+
+## Investigating and plotting results
 
 Due to the size of `haplinSlide` results, it is best to narrow down the visualization of the results. If you have installed the [ggplot2](https://CRAN.R-project.org/package=ggplot2) package, you can use the functions `plotPValues` and `plot.haplinSlide`. First, we advise to plot only the p-values of the estimation we're interested in, using the `plotPValues` function:
 
@@ -153,8 +162,10 @@ The object `all.p.values` holds the table with p-values for all the windows plot
 ```{r show_p_val3}
 head( all.p.values )
 ```
-	
-If we ran analysis with estimation of the maternal or POO effects, then we can choose to plot these p-values:
+
+## Special effects: maternal or parent-of-origin
+
+If we ran analysis with estimation of the maternal or parent-of-origin (PoO) effects, then we can choose to plot these p-values:
 
 ```{r haplinslide2,fig.width=8,fig.height=5,fig.pos='!hb',fig.cap="Results of haplinSlide analysis in a plot of the 'maternal' p-values, for windows with p-values below 0.2"}
 hapSlide.res2 <- haplinSlide( hapSlide.subset.data.prep, use.missing = TRUE,
@@ -190,24 +201,28 @@ plot( hapSlide.res3, plot.signif.only = TRUE, signif.thresh = 0.01 )
 
 # Analysis of gene-environment interactions (GxE) with haplinStrat
 
-If we have data on environmental exposure of (usually) the mother, we can add it to our dataset and analyse it with `haplinStrat`, that calculates relative risks for strata defined by the categories of the environmental exposure variable.
+If our dataset contains a column with environmental exposure of (usually) the mother, we can analyse it with `haplinStrat`, that calculates relative risks for strata defined by the categories of the environmental exposure variable. To do that, we use the `strata` argument which points to the column in the dataset that contains the environmental exposure categories.
 
 ```{r haplinStrat}
 hapStrat.res <- haplinStrat( data = trial.data2.prep, strata = 1, use.missing = TRUE,
   ccvar = 2, design = "cc.triad", reference = "ref.cat", response = "mult" )
 ```
 
-The difference from running haplin is that we need to tell `haplinStrat` which column contains the environmental variable. This is done by setting the argument `strata` to a specific column number in the `gen.data$cov.data` part of data. The result of `haplinStrat` run is a list of haplin objects: one for the haplin run on the entire data, and then one for every stratum.
+The result of `haplinStrat` run is a list of haplin objects: one for the haplin run on the entire data, and then one for every stratum.
 
 ```{r haplinStrat_summary}
 lapply( hapStrat.res, haptable )
 ```
+
+## Plotting the results
 
 We can plot the results easily with the `plot` function (provided that the [ggplot2](https://CRAN.R-project.org/package=ggplot2) package is installed on your system!):
 
 ```{r haplinStrat_plot,fig.keep='high',fig.show='hold',fig.width=9,fig.height=4,fig.pos='!hb',fig.cap="Results of haplinStrat run."}
 plot( hapStrat.res )
 ```
+
+## Checking for significance of interactions
 
 To check whether there is any significant interaction between the environmental exposure and genotypes, we use the `gxe` function:
 

@@ -70,7 +70,7 @@ cov.data.extracted <- data.read$cov.data[ .ind.sub, ]
 .rows.with.na <- sum( .is.na )
 if( .rows.with.na == 0){
 	# this is the same as if missing=T
-	use.missing = TRUE
+	use.missing <- TRUE
 }
 #
 ## REMOVE ROWS WITH MISSING, IF REQUESTED:

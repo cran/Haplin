@@ -47,18 +47,18 @@
 #'   # The argument 'overwrite' is set to TRUE!
 #'   # Read the data:
 #'   examples.dir <- system.file( "extdata", package = "Haplin" )
-#'   example.file <- paste0( examples.dir, "/HAPLIN.trialdata2.txt" )
+#'   example.file <- file.path( examples.dir, "HAPLIN.trialdata2.txt" )
 #'   my.gen.data.read <- genDataRead( file.in = example.file, file.out = "trial_data",
-#'    dir.out = ".", format = "haplin", allele.sep = "", n.vars = 2, cov.header = 
-#'    c( "smoking", "sex" ), overwrite = TRUE )
+#'    dir.out = tempdir( check = TRUE ), format = "haplin", allele.sep = "", n.vars = 2,
+#'    cov.header = c( "smoking", "sex" ), overwrite = TRUE )
 #'   my.gen.data.read
 #'   # Extract part with only men:
 #'   men.subset <- genDataGetPart( my.gen.data.read, design = "triad", sex = 1,
-#'     dir.out = ".", file.out = "gen_data_men_only", overwrite = TRUE )
+#'     dir.out = tempdir( check = TRUE ), file.out = "gen_data_men_only", overwrite = TRUE )
 #'   men.subset
 #'   # Extract the part with only smoking women:
 #'   women.smoke.subset <- genDataGetPart( my.gen.data.read, design = "triad",
-#'     sex = 0, smoking = c( 1,2 ), overwrite = TRUE )
+#'     dir.out = tempdir( check = TRUE ), sex = 0, smoking = c( 1,2 ), overwrite = TRUE )
 #'   women.smoke.subset 
 #'
 #' @section Warning:
@@ -71,7 +71,8 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 	#---- checking the input params ---------------------
 	files.list <- f.make.out.filename( file.out = file.out, dir.out = dir.out, overwrite = overwrite )
 	
-	if( (class(data.in) != "haplin.data") || !all( names( data.in ) == .haplinEnv$.haplin.data.names ) ){
+	if( !is( data.in, "haplin.data" ) ||
+	  !all( names( data.in ) == .haplinEnv$.haplin.data.names ) ){
 		stop( "The input data is not in the correct format!", call. = FALSE )
 	}
 	
@@ -99,11 +100,11 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 
 	# this is the maximum set of arguments for subset selection, based on the read in covariate data
 	format <- data.in$aux$info$filespecs$format
-	if( format == "ped" ){
-		correct.sel.args <- union( names( formals() ), colnames( data.in$cov.data )[ -(1:4) ] )
-	} else { # haplin file
+# 	if( format == "ped" ){
+# 		correct.sel.args <- union( names( formals() ), colnames( data.in$cov.data )[ -(1:4) ] )
+# 	} else { # haplin file
 		correct.sel.args <- union( names( formals() ), colnames( data.in$cov.data ) )
-	}
+# 	}
 	correct.sel.args <- correct.sel.args[ -( match( c( non.sel.args, "..." ),
 		correct.sel.args ) ) ]
 	
@@ -124,7 +125,7 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 	cat( "Provided arguments:\n" )
 	for( arg in names( selection.args ) ){
 		if( arg == "markers" ){
-			val <- eval( all.args$markers )
+			val <- eval( all.args$markers, envir = rlang::caller_env() )
 			print.val <- paste( val, collapse = ", " )
 			if( length( val ) > 20 ){
 				print.val <- paste( paste( head( val ), collapse = ", "), "...", paste( tail( val ), collapse = ", " ) )
@@ -141,7 +142,7 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 			}
 			
 		} else if( arg == "indiv.ids" ){
-			val <- eval( all.args$indiv.ids )
+			val <- eval( all.args$indiv.ids, envir = rlang::caller_env() )
 			print.val <- paste( val, collapse = ", " )
 			if( length( val ) > 20 ){
 				print.val <- paste( paste( head( val ), collapse = ", "), "...", paste( tail( val ), collapse = ", " ) )
@@ -168,7 +169,7 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 			}
 			
 		} else if( arg == "rows" ){
-			val <- eval( all.args$rows )
+			val <- eval( all.args$rows, envir = rlang::caller_env() )
 			print.val <- paste( val, collapse = ", " )
 			if( length( val ) > 20 ){
 				print.val <- paste( paste( head( val ), collapse = ", "), "...", paste( tail( val ), collapse = ", " ) )
@@ -188,7 +189,7 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
  			stop( "the given argument: ", arg, " is not recognizable!", call. = FALSE )
  			
 		} else { #any other argument if additional covariate data are loaded
-			val <- eval( all.args[[ match( arg, names( all.args ) ) ]] )
+			val <- eval( all.args[[ match( arg, names( all.args ) ) ]], envir = rlang::caller_env() )
 			print.val <- paste( val, collapse = ", " )
 			if( length( val ) > 20 ){
 				print.val <- paste( paste( head( val ), collapse = ", "), "...", paste( tail( val ), collapse = ", " ) )
@@ -236,7 +237,9 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 		# need to choose from both gen.data and cov.data
 		gen.data.col.wise <- lapply( gen.data.col.wise, function( x ){
 			sub <- x[ subset.rows, ]
-			ff::ff( sub, levels = ff::levels.ff( sub ), dim = dim( sub ), vmode = ff::vmode( x ) )
+			out <- ff::ff( sub, levels = ff::levels.ff( sub ), dim = dim( sub ), vmode = ff::vmode( x ) )
+			colnames( out ) <- colnames( sub )
+			return( out )
 		})
 		
 		if( !is.null( data.in$cov.data ) ){
@@ -261,7 +264,7 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 	if( !is.null( cov.data.in ) ){
 		save.list <- c( save.list, "cov.data.in" )
 	}
-	ff::ffsave( list = save.list, file = paste0( dir.out, "/", files.list$file.out.base ) )
+	ff::ffsave( list = save.list, file = file.path( dir.out, files.list$file.out.base ) )
 	cat( "... saved to files: ", files.list$file.out.ff, ", ", files.list$file.out.aux, "\n", sep = "" )
 
 	return( data.out )

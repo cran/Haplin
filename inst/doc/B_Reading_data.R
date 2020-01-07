@@ -14,12 +14,9 @@ my.gen.data <- genDataRead( exemplary.file3, file.out = "ped_data", dir.out = ".
 	format = "ped" )
 
 ## ----eval=FALSE----------------------------------------------------------
-#  my.gen.data.haplin2 <- genDataRead( file.in = "my_gen_data_hap.dat",
-#    file.out = "my_saved_gen_data_hap2", cov.file.in = "add_cov.dat",
-#    dir.out = ".", format = "haplin" )
-
-## ----eval=FALSE----------------------------------------------------------
 #  ?genDataRead
+#  
+#  example( genDataRead )
 
 ## ----add_cov_data_read---------------------------------------------------
 add.cov.file <- paste0( dir.exmpl, "/add_cov_data2.dat" )
@@ -36,10 +33,13 @@ my.gen.data2
 my.gen.data
 
 ## ----showPheno_demo------------------------------------------------------
-showPheno( my.gen.data ) # by default - showing first 5 entries
+# by default - showing first 5 entries:
+showPheno( my.gen.data )
+# getting all the info:
 head( showPheno( my.gen.data, n = "all" ), n = 20 )
 showPheno( my.gen.data, from = 4, to = 15 )
-head( showPheno( my.gen.data, sex = 2 ), n = 20 ) # show information about females only
+# show information about females only:
+head( showPheno( my.gen.data, sex = 2, n = "all" ), n = 20 )
 
 ## ----showPheno_demo2-----------------------------------------------------
 females.pheno <- showPheno( my.gen.data, sex = 2 )
@@ -51,6 +51,10 @@ nfam( my.gen.data )
 
 ## ----nsnps---------------------------------------------------------------
 nsnps( my.gen.data )
+
+## ----showSNPnames--------------------------------------------------------
+showSNPnames( my.gen.data ) # by default - showing only first 5 SNPs
+showSNPnames( my.gen.data, from = 12, to = 31 )
 
 ## ----showGen_demo--------------------------------------------------------
 showGen( my.gen.data, markers = c( 10,15,121 ) ) # by default - showing first 5 entries
