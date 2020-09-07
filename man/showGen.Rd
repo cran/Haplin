@@ -4,8 +4,7 @@
 \alias{showGen}
 \title{Display chosen genotypes}
 \usage{
-showGen(data.in, design = "triad", n = 5, from, to, sex,
-  markers = 1:5)
+showGen(data.in, design = "triad", n = 5, from, to, sex, markers = 1:5)
 }
 \arguments{
 \item{data.in}{The data read in by \link{genDataRead}.}

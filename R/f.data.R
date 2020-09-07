@@ -141,12 +141,6 @@ if(.rows.with.na == 0){
 	}
 }
 
-#------ done now in pre-processing -------
-# ## FREQUENCY COUNT AND ALLELE SORTING:
-# if(verbose) cat("\nPreparing data for analysis...  ")
-# .data <- f.prep.data( data.read, info = info )
-# if(verbose) cat("Done\n")
-
 ## EXTRACT ALLELE INFORMATION:
 info$haplos$alleles <- data.read$aux$alleles[ .markers ]
 info$haplos$alleles <- lapply( info$haplos$alleles, function(x){

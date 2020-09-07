@@ -4,8 +4,12 @@
 \alias{getDyads}
 \title{Getter only for all dyads (child and one parent)}
 \usage{
-getDyads(data.in = stop("No data given!", call. = FALSE),
-  file.out = "my_data_onlyDyads", dir.out = ".", overwrite = NULL)
+getDyads(
+  data.in = stop("No data given!", call. = FALSE),
+  file.out = "my_data_onlyDyads",
+  dir.out = ".",
+  overwrite = NULL
+)
 }
 \arguments{
 \item{data.in}{The data object (in format as the output of \link{genDataRead}); note

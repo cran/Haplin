@@ -1,20 +1,20 @@
-## ----setup,include=FALSE-------------------------------------------------
+## ----setup,include=FALSE------------------------------------------------------
 knitr::opts_chunk$set( echo = TRUE )
 library( Haplin, quietly = TRUE )
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  haplin( my.prepared.gen.data )
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  haplinSlide( my.prepared.gen.data, use.missing = TRUE, winlength = 3 )
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  ?haplin
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  ?haplinSlide
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 unlink( c( "*.ffData", "*.RData" ) )
 
 ## ----haplinfig1,fig.keep='high',fig.show='hold',fig.width=6,fig.height=5,fig.pos='!hb',fig.cap="Results of trial run no.1"----
@@ -27,7 +27,7 @@ trial.data1.prep <- genDataPreprocess( data.in = trial.data1, design = "triad",
   file.out = "trial_data1_prep", dir.out = "." )
 haplin( trial.data1.prep, use.missing = TRUE, maternal = TRUE )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 my.results <- haplin( trial.data1.prep, use.missing = TRUE, maternal = TRUE,
   verbose = FALSE, printout = FALSE )
 my.results
@@ -42,20 +42,20 @@ trial.data2.prep <- genDataPreprocess( data.in = trial.data2, design = "triad",
 haplin( trial.data2.prep, use.missing = TRUE, ccvar = 2, design =
   "cc.triad", reference = "ref.cat", response = "mult" )
 
-## ----haplinslide_read----------------------------------------------------
+## ----haplinslide_read---------------------------------------------------------
 exemplary.file3 <- paste0( dir.exmpl, "/exmpl_data.ped" )
 
 hapSlide.data <- genDataRead( exemplary.file3, file.out = "hapSlide_data",
 	format = "ped" )
 hapSlide.data
 
-## ----haplinslide_subset--------------------------------------------------
+## ----haplinslide_subset-------------------------------------------------------
 hapSlide.subset.data <- genDataGetPart( hapSlide.data, design = "cc",
 	markers = 1:100, file.out = "hapSlide_subset_data" )
 hapSlide.subset.data.prep <- genDataPreprocess( hapSlide.subset.data,
 	design = "cc.triad", file.out = "hapSlide_subset_prep" )
 
-## ----haplinslide---------------------------------------------------------
+## ----haplinslide--------------------------------------------------------------
 hapSlide.res1 <- haplinSlide( hapSlide.subset.data.prep, use.missing = TRUE,
 	ccvar = 10, design = "cc.triad", reference = "ref.cat", response = "mult" )
 
@@ -66,7 +66,7 @@ all.p.values <- plotPValues( hapSlide.res1 )
 all.p.values <- plotPValues( hapSlide.res1, plot.signif.only = TRUE,
 	signif.thresh = 0.25 )
 
-## ----show_p_val3---------------------------------------------------------
+## ----show_p_val3--------------------------------------------------------------
 head( all.p.values )
 
 ## ----haplinslide2,fig.width=8,fig.height=5,fig.pos='!hb',fig.cap="Results of haplinSlide analysis in a plot of the 'maternal' p-values, for windows with p-values below 0.2"----
@@ -86,16 +86,16 @@ hapSlide.res3 <- haplinSlide( hapSlide.subset.data.prep, use.missing = TRUE,
   response = "mult", winlength = 2 )
 plot( hapSlide.res3, plot.signif.only = TRUE, signif.thresh = 0.01 )
 
-## ----haplinStrat---------------------------------------------------------
+## ----haplinStrat--------------------------------------------------------------
 hapStrat.res <- haplinStrat( data = trial.data2.prep, strata = 1, use.missing = TRUE,
   ccvar = 2, design = "cc.triad", reference = "ref.cat", response = "mult" )
 
-## ----haplinStrat_summary-------------------------------------------------
+## ----haplinStrat_summary------------------------------------------------------
 lapply( hapStrat.res, haptable )
 
 ## ----haplinStrat_plot,fig.keep='high',fig.show='hold',fig.width=9,fig.height=4,fig.pos='!hb',fig.cap="Results of haplinStrat run."----
 plot( hapStrat.res )
 
-## ----haplinStrat_gxe-----------------------------------------------------
+## ----haplinStrat_gxe----------------------------------------------------------
 gxe( hapStrat.res )
 

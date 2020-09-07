@@ -4,8 +4,12 @@
 \alias{getChildren}
 \title{Getter for all rows with children data}
 \usage{
-getChildren(data.in = stop("No data given!", call. = FALSE),
-  file.out = "my_data_onlyChildren", dir.out = ".", overwrite = NULL)
+getChildren(
+  data.in = stop("No data given!", call. = FALSE),
+  file.out = "my_data_onlyChildren",
+  dir.out = ".",
+  overwrite = NULL
+)
 }
 \arguments{
 \item{data.in}{The data object (in format as the output of \link{genDataRead}); note

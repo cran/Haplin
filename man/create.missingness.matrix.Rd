@@ -4,8 +4,10 @@
 \alias{create.missingness.matrix}
 \title{Create family matrix of data missingness}
 \usage{
-create.missingness.matrix(data.in = stop("No data given!", call. =
-  FALSE), new.ids = stop("No IDs given", call. = FALSE))
+create.missingness.matrix(
+  data.in = stop("No data given!", call. = FALSE),
+  new.ids = stop("No IDs given", call. = FALSE)
+)
 }
 \arguments{
 \item{data.in}{The data object (in format as the output of \link{genDataRead}); note

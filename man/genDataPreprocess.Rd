@@ -4,10 +4,15 @@
 \alias{genDataPreprocess}
 \title{Pre-processing of the genetic data}
 \usage{
-
-  genDataPreprocess(data.in = stop("You have to give the object to preprocess!"),
-  map.file, design = "triad", file.out = "data_preprocessed",
-  dir.out = ".", ncpu = 1, overwrite = NULL)
+genDataPreprocess(
+  data.in = stop("You have to give the object to preprocess!"),
+  map.file,
+  design = "triad",
+  file.out = "data_preprocessed",
+  dir.out = ".",
+  ncpu = 1,
+  overwrite = NULL
+)
 }
 \arguments{
 \item{data.in}{Input data, as loaded by \link{genDataRead} or \link{genDataLoad}.}

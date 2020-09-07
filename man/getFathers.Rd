@@ -4,8 +4,12 @@
 \alias{getFathers}
 \title{Getter for all rows with fathers' data}
 \usage{
-getFathers(data.in = stop("No data given!", call. = FALSE),
-  file.out = "my_data_onlyFathers", dir.out = ".", overwrite = NULL)
+getFathers(
+  data.in = stop("No data given!", call. = FALSE),
+  file.out = "my_data_onlyFathers",
+  dir.out = ".",
+  overwrite = NULL
+)
 }
 \arguments{
 \item{data.in}{The data object (in format as the output of \link{genDataRead}); note

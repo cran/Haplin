@@ -4,9 +4,20 @@
 \alias{plot.haplinSlide}
 \title{Plotter function for haplinSlide.}
 \usage{
-\method{plot}{haplinSlide}(x, filename, title, windows,
-  plot.signif.only = FALSE, signif.thresh = 0.05, y.lim, x.title,
-  y.title, file.width, file.height, ...)
+\method{plot}{haplinSlide}(
+  x,
+  filename,
+  title,
+  windows,
+  plot.signif.only = FALSE,
+  signif.thresh = 0.05,
+  y.lim,
+  x.title,
+  y.title,
+  file.width,
+  file.height,
+  ...
+)
 }
 \arguments{
 \item{x}{The \code{\link{haplinSlide}} object (NB: only the output produced by

@@ -26,10 +26,9 @@ import( stats, graphics, grDevices, tools )
 
 importFrom( "utils", "capture.output", "head", "read.table", "str", "tail",
   "write.table", "file_test", "packageDescription")
-importFrom( ffbase, table )
+# importFrom( ffbase, table )
 importFrom( mgcv, mroot )
 importFrom( MASS, mvrnorm )
-# importFrom( SuppDists, JohnsonFit, pJohnson )
 importFrom("methods", "is")
 
 S3method( plot, haplin )

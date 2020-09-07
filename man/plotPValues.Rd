@@ -4,8 +4,15 @@
 \alias{plotPValues}
 \title{Plotting p-values for relative risks}
 \usage{
-plotPValues(object, windows, which.p.val = "overall",
-  plot.signif.only = FALSE, signif.thresh = 0.05, title, filename)
+plotPValues(
+  object,
+  windows,
+  which.p.val = "overall",
+  plot.signif.only = FALSE,
+  signif.thresh = 0.05,
+  title,
+  filename
+)
 }
 \arguments{
 \item{object}{The \code{\link{haplinSlide}} results: list of \code{\link{haptable}}

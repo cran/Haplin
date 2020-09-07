@@ -24,7 +24,7 @@ f.get.gen.data.cols <- function( gen.data, cols, by.colname = FALSE ){
 
 	all.levels <- c()
 	for( i in unique( which.gen.chunk ) ){
-		all.levels <- union( all.levels, ff::levels.ff( gen.data[[ i ]] ) )
+		all.levels <- union( all.levels, levels( gen.data[[ i ]] ) )
 	}
 	
 	new.colnames <- c()

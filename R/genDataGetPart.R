@@ -237,7 +237,7 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 		# need to choose from both gen.data and cov.data
 		gen.data.col.wise <- lapply( gen.data.col.wise, function( x ){
 			sub <- x[ subset.rows, ]
-			out <- ff::ff( sub, levels = ff::levels.ff( sub ), dim = dim( sub ), vmode = ff::vmode( x ) )
+			out <- ff::ff( sub, levels = levels( sub ), dim = dim( sub ), vmode = ff::vmode( x ) )
 			colnames( out ) <- colnames( sub )
 			return( out )
 		})

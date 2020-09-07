@@ -4,11 +4,21 @@
 \alias{genDataRead}
 \title{Reading the genetic data from a file}
 \usage{
-genDataRead(file.in = stop("Filename must be given!", call. = FALSE),
-  file.out = NULL, dir.out = ".",
-  format = stop("Format parameter is required!"), header = FALSE,
-  n.vars, cov.file.in, cov.header, map.file, allele.sep = ";",
-  na.strings = "NA", col.sep = "", overwrite = NULL)
+genDataRead(
+  file.in = stop("Filename must be given!", call. = FALSE),
+  file.out = NULL,
+  dir.out = ".",
+  format = stop("Format parameter is required!"),
+  header = FALSE,
+  n.vars,
+  cov.file.in,
+  cov.header,
+  map.file,
+  allele.sep = ";",
+  na.strings = "NA",
+  col.sep = "",
+  overwrite = NULL
+)
 }
 \arguments{
 \item{file.in}{The name of the main input file with genotype information.}
