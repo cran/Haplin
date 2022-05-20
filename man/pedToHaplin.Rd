@@ -29,7 +29,7 @@ Note that the output file usually has three columns before (to the left of) the 
 	The \code{outdata} file is written to disk. \code{pedToHaplin} returns (invisibly) the converted data file.
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
+Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

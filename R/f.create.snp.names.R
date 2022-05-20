@@ -52,9 +52,11 @@ f.create.snp.names <- function( map.file, ncol, format, design ){
 	marker.names <- c()
 	if( !is.null( map.file ) ){
 		marker.names <- read.table( map.file, header = TRUE, stringsAsFactors = FALSE )
+		if( ( nrow( marker.names ) * ncol.per.locus ) != ncol ){
+			marker.names <- c()
+		}
 	}
-	if( ( length( marker.names ) != 0 ) |
-	( ( length( marker.names ) * ncol.per.locus ) != ncol ) ){
+	if( length( marker.names ) == 0 ){
 		warning( "No map file given, map file empty or the number of map file rows not equal to the number of markers in data; will generate dummy marker names.", call. = FALSE )
 		marker.names <- paste( "m", 1:( ncol/ncol.per.locus ), sep = "" )
 	} else {

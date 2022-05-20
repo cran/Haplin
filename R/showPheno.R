@@ -42,7 +42,7 @@ showPheno <- function( data.in, n = 5, from, to, sex ){
 		}
 		
 		which.rows.show <- as.numeric( cov.data[ ,"sex" ] ) == sex
-		data.out <- cov.data[ which.rows.show, ]
+		data.out <- cov.data[ which.rows.show, , drop = FALSE]
 	} else {
 		if( !missing( n ) ){
 			n.given <- TRUE
@@ -98,7 +98,7 @@ showPheno <- function( data.in, n = 5, from, to, sex ){
 		if( from < 1 | to > nrow( cov.data ) | from > to ){
 			stop( paste0( "Wrong specification of 'from' (", from ,") and 'to' (", to, ")!" ), call. = FALSE )
 		}
-		data.out <- cov.data[ from:to, ]
+		data.out <- cov.data[ from:to, , drop = FALSE]
 	}
 	return( data.out )
 }

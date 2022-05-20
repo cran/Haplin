@@ -12,7 +12,7 @@
 
 <meta name="author" content="Hakon K. Gjessing and Julia Romanowska" />
 
-<meta name="date" content="2020-09-05" />
+<meta name="date" content="2022-05-19" />
 
 <title>Introduction: installing and citing Haplin</title>
 
@@ -29,29 +29,31 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
 
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
   }
-});
-</script>
-
-
-<style type="text/css">code{white-space: pre;}</style>
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -134,6 +136,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -329,9 +332,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Introduction: installing and citing Haplin</h1>
+<h1 class="title toc-ignore">Introduction: installing and citing
+Haplin</h1>
 <h4 class="author">Hakon K. Gjessing and Julia Romanowska</h4>
-<h4 class="date">2020-09-05</h4>
+<h4 class="date">2022-05-19</h4>
 
 
 
@@ -339,11 +343,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1>Citing use of Haplin</h1>
 <p>If you find Haplin useful, please acknowledge our work by citing:</p>
 <blockquote>
-<p>Gjessing HK and Lie RT. <a href="https://folk.uib.no/gjessing/genetics/software/haplin/docu/Gjessing_Lie_2006.pdf">“Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes.”</a> <strong>Annals of Human Genetics</strong> <em>(2006)</em> 70, pp. 382-396.</p>
+<p>Gjessing HK and Lie RT. <a href="https://folk.uib.no/gjessing/genetics/software/haplin/docu/Gjessing_Lie_2006.pdf">“Case-parent
+triads: Estimating single- and double-dose effects of fetal and maternal
+disease gene haplotypes.”</a> <strong>Annals of Human Genetics</strong>
+<em>(2006)</em> 70, pp. 382-396.</p>
 </blockquote>
-<p>The BibTex entry for LaTeX users can be obtained by the following command in R:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">citation</span>( <span class="st">&quot;Haplin&quot;</span> )</span></code></pre></div>
+<p>The BibTex entry for LaTeX users can be obtained by the following
+command in R:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">citation</span>( <span class="st">&quot;Haplin&quot;</span> )</span></code></pre></div>
 <pre><code>## 
+## To cite package &#39;Haplin&#39; in publications use:
+## 
 ##   Gjessing HK and Lie RT. Case-parent triads: Estimating single- and
 ##   double-dose effects of fetal and maternal disease gene haplotypes.
 ##   Annals of Human Genetics (2006) 70, pp. 382-396
@@ -359,28 +369,44 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##     number = {3},
 ##     pages = {382--396},
 ##     year = {2006},
-##     url = {https://onlinelibrary.wiley.com/doi/10.1111/j.1529-8817.2005.00218.x},
 ##   }</code></pre>
 </div>
 <div id="obtaining-and-installing-haplin" class="section level1">
 <h1>Obtaining and installing Haplin</h1>
 <div id="requirements" class="section level2">
 <h2>Requirements</h2>
-<p>Haplin is written for use with the statistical software R. However, it is easy to install and requires no previous knowledge of R. R can be downloaded free of charge from <a href="https://www.r-project.org/">The R Project for Statistical Computing</a>. Haplin is implemented as a standard R library, and should run without problems on all reasonably new R versions, for Windows, Linux or MAC.</p>
+<p>Haplin is written for use with the statistical software R. However,
+it is easy to install and requires no previous knowledge of R. R can be
+downloaded free of charge from <a href="https://www.r-project.org/">The
+R Project for Statistical Computing</a>. Haplin is implemented as a
+standard R library, and should run without problems on all reasonably
+new R versions, for Windows, Linux or MAC.</p>
 <p>Haplin is dependent on several other R packages:</p>
 <p><code>MASS, mgcv, tools, ff, ffbase, snow</code></p>
-<p>These are automatically installed together with Haplin (see below).</p>
-<p>If you are using Windows, you should install <a href="https://cran.r-project.org/bin/windows/Rtools/">RTools</a> before installing Haplin in R. RTools include the <strong>zip</strong> command, which is required by the <strong>ff</strong> package.</p>
-<p>Moreover, if you want to use the plotting functions for plotting the results of <strong>haplinSlide</strong> and <strong>haplinStrat</strong>, you should install the <a href="https://CRAN.R-project.org/package=ggplot2">ggplot2</a> package separately. You can still use Haplin if you don’t have this package, though!</p>
-<p>For running on a cluster, you would need the <a href="https://CRAN.R-project.org/package=Rmpi">Rmpi</a> package installed, see the vignette <strong>“Running Haplin on cluster”</strong>.</p>
+<p>These are automatically installed together with Haplin (see
+below).</p>
+<p>If you are using Windows, you should install <a href="https://cran.r-project.org/bin/windows/Rtools/">RTools</a> before
+installing Haplin in R. RTools include the <strong>zip</strong> command,
+which is required by the <strong>ff</strong> package.</p>
+<p>Moreover, if you want to use the plotting functions for plotting the
+results of <strong>haplinSlide</strong> and
+<strong>haplinStrat</strong>, you should install the <a href="https://CRAN.R-project.org/package=ggplot2">ggplot2</a> package
+separately. You can still use Haplin if you don’t have this package,
+though!</p>
+<p>For running on a cluster, you would need the <a href="https://CRAN.R-project.org/package=Rmpi">Rmpi</a> package
+installed, see the vignette <strong>“Running Haplin on
+cluster”</strong>.</p>
 </div>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>To install Haplin in R:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">install.packages</span>( <span class="st">&quot;Haplin&quot;</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span> )</span></code></pre></div>
-<p>Haplin and the dependent packages will then be installed automatically over the internet from the <a href="https://CRAN.R-project.org/package=Haplin">CRAN library</a>.</p>
-<p>To start using Haplin, open a new R session (either in a terminal window or any IDE, e.g., <a href="https://www.rstudio.com/">RStudio</a>). Then, use the R command:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">library</span>( Haplin )</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>( <span class="st">&quot;Haplin&quot;</span>, <span class="at">dependencies =</span> <span class="cn">TRUE</span> )</span></code></pre></div>
+<p>Haplin and the dependent packages will then be installed
+automatically over the internet from the <a href="https://CRAN.R-project.org/package=Haplin">CRAN library</a>.</p>
+<p>To start using Haplin, open a new R session (either in a terminal
+window or any IDE, e.g., <a href="https://www.rstudio.com/">RStudio</a>). Then, use the R
+command:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>( Haplin )</span></code></pre></div>
 <p>Haplin is then loaded and ready for use.</p>
 <!-- ## GUI -->
 <!-- An easily accessible Graphical User Interface for generating Haplin syntax is available at [haplin.fhi.no](http://haplin.fhi.no), thanks to Nguyen Trung Truc. The syntax generator helps setting up Haplin commands which can be cut and pasted into your own R window. It includes some (but not all) of the features currently available in Haplin. -->

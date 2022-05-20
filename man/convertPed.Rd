@@ -75,7 +75,7 @@ the ped file above should look like this:
 
 \references{
 %Purcell S. PLINK v1.07. Web Site: \url{http://pngu.mgh.harvard.edu/purcell/plink/}\cr\cr
-Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}
+Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}
 }
 
 \author{Miriam Gjerdevik,\cr

@@ -89,8 +89,9 @@ genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALS
 		if( !file.exists( map.file ) ){
 			stop( "The given map.file (", map.file, ") doesn't exist! Check and try again.", call. = FALSE )
 		}
+	} else {
+	  map.file <- NULL
 	}
-	map.file <- NULL
 
 	files.list <- f.make.out.filename( file.in, file.out, dir.out = dir.out, overwrite = overwrite )
 	

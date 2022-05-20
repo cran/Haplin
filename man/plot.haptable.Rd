@@ -12,8 +12,7 @@ filetype = "png", use.dd, verbose = T, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{}{Of the following arguments, only \code{x} is required.}
-  \item{x}{A \code{haptable} object, i.e. the result of running \code{haptable} on a result from \code{haplin}.}
+  \item{x}{A \code{haptable} object, i.e. the result of running \code{haptable} on a result from \code{haplin}. This is the only required argument.}
 %  \item{reference}{Same as \code{reference} argument in \code{haplin}. Note that when plotting, you can only choose \code{"reciprocal"}, \code{"population"} or \code{"ref.cat"}. You cannot use a numeric value to change the reference category, to do that \code{haplin} must be run over again. (See the \code{reference} argument of \code{haplin}.)}
   \item{separate.plots}{Logical. If you estimate effects of both fetal and maternal genes you can decide whether or not to plot them in the same plot. The default is the same plot (TRUE), the alternative (FALSE) means in separate plots. If you choose separate plots you may have to set the graphics window to "recording" to make sure you can scroll back to the first plot.}
   \item{filename}{If you want a file containing the plot to be produced, give a character string for the filename.}
@@ -24,7 +23,7 @@ filetype = "png", use.dd, verbose = T, ...)
 }
 %\details{}
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
+Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

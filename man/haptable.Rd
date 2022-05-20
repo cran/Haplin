@@ -41,7 +41,7 @@ Create a comprehensive table of haplin output
 	\item{RRdd.lower}{Lower 95\% CI for double dose relative risk}
 	\item{RRdd.upper}{Upper 95\% CI for double dose relative risk}
 	\item{RRdd.p.value}{P-values for individual double dose effect}
-	\item{}{When maternal = TRUE, there will be additional columns:}
+	\item{NOTE1}{When maternal = TRUE, there will be additional columns:}
 	\item{RRm.est.}{Estimated single dose relative risk for maternal haplotype}
 	\item{RRm.lower }{Lower 95\% CI for single dose relative risk for maternal haplotype}
 	\item{RRm.upper}{Upper 95\% CI for single dose relative risk for maternal haplotype}
@@ -50,7 +50,7 @@ Create a comprehensive table of haplin output
 	\item{RRmdd.lower}{Lower 95\% CI for double dose relative risk for maternal haplotype}
 	\item{RRmdd.upper}{Upper 95\% CI for double dose relative risk for maternal haplotype}
 	\item{RRmdd.p.value}{P-values for individual double dose effect of maternal haplotype}
-	\item{}{When poo = TRUE, the RR.est., RR.lower, and RR.upper columns will be replaced by the following columns:}
+	\item{NOTE2}{When poo = TRUE, the RR.est., RR.lower, and RR.upper columns will be replaced by the following columns:}
 	\item{RRcm.est.}{Estimated single dose relative risk, when inherited from the mother}
 	\item{RRcm.lower}{Lower 95\% CI for single dose relative risk, when inherited from the mother}
 	\item{RRcm.upper}{Upper 95\% CI for single dose relative risk, when inherited from the mother}
@@ -64,7 +64,7 @@ Create a comprehensive table of haplin output
 	\item{RRcm_RRcf.upper}{Upper 95\% CI for ratio RRcm/RRcf}
 	\item{RRcm_RRcf.p.value}{P-value for parent-of-origin effect RRcm/RRcf at that marker}	   
 }
-\references{Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}}
+\references{Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
@@ -73,18 +73,10 @@ Norwegian Institute of Public Health\cr
 \note{Further information is found on the web page
 }
 \seealso{\code{\link{haplin}}, \code{\link{output}}}
-
 \examples{
 \dontrun{
 
 # Produce a table containing the most important output from haplin:
 res <- haplin("data.dat", use.missing = T, maternal = T)
 haptable(res)
-
-
-
 }}
-
-
-
-

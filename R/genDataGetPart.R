@@ -251,6 +251,12 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 	data.out <- list( cov.data = cov.data.in, gen.data = gen.data.col.wise, aux = data.in$aux )
 	class( data.out ) <- class( data.in )
 	
+	# update the marker names
+	if("markers" %in% names(selection.args)){
+	  which.markers.retain <- eval(all.args$markers, envir = rlang::caller_env())
+	  data.out$aux$marker.names <- data.in$aux$marker.names[which.markers.retain]
+	}
+	
 	## saving the chosen part of the data
 	cat( "Saving data... \n" )
 	cur.names <- c()
@@ -259,7 +265,7 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 		assign( cur.name, gen.data.col.wise[[i]] )
 		cur.names <- c( cur.names, cur.name )
 	}
-	aux <- data.in$aux
+	aux <- data.out$aux
 	save.list <- c( cur.names, "aux" )
 	if( !is.null( cov.data.in ) ){
 		save.list <- c( save.list, "cov.data.in" )

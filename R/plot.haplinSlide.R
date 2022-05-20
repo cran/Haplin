@@ -103,6 +103,19 @@ plot.haplinSlide <- function( x, filename, title, windows, plot.signif.only = FA
 	dodge <- ggplot2::position_dodge( width = 0.6 )
 	x.lab <- unique( paste0( coefs$marker, "\n", coefs$haplos ) )
 	
+	# ggplot creates factors of character columns, ordering them alphabetically
+	# but we want a specific order if this is a haplinStrat result:
+	#  first, stratum 'all', then strata as numbered
+	x.axis.order <- unique(coefs$marker)
+	if("all" %in% x.axis.order){
+  	coefs$haplos <- factor(
+  	    coefs$haplos, levels = unique(coefs$haplos), ordered = TRUE
+  	  )
+  	coefs$marker <- factor(
+  	    coefs$marker, levels = x.axis.order, ordered = TRUE
+  	  )
+	}
+	
 	if( missing( y.lim ) ){
 		y.lim <- range( c( coefs$upper, coefs$lower ), na.rm = TRUE )
 		if( y.lim[ 1 ] < 1/4 ){
@@ -132,7 +145,7 @@ plot.haplinSlide <- function( x, filename, title, windows, plot.signif.only = FA
 			ggplot2::geom_label( ggplot2::aes( label = labels, fill = as.factor( labels ), fontface = "bold" ), colour = "white", position = dodge ) +
 			ggplot2::geom_text( ggplot2::aes_( label = quote( star ), y = quote( upper ), group = quote( est.name ) ), position = dodge, size = 5 ) +
 			ggplot2::labs( title = fig.title, y = y.title, x = x.title ) +
-			ggplot2::coord_trans( y = "log2", limy = y.lim ) + 
+			ggplot2::coord_trans( y = "log2", ylim = y.lim ) + 
 			ggplot2::theme( legend.position = "none", axis.text.x = ggplot2::element_text( angle = 90 ) )
 		if( calc.maternal ){
 			final.plot <- basic.plot.multi + ggplot2::facet_grid( plot.pos ~ marker, scales = "free" )
@@ -147,7 +160,7 @@ plot.haplinSlide <- function( x, filename, title, windows, plot.signif.only = FA
 			ggplot2::geom_label( ggplot2::aes( label = labels, fill = as.factor( labels ), fontface = "bold" ), colour = "white", position = dodge ) +
 			ggplot2::geom_text( ggplot2::aes_( label = quote( star ), y = quote( upper ), group = quote( est.name ) ), position = dodge, size = 5 ) +
 			ggplot2::labs( title = fig.title, y = y.title, x = x.title ) +
-			ggplot2::coord_trans( y = "log2", limy = y.lim ) + 
+			ggplot2::coord_trans( y = "log2", ylim = y.lim ) + 
 			ggplot2::theme( legend.position = "none", axis.text.x = ggplot2::element_text( angle = 90 ) )
 		if( calc.maternal ){
 			final.plot <- basic.plot.single + ggplot2::scale_x_discrete( labels = x.lab ) + ggplot2::facet_wrap( ~ plot.pos, nrow = 2 )

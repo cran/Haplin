@@ -24,7 +24,7 @@ haplinStrat( data, strata = NULL, ...)
 	A list of objects of class haplin is returned. The first element contains the result of running \code{haplin} on the entire data file; the remaining elements are the results from each of the strata. The names of the list correspond to the values of the \code{strata} variable.
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{http://www.uib.no/smis/gjessing/genetics/software/haplin/}}
+Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

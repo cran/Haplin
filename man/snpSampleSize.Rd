@@ -37,7 +37,7 @@ and then uses the asymptotic normal approximation for the natural logarithm of t
 \references{
 Skare O, Jugessur A, Lie RT, Wilcox AJ, Murray JC, Lunde A, Nguyen TT, Gjessing HK. Application of a novel hybrid study design to explore gene-environment interactions in orofacial clefts. Annals of Human Genetics (2012) 76, pp. 221-236.\cr
 
-Web Site: \url{http://folk.uib.no/gjessing/genetics/software/haplin/}
+Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}
 }
 
 \author{Miriam Gjerdevik,\cr

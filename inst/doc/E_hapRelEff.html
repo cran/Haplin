@@ -12,7 +12,7 @@
 
 <meta name="author" content="Miriam Gjerdevik and Hakon K. Gjessing" />
 
-<meta name="date" content="2020-09-05" />
+<meta name="date" content="2022-05-19" />
 
 <title>Relative efficiency in Haplin</title>
 
@@ -29,29 +29,31 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
 
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
   }
-});
-</script>
-
-
-<style type="text/css">code{white-space: pre;}</style>
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -136,6 +138,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </script>
 
 
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <style type="text/css">body {
 background-color: #fff;
@@ -331,103 +356,227 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Relative efficiency in Haplin</h1>
 <h4 class="author">Miriam Gjerdevik and Hakon K. Gjessing</h4>
-<h4 class="date">2020-09-05</h4>
+<h4 class="date">2022-05-19</h4>
 
 
 
 <div id="background" class="section level2">
 <h2>Background</h2>
-<p>A variety of child-parent configurations are amenable to genetic association studies, including (but not limited to) cases in combination with unrelated controls, case-parent triads, and case-parent triads in combination with unrelated control-parent triads. Because genome-wide association studies (GWAS) are frequently underpowered due to the large number of single-nucleotide polymorphisms being tested, power calculations are necessary to choose an optimal study design and to maximize scientific gains from high genotyping and assay costs.</p>
-<p>The statistical power is an important aspect of design comparison. Frequently, study designs are compared directly through a power analysis, without considering the total number of individuals that needs to be genotyped. For example, a fixed number of complete case-parent triads could be compared with the same number of case-mother or case-father dyads. However, such an approach ignores the costs of data collection. A much more general and informative design comparison can be achieved by studying the relative efficiency, which we define as the ratio of variances of two different parameter estimators, corresponding to two separate designs. Using log-linear modeling, we derive the relative efficiency from the asymptotic variance formulas of the parameters. The relative efficiency estimate takes into account the fact that different designs impose different costs relative to the number of genotyped individuals. The relative efficiency calculations are implemented as an easy-to-use function in our R package Haplin <span class="citation">(H. K. Gjessing and Lie 2006)</span>) .</p>
-<p>We use the releative efficiency estimates to select the study design that attains the highest statistical power using the smallest sample collection and assay costs. The results will depend on the genetic effect being assessed, and our analyses include regular autosomal (offspring or child) effects, parent-of-origin effects and maternal effects (a definition of the genetic effects are provided in <span class="citation">(M. Gjerdevik et al. 2019)</span>). We here show example commands for various scenarios.</p>
+<p>A variety of child-parent configurations are amenable to genetic
+association studies, including (but not limited to) cases in combination
+with unrelated controls, case-parent triads, and case-parent triads in
+combination with unrelated control-parent triads. Because genome-wide
+association studies (GWAS) are frequently underpowered due to the large
+number of single-nucleotide polymorphisms being tested, power
+calculations are necessary to choose an optimal study design and to
+maximize scientific gains from high genotyping and assay costs.</p>
+<p>The statistical power is an important aspect of design comparison.
+Frequently, study designs are compared directly through a power
+analysis, without considering the total number of individuals that needs
+to be genotyped. For example, a fixed number of complete case-parent
+triads could be compared with the same number of case-mother or
+case-father dyads. However, such an approach ignores the costs of data
+collection. A much more general and informative design comparison can be
+achieved by studying the relative efficiency, which we define as the
+ratio of variances of two different parameter estimators, corresponding
+to two separate designs. Using log-linear modeling, we derive the
+relative efficiency from the asymptotic variance formulas of the
+parameters. The relative efficiency estimate takes into account the fact
+that different designs impose different costs relative to the number of
+genotyped individuals. The relative efficiency calculations are
+implemented as an easy-to-use function in our R package Haplin <span class="citation">(H. K. Gjessing and Lie 2006)</span>) .</p>
+<p>We use the releative efficiency estimates to select the study design
+that attains the highest statistical power using the smallest sample
+collection and assay costs. The results will depend on the genetic
+effect being assessed, and our analyses include regular autosomal
+(offspring or child) effects, parent-of-origin effects and maternal
+effects (a definition of the genetic effects are provided in <span class="citation">(M. Gjerdevik et al. 2019)</span>). We here show
+example commands for various scenarios.</p>
 </div>
 <div id="regular-autosomal-effects" class="section level2">
 <h2>Regular autosomal effects</h2>
-<p>The relative efficiency of two designs are calculated by the Haplin function <code>hapRelEff</code>. The commands are very similar to the Haplin power calculation function <code>hapPowerAsymp</code>, which are explained in detail in our previously published paper <span class="citation">(M. Gjerdevik et al. 2019)</span>. In general, one only needs to specify the study designs to be compared, the allele frequencies, and the type of genetic effect and its magnitude.</p>
-<p>The following command calculates the efficiency of the standard case-control design with an equal number of case and control children relative to the case-parent triad design.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>     <span class="kw">hapRelEff</span>(<span class="dt">cases.comp =</span> <span class="kw">c</span>(<span class="dt">c=</span><span class="dv">1</span>), </span>
-<span id="cb1-2"><a href="#cb1-2"></a>            <span class="dt">controls.comp =</span> <span class="kw">c</span>(<span class="dt">c=</span><span class="dv">1</span>), <span class="dt">cases.ref =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb1-3"><a href="#cb1-3"></a>            <span class="dt">haplo.freq =</span> <span class="kw">c</span>(<span class="fl">0.1</span>,<span class="fl">0.9</span>), <span class="dt">RR =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+<p>The relative efficiency of two designs are calculated by the Haplin
+function <code>hapRelEff</code>. The commands are very similar to the
+Haplin power calculation function <code>hapPowerAsymp</code>, which are
+explained in detail in our previously published paper <span class="citation">(M. Gjerdevik et al. 2019)</span>. In general, one only
+needs to specify the study designs to be compared, the allele
+frequencies, and the type of genetic effect and its magnitude.</p>
+<p>The following command calculates the efficiency of the standard
+case-control design with an equal number of case and control children
+relative to the case-parent triad design.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.9</span>), <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
 <pre><code>## $haplo.rel.eff
 ##   Haplotype RR.rel.eff
 ## 1         1        1.5
 ## 2         2        ref</code></pre>
-<p>The arguments <code>cases.comp</code> and <code>controls.comp</code> specify the comparison designs, whereas <code>cases.ref</code> and <code>controls.ref</code> specify the reference design. We use the following abbreviations to describe the family designs. We let the letters c, m and f denote a child, mother and a father, respectively. Thus, the case-parent triad design is specified by <code>cases.comp = c(mfc=1)</code> or <code>cases.ref = c(mfc=1)</code>, whereas the standard case-control design is specified by <code>cases.comp = c(c=1)</code> and <code>controls.comp = c(c=1)</code> or <code>cases.ref = c(c=1)</code> and <code>controls.ref = c(c=1)</code>. To specify a case-control design with twice as many controls than cases, one could use the combination <code>cases.comp = c(c=1)</code> and <code>controls.comp = c(c=2)</code>.</p>
-<p>The genetic effects are determined by the choice of relative risk parameter(s), which also specifies the effect sizes. A reguar autosomal effect is specified by the relative risk argument <code>RR</code>. The relative efficiency estimated under the null hypothesis, i.e., when all relative risks are equal to one, is known as the Pitman efficiency <span class="citation">(Noether 1955)</span>. However, other relative risk values can be used. Allele frequencies are specified by the argument <code>haplo.freq</code>. Note that the order and length of the specified relative risk parameter vectors should always match the corresponding allele frequencies.</p>
-<p>We see that the relative efficiency for the standard case-control design is 1.5, compared with the case-parent triad design. This result is well-known from the literature <span class="citation">(H. J. Cordell and Clayton 2005)</span>.</p>
-<p>To compare the full hybrid design consisting of both case-parent triads and control-parent triads, we can use a command similar to</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>     <span class="kw">hapRelEff</span>(<span class="dt">cases.comp =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>), </span>
-<span id="cb3-2"><a href="#cb3-2"></a>            <span class="dt">controls.comp =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>), <span class="dt">cases.ref =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb3-3"><a href="#cb3-3"></a>            <span class="dt">haplo.freq =</span> <span class="kw">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>), <span class="dt">RR =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+<p>The arguments <code>cases.comp</code> and <code>controls.comp</code>
+specify the comparison designs, whereas <code>cases.ref</code> and
+<code>controls.ref</code> specify the reference design. We use the
+following abbreviations to describe the family designs. We let the
+letters c, m and f denote a child, mother and a father, respectively.
+Thus, the case-parent triad design is specified by
+<code>cases.comp = c(mfc=1)</code> or <code>cases.ref = c(mfc=1)</code>,
+whereas the standard case-control design is specified by
+<code>cases.comp = c(c=1)</code> and <code>controls.comp = c(c=1)</code>
+or <code>cases.ref = c(c=1)</code> and
+<code>controls.ref = c(c=1)</code>. To specify a case-control design
+with twice as many controls than cases, one could use the combination
+<code>cases.comp = c(c=1)</code> and
+<code>controls.comp = c(c=2)</code>.</p>
+<p>The genetic effects are determined by the choice of relative risk
+parameter(s), which also specifies the effect sizes. A reguar autosomal
+effect is specified by the relative risk argument <code>RR</code>. The
+relative efficiency estimated under the null hypothesis, i.e., when all
+relative risks are equal to one, is known as the Pitman efficiency <span class="citation">(Noether 1955)</span>. However, other relative risk
+values can be used. Allele frequencies are specified by the argument
+<code>haplo.freq</code>. Note that the order and length of the specified
+relative risk parameter vectors should always match the corresponding
+allele frequencies.</p>
+<p>We see that the relative efficiency for the standard case-control
+design is 1.5, compared with the case-parent triad design. This result
+is well-known from the literature <span class="citation">(H. J. Cordell
+and Clayton 2005)</span>.</p>
+<p>To compare the full hybrid design consisting of both case-parent
+triads and control-parent triads, we can use a command similar to</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>), <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
 </div>
 <div id="parent-of-origin-poo-effects" class="section level2">
 <h2>Parent-of-origin (PoO) effects</h2>
-<p>The relative efficiency for PoO effects is computed by replacing the argument <code>RR</code> by the two relative risk arguments <code>RRcm</code> and <code>RRcf</code> denoting parental origin m (mother) and f (father). The command</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>     <span class="kw">hapRelEff</span>(<span class="dt">cases.comp =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>), </span>
-<span id="cb4-2"><a href="#cb4-2"></a>            <span class="dt">controls.comp =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>), <span class="dt">cases.ref =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb4-3"><a href="#cb4-3"></a>            <span class="dt">haplo.freq =</span> <span class="kw">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>), <span class="dt">RRcm =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="dt">RRcf =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
-<p>calculates the efficiency for the full hybrid design, relative to the case-parent triad design. We refer to our previous paper <span class="citation">(M. Gjerdevik et al. 2019)</span> for an explanation of the full output.</p>
+<p>The relative efficiency for PoO effects is computed by replacing the
+argument <code>RR</code> by the two relative risk arguments
+<code>RRcm</code> and <code>RRcf</code> denoting parental origin m
+(mother) and f (father). The command</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>), <span class="at">RRcm =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">RRcf =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+<p>calculates the efficiency for the full hybrid design, relative to the
+case-parent triad design. We refer to our previous paper <span class="citation">(M. Gjerdevik et al. 2019)</span> for an explanation of
+the full output.</p>
 </div>
 <div id="maternal-effects" class="section level2">
 <h2>Maternal effects</h2>
-<p>Since children and their mothers have an allele in common, a maternal effect might be statistically confounded with a regular autosomal effect or a PoO effect. The relative efficiency for maternal effects can be analyzed jointly with that of a regular autosomal effect or a PoO effect by adding the relative risk argument <code>RR.mat</code> to the original command.</p>
+<p>Since children and their mothers have an allele in common, a maternal
+effect might be statistically confounded with a regular autosomal effect
+or a PoO effect. The relative efficiency for maternal effects can be
+analyzed jointly with that of a regular autosomal effect or a PoO effect
+by adding the relative risk argument <code>RR.mat</code> to the original
+command.</p>
 <p>The command</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>     <span class="kw">hapRelEff</span>(<span class="dt">cases.comp =</span> <span class="kw">list</span>(<span class="kw">c</span>(<span class="dt">mc=</span><span class="dv">1</span>)), </span>
-<span id="cb5-2"><a href="#cb5-2"></a>            <span class="dt">cases.ref=</span><span class="kw">list</span>(<span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>)), <span class="dt">haplo.freq =</span> <span class="kw">c</span>(<span class="fl">0.1</span>,<span class="fl">0.9</span>), </span>
-<span id="cb5-3"><a href="#cb5-3"></a>            <span class="dt">RR =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="dt">RR.mat=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="at">mc=</span><span class="dv">1</span>)), </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">cases.ref=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>)), <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.9</span>), </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">RR.mat=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
 <pre><code>## $haplo.rel.eff
 ##   Haplotype RR.rel.eff RRm.rel.eff
 ## 1         1        0.6         0.6
 ## 2         2        ref         ref</code></pre>
-<p>calculates the efficiency of the case-mother dyad design relative to the case-mother dyad design, assessing both regular autosomal and maternal effects. In this example, we see that the relative efficiency estimates for regular autosomal and maternal effects are identical when adjusting for possible confounding of the effects with one another <span class="citation">(M. Gjerdevik et al. 2019)</span>.</p>
+<p>calculates the efficiency of the case-mother dyad design relative to
+the case-mother dyad design, assessing both regular autosomal and
+maternal effects. In this example, we see that the relative efficiency
+estimates for regular autosomal and maternal effects are identical when
+adjusting for possible confounding of the effects with one another <span class="citation">(M. Gjerdevik et al. 2019)</span>.</p>
 </div>
 <div id="haplotype-effects" class="section level2">
 <h2>Haplotype effects</h2>
-<p>The default commands correspond to analyses of single-SNPs. However, the extention to haplotypes is straightforward. The number of markers and haplotypes is determined by the vector <code>nall</code>, where the number of markers is equal to <code>length(nall)</code>, and the number of different haplotypes is equal to <code>prod(nall)</code>. Thus, two diallelic markers are denoted by <code>nall = c(2,2)</code>. The length of the arguments <code>haplo.freq</code> and <code>RR</code> should correspond to the number of haplotypes, as shown in the example below.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>     <span class="kw">hapRelEff</span>(<span class="dt">nall =</span> <span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="dt">cases.comp =</span> <span class="kw">c</span>(<span class="dt">c=</span><span class="dv">1</span>), </span>
-<span id="cb7-2"><a href="#cb7-2"></a>            <span class="dt">controls.comp =</span> <span class="kw">c</span>(<span class="dt">c=</span><span class="dv">1</span>), <span class="dt">cases.ref =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb7-3"><a href="#cb7-3"></a>            <span class="dt">haplo.freq =</span> <span class="kw">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>), <span class="dt">RR =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+<p>The default commands correspond to analyses of single-SNPs. However,
+the extention to haplotypes is straightforward. The number of markers
+and haplotypes is determined by the vector <code>nall</code>, where the
+number of markers is equal to <code>length(nall)</code>, and the number
+of different haplotypes is equal to <code>prod(nall)</code>. Thus, two
+diallelic markers are denoted by <code>nall = c(2,2)</code>. The length
+of the arguments <code>haplo.freq</code> and <code>RR</code> should
+correspond to the number of haplotypes, as shown in the example
+below.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">nall =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>), <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
 <pre><code>## $haplo.rel.eff
 ##   Haplotype RR.rel.eff
 ## 1       1-1       1.31
 ## 2       2-1       1.22
 ## 3       1-2       1.27
 ## 4       2-2        ref</code></pre>
-<p>We recommend consulting our paper <span class="citation">(M. Gjerdevik et al. 2019)</span> for a more detailed description of haplotype analysis.</p>
+<p>We recommend consulting our paper <span class="citation">(M.
+Gjerdevik et al. 2019)</span> for a more detailed description of
+haplotype analysis.</p>
 </div>
 <div id="analysis-of-x-linked-markers" class="section level2">
 <h2>Analysis of X-linked markers</h2>
-<p>Different X-chromosome models are implemented in Haplin, depending on the underlying assumptions of allele-effects in males versus females. The various models may include sex-specific baseline risks, common or distinct relative risks for males and females, as well as X-inactivation in females. Corresponding relative efficiency estimates are readily available in <code>hapRelEff</code>. In addition to the arguments needed to perform analyses on autosomal markers, three arguments must be specified for relative efficiency estimates on the X chromosome. First, to indicate an X-chromosome analysis, the argument <code>xchrom</code> must be set to <code>TRUE</code>. Second, the argument <code>sim.comb.sex</code> specifies how to deal with sex differences on the X-chromosome, i.e., X-inactivation or not. Finally, the argument <code>BR.girls</code> specifies the ratio of baseline risk for females relative to males. A detailed description of the parameterization models is provided elsewhere <span class="citation">(A. Jugessur et al. 2012; O. Skare et al. 2017, 2018)</span>.</p>
+<p>Different X-chromosome models are implemented in Haplin, depending on
+the underlying assumptions of allele-effects in males versus females.
+The various models may include sex-specific baseline risks, common or
+distinct relative risks for males and females, as well as X-inactivation
+in females. Corresponding relative efficiency estimates are readily
+available in <code>hapRelEff</code>. In addition to the arguments needed
+to perform analyses on autosomal markers, three arguments must be
+specified for relative efficiency estimates on the X chromosome. First,
+to indicate an X-chromosome analysis, the argument <code>xchrom</code>
+must be set to <code>TRUE</code>. Second, the argument
+<code>sim.comb.sex</code> specifies how to deal with sex differences on
+the X-chromosome, i.e., X-inactivation or not. Finally, the argument
+<code>BR.girls</code> specifies the ratio of baseline risk for females
+relative to males. A detailed description of the parameterization models
+is provided elsewhere <span class="citation">(A. Jugessur et al. 2012;
+O. Skare et al. 2017, 2018)</span>.</p>
 <p>The command</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>     <span class="kw">hapRelEff</span>(<span class="dt">cases.comp =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>), <span class="dt">controls.comp =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>), </span>
-<span id="cb9-2"><a href="#cb9-2"></a>            <span class="dt">cases.ref =</span> <span class="kw">c</span>(<span class="dt">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb9-3"><a href="#cb9-3"></a>            <span class="dt">haplo.freq =</span> <span class="kw">c</span>(<span class="fl">0.8</span>,<span class="fl">0.2</span>), </span>
-<span id="cb9-4"><a href="#cb9-4"></a>            <span class="dt">RRcm =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="dt">RRcf =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),</span>
-<span id="cb9-5"><a href="#cb9-5"></a>            <span class="dt">xchrom =</span> T, <span class="dt">sim.comb.sex =</span> <span class="st">&quot;double&quot;</span>,</span>
-<span id="cb9-6"><a href="#cb9-6"></a>            <span class="dt">BR.girls =</span> <span class="dv">1</span>)</span></code></pre></div>
-<p>estimates the PoO relative efficiency for the full hybrid design versus the case-parent triad design, accounting for X-inactivation in females (<code>sim.comb.sex = &quot;double&quot;</code>) and assuming the same baseline risk in females and males (<code>BR.girls = 1</code>). We refer to our previously published paper <span class="citation">(M. Gjerdevik et al. 2019)</span> for further details.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.2</span>), </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">RRcm =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">RRcf =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">xchrom =</span> T, <span class="at">sim.comb.sex =</span> <span class="st">&quot;double&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">BR.girls =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p>estimates the PoO relative efficiency for the full hybrid design
+versus the case-parent triad design, accounting for X-inactivation in
+females (<code>sim.comb.sex = &quot;double&quot;</code>) and assuming the same
+baseline risk in females and males (<code>BR.girls = 1</code>). We refer
+to our previously published paper <span class="citation">(M. Gjerdevik
+et al. 2019)</span> for further details.</p>
 <hr />
-<div id="refs" class="references hanging-indent">
-<div id="ref-Jugessur2012a">
-<p>A. Jugessur, O. Skare, R. T. Lie, A. J. Wilcox, K. Christensen, L. Christiansen, T. T. Nguyen, J. C. Murray, and H. K. Gjessing. 2012. “X-linked genes and risk of orofacial clefts: evidence from two population-based studies in Scandinavia.” <em>PLoS One</em> 7 (6): e39240.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Jugessur2012a" class="csl-entry">
+A. Jugessur, O. Skare, R. T. Lie, A. J. Wilcox, K. Christensen, L.
+Christiansen, T. T. Nguyen, J. C. Murray, and H. K. Gjessing. 2012.
+<span>“<span class="nocase">X-linked genes and risk of orofacial clefts:
+evidence from two population-based studies in
+Scandinavia</span>.”</span> <em>PLoS One</em> 7 (6): e39240.
 </div>
-<div id="ref-Cordell2005">
-<p>H. J. Cordell, and D. G. Clayton. 2005. “Genetic association studies.” <em>Lancet</em> 366 (9491): 1121–31.</p>
+<div id="ref-Cordell2005" class="csl-entry">
+H. J. Cordell, and D. G. Clayton. 2005. <span>“<span class="nocase">Genetic association studies</span>.”</span>
+<em>Lancet</em> 366 (9491): 1121–31.
 </div>
-<div id="ref-Gjessing2006a">
-<p>H. K. Gjessing, and R. T. Lie. 2006. “Case-parent triads: estimating single- and double-dose effects of fetal and maternal disease gene haplotypes.” <em>Ann. Hum. Genet.</em> 70 (3): 382–96.</p>
+<div id="ref-Gjessing2006a" class="csl-entry">
+H. K. Gjessing, and R. T. Lie. 2006. <span>“<span class="nocase">Case-parent triads: estimating single- and double-dose
+effects of fetal and maternal disease gene haplotypes</span>.”</span>
+<em>Ann. Hum. Genet.</em> 70 (3): 382–96.
 </div>
-<div id="ref-Gjerdevik2019">
-<p>M. Gjerdevik, A. Jugessur, O. A. Haaland, J. Romanowska, R. T. Lie, H. J. Cordell, and H. K. Gjessing. 2019. “Haplin power analysis: a software module for power and sample size calculations in genetic association analyses of family triads and unrelated controls.” <em>BMC Bioinformatics</em> 20 (1): 165.</p>
+<div id="ref-Gjerdevik2019" class="csl-entry">
+M. Gjerdevik, A. Jugessur, O. A. Haaland, J. Romanowska, R. T. Lie, H.
+J. Cordell, and H. K. Gjessing. 2019. <span>“<span class="nocase">Haplin
+power analysis: a software module for power and sample size calculations
+in genetic association analyses of family triads and unrelated
+controls</span>.”</span> <em>BMC Bioinformatics</em> 20 (1): 165.
 </div>
-<div id="ref-Noether1955">
-<p>Noether, G. E. 1955. “On a theorem of Pitman.” <em>Ann. Math. Stat.</em> 26 (1): 64–68.</p>
+<div id="ref-Noether1955" class="csl-entry">
+Noether, G. E. 1955. <span>“<span class="nocase">On a theorem of
+Pitman</span>.”</span> <em>Ann. Math. Stat.</em> 26 (1): 64–68.
 </div>
-<div id="ref-Skare2017">
-<p>O. Skare, H. K. Gjessing, M. Gjerdevik, O. A. Haaland, J. Romanowska, R. T. Lie, and A. Jugessur. 2017. “A new approach to chromosome-wide analysis of X-linked markers identifies new associations in Asian and European case-parent triads of orofacial clefts.” <em>PLoS One</em> 12 (9): e0183772.</p>
+<div id="ref-Skare2017" class="csl-entry">
+O. Skare, H. K. Gjessing, M. Gjerdevik, O. A. Haaland, J. Romanowska, R.
+T. Lie, and A. Jugessur. 2017. <span>“<span class="nocase">A new
+approach to chromosome-wide analysis of X-linked markers identifies new
+associations in Asian and European case-parent triads of orofacial
+clefts</span>.”</span> <em>PLoS One</em> 12 (9): e0183772.
 </div>
-<div id="ref-Skare2018">
-<p>O. Skare, R. T. Lie, O. A. Haaland, M. Gjerdevik, J. Romanowska, H. K. Gjessing, and A. Jugessur. 2018. “Analysis of parent-of-origin effects on the X chromosome in Asian and European orofacial cleft triads identifies associations with <em>DMD</em>, <em>FGF13</em>, <em>EGFL6</em>, and additional loci at Xp22.2.” <em>Front. Genet.</em> 9 (25). <a href="https://doi.org/10.3389/fgene.2018.00025">https://doi.org/10.3389/fgene.2018.00025</a>.</p>
+<div id="ref-Skare2018" class="csl-entry">
+O. Skare, R. T. Lie, O. A. Haaland, M. Gjerdevik, J. Romanowska, H. K.
+Gjessing, and A. Jugessur. 2018. <span>“<span class="nocase">Analysis of
+parent-of-origin effects on the X chromosome in Asian and European
+orofacial cleft triads identifies associations with <em>DMD</em>,
+<em>FGF13</em>, <em>EGFL6</em>, and additional loci at
+Xp22.2</span>.”</span> <em>Front. Genet.</em> 9 (25). <a href="https://doi.org/10.3389/fgene.2018.00025">https://doi.org/10.3389/fgene.2018.00025</a>.
 </div>
 </div>
 </div>

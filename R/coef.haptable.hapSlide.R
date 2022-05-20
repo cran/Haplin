@@ -1,10 +1,7 @@
 coef.haptable.hapSlide <- function( object, plot.signif.only = FALSE, signif.thresh = 0.05, keep.p.overall = FALSE, poo.p.val = FALSE ){
 
 	coef.list <- lapply( object, coef.haptable, poo.p.val )
-	markers <- names( coef.list )
 	infos <- lapply( coef.list, function( x ){ attr( x, "info" ) } )
-	maternal <- infos[[ 1 ]]$model$maternal
-	poo <- infos[[ 1 ]]$model$poo
 	ref.method <- infos[[ 1 ]]$haplos$reference.method
 	
 	coef.list <- lapply( 1:length( coef.list ), function( x ){
@@ -27,21 +24,32 @@ coef.haptable.hapSlide <- function( object, plot.signif.only = FALSE, signif.thr
 			cur.haplos <- haplos
 			cur.est.names <- cur.est.names[ -which.ref.rows ]
 		}
-		cbind( marker = names( coef.list )[ x ], haplos = cur.haplos, est.name = cur.est.names, cur.coef )
+		cbind( marker = names( coef.list )[ x ],
+		       haplos = cur.haplos,
+		       est.name = cur.est.names,
+		       cur.coef,
+		       stringsAsFactors = FALSE )
 	} )
 	# This makes a nice table for plotting with ggplot2
 	coefs <- do.call( rbind, coef.list )
 	# these give the haplotype frequency, with lower and upper estimate
 	# we don't need these, so we remove them from 'coefs'
 	which.rows.pvals <- grep( pattern = "^p[[:digit:]]$", as.character( coefs$est.name ) )
-	p.vals <- coefs[ which.rows.pvals, ]
 	coefs <- coefs[ -which.rows.pvals, ]
 
 	if( keep.p.overall ){
 		all.pv.overall <- sapply( object, function(x){
 			x$pv.overall[1]
 		} )
-		all.pv.overall.df <- data.frame( marker = names( all.pv.overall ), haplos = NA, est.name = "pv.overall", est. = all.pv.overall, lower = NA, upper = NA, p.value = all.pv.overall )
+		all.pv.overall.df <- data.frame(
+		  marker = names( all.pv.overall ),
+		  haplos = NA,
+		  est.name = "pv.overall",
+		  est. = all.pv.overall,
+		  lower = NA,
+		  upper = NA,
+		  p.value = all.pv.overall,
+		  stringsAsFactors = FALSE )
 		coefs <- rbind( coefs, all.pv.overall.df )
 	}
 	

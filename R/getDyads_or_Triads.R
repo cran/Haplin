@@ -114,6 +114,14 @@ getFullTriads <- function( data.in = stop( "No data given!", call. = FALSE ),
 		id <- new.ids$ids
 		pedIndex <- new.ids$pedIndex
 
+  	# check that none of the children are missing
+  	pedIndex <- new.ids$pedIndex <- pedIndex[!is.na(pedIndex[,"id.child"]), ]
+  	# check if there are any families that have missing members in pedIndex
+  	any.NAs.families <- apply(pedIndex, 1, function(row){
+  	  any(is.na(row))
+  	})
+  	pedIndex <- new.ids$pedIndex <- pedIndex[!any.NAs.families, ]
+	
 		which.gen.data.fam <- create.missingness.matrix( data.in, new.ids )
 
 		# here are IDs of the members where the full family information is available
@@ -182,11 +190,31 @@ getDyads <- function( data.in = stop( "No data given!", call. = FALSE ),
 		id <- new.ids$ids
 		pedIndex <- new.ids$pedIndex
 
-		which.gen.data.fam <- create.missingness.matrix( data.in, new.ids )
+  	# check that none of the children are missing
+  	pedIndex <- new.ids$pedIndex <- pedIndex[!is.na(pedIndex[,"id.child"]), ]
 
-		# here are IDs of the members where only the child and one parent have genetic data
-		full.triads <- apply( which.gen.data.fam[ ,-1 ], 1, all )
+  	# check which families have only one missing member in pedIndex
+  	one.NA.families <- apply(pedIndex, 1, function(row){
+  	  sum(is.na(row)) == 1
+  	})
+
+  	# if there is "NA" instead of a parental ID, this is a dyad
+	  dyads.from.pedIndex <- c()
+  	if (any(one.NA.families)){
+    	dyads.from.pedIndex <- pedIndex[one.NA.families, ]
+  	}
+  	
+  	# check if there are any families that have missing members in pedIndex
+  	any.NAs.families <- apply(pedIndex, 1, function(row){
+  	  any(is.na(row))
+  	})
+  	pedIndex <- new.ids$pedIndex <- pedIndex[!any.NAs.families, ]
+
+  	# now - taking care of the genetic data missingness
+  	which.gen.data.fam <- create.missingness.matrix( data.in, new.ids )
+
 		# first, exclude the full triads
+		full.triads <- apply( which.gen.data.fam[ ,-1 ], 1, all )
 		pedIndex.no.triads <- pedIndex[ !full.triads, ]
 		which.gen.data.fam <- which.gen.data.fam[ !full.triads, ]
 		# then exclude the families with one member only
@@ -206,13 +234,32 @@ getDyads <- function( data.in = stop( "No data given!", call. = FALSE ),
 			which.gen.data.fam <- which.gen.data.fam[ !only.parents, ]
 		}
 		# check how many dyads found
-		if( nrow( pedIndex.dyads ) == 0 ){
+		if (nrow(pedIndex.dyads) == 0 &
+		    length(dyads.from.pedIndex) == 0){
 			stop( "No dyads found!", call. = FALSE )
 		}
-		final.sel.IDs <- c( 
+		if (nrow(pedIndex.dyads) == 0){
+		  final.sel.IDs <- unique(
+		    na.omit(as.character(
+				  dyads.from.pedIndex[, -1]
+				))
+		  )
+		} else if (length(dyads.from.pedIndex) == 0){
+		  final.sel.IDs <- unique(c(
 				pedIndex.dyads[ which.gen.data.fam$id.father ,'id.father' ],
 				pedIndex.dyads[ which.gen.data.fam$id.mother ,'id.mother' ],
-				pedIndex.dyads[ which.gen.data.fam$id.child ,'id.child' ] )
+				pedIndex.dyads[ which.gen.data.fam$id.child ,'id.child' ]
+			))
+		} else {
+		  final.sel.IDs <- unique(c(
+				pedIndex.dyads[ which.gen.data.fam$id.father ,'id.father' ],
+				pedIndex.dyads[ which.gen.data.fam$id.mother ,'id.mother' ],
+				pedIndex.dyads[ which.gen.data.fam$id.child ,'id.child' ],
+				na.omit(as.character(
+				  dyads.from.pedIndex[, -1]
+				))
+			))
+		}
 		
 		# find the correct rows, based on matching the IDs from the final selection
 		only.dyads.rows <- sort( match( final.sel.IDs, id ) )

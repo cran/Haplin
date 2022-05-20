@@ -79,7 +79,7 @@ for(i in seq(along = .strata.list)){
 	#
 	## RUN HAPLIN
 	.ut.list[[i + 1]] <- try(do.call("haplin0", .args))
-	if(class(.ut.list[[i + 1]]) != "try-error"){
+	if(!is(.ut.list[[i + 1]], "try-error")){
 		## RESET reference.method TO ORIGINAL
 
 		if(.ut.list[[i + 1]]$info$haplos$reference.method != "ref.cat") stop("Something's wrong with the choice of reference...", call. = F) # should never kick in
