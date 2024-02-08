@@ -11,8 +11,8 @@ vignette: >
 ---
 
 ```{r setup,include=FALSE}
-knitr::opts_chunk$set( echo = TRUE )
-library( Haplin, quietly = TRUE )
+knitr::opts_chunk$set(echo = TRUE)
+library(Haplin, quietly = TRUE)
 ```
 
 
@@ -32,9 +32,13 @@ In general, one only needs to specify the study designs to be compared, the alle
 
 The following command calculates the efficiency of the standard case-control design with an equal number of case and control children relative to the case-parent triad design.
 ```{r eval=TRUE}
-     hapRelEff(cases.comp = c(c=1), 
-            controls.comp = c(c=1), cases.ref = c(mfc=1),
-            haplo.freq = c(0.1,0.9), RR = c(1,1))
+hapRelEff(
+  cases.comp = c(c=1), 
+  controls.comp = c(c=1),
+  cases.ref = c(mfc=1),
+  haplo.freq = c(0.1,0.9),
+  RR = c(1,1)
+)
 ```
 
 The arguments `cases.comp` and  `controls.comp` specify the comparison designs, whereas  `cases.ref` and  `controls.ref` specify the reference design. We use the following abbreviations to describe the family designs. We let the letters c, m and f denote a child, mother and a father, respectively. Thus, the case-parent triad design is specified by `cases.comp = c(mfc=1)` or `cases.ref = c(mfc=1)`, whereas the standard case-control design is specified by `cases.comp = c(c=1)` and `controls.comp = c(c=1)`
@@ -46,24 +50,35 @@ argument `RR`. The relative efficiency estimated under the null hypothesis, i.e.
 
 We see that the relative efficiency for the standard case-control design is 1.5, compared with the case-parent triad design. This result is well-known from the literature [@Cordell2005].
 
-To compare the full hybrid design consisting of both case-parent triads and control-parent triads, we can use a command similar to  
-```{r eval=FALSE}
-     hapRelEff(cases.comp = c(mfc=1), 
-            controls.comp = c(mfc=1), cases.ref = c(mfc=1),
-            haplo.freq = c(0.2,0.8), RR = c(1,1))
+To compare the full hybrid design consisting of both case-parent triads and control-parent triads, we can use a command similar to the one below:
+
+```{r}
+hapRelEff(
+  cases.comp = c(mfc=1), 
+  controls.comp = c(mfc=1),
+  cases.ref = c(mfc=1),
+  haplo.freq = c(0.2,0.8),
+  RR = c(1,1)
+)
 ```
 
 ## Parent-of-origin (PoO) effects
 
 The relative efficiency for PoO effects is computed by replacing the argument `RR`
 by the two relative risk arguments `RRcm` and `RRcf` denoting parental origin m (mother) and f (father).
-The command 
-```{r eval=FALSE}
-     hapRelEff(cases.comp = c(mfc=1), 
-            controls.comp = c(mfc=1), cases.ref = c(mfc=1),
-            haplo.freq = c(0.2,0.8), RRcm = c(1,1), RRcf = c(1,1))
+The command below calculates the efficiency for the full hybrid design, relative to the case-parent triad design.
+
+```{r}
+hapRelEff(
+  cases.comp = c(mfc=1), 
+  controls.comp = c(mfc=1),
+  cases.ref = c(mfc=1),
+  haplo.freq = c(0.2,0.8),
+  RRcm = c(1,1),
+  RRcf = c(1,1)
+)
 ```
-calculates the efficiency for the full hybrid design, relative to the case-parent triad design.
+
 We refer to our previous paper [@Gjerdevik2019] for an explanation of the full output.
 
 ## Maternal effects
@@ -71,13 +86,19 @@ We refer to our previous paper [@Gjerdevik2019] for an explanation of the full o
 Since children and their mothers have an allele in common, a maternal
 effect might be statistically confounded with a regular autosomal effect or a PoO effect. The relative efficiency for maternal effects can be analyzed jointly with that of a regular autosomal effect or a PoO effect by adding the relative risk argument `RR.mat` to the original command. 
 
-The command
+The command below calculates the efficiency of the case-mother dyad design relative to the case-mother dyad design, assessing both regular autosomal and maternal effects.
+
 ```{r eval=TRUE}
-     hapRelEff(cases.comp = list(c(mc=1)), 
-            cases.ref=list(c(mfc=1)), haplo.freq = c(0.1,0.9), 
-            RR = c(1,1), RR.mat=c(1,1))
+hapRelEff(
+  cases.comp = list(c(mc=1)), 
+  cases.ref = list(c(mfc=1)),
+  haplo.freq = c(0.1,0.9),
+  RR = c(1,1),
+  RR.mat=c(1,1)
+)
 ```
-calculates the efficiency of the case-mother dyad design relative to the case-mother dyad design, assessing both regular autosomal and maternal effects. In this example, we see that the relative efficiency estimates for regular autosomal and maternal effects are identical when adjusting for possible confounding of the effects with one another [@Gjerdevik2019].
+
+In this example, we see that the relative efficiency estimates for regular autosomal and maternal effects are identical when adjusting for possible confounding of the effects with one another [@Gjerdevik2019].
 
 
 ## Haplotype effects
@@ -85,28 +106,37 @@ calculates the efficiency of the case-mother dyad design relative to the case-mo
 The default commands correspond to analyses of single-SNPs. However, the extention to haplotypes is straightforward. The number of markers and haplotypes is determined by the vector `nall`, where the number of markers is equal to `length(nall)`, and the number of different haplotypes is equal to `prod(nall)`. Thus, two diallelic markers are denoted by `nall = c(2,2)`. The length of the arguments `haplo.freq` and `RR` should correspond to the number of haplotypes, as shown in the example below.
 
 ```{r eval=TRUE}
-     hapRelEff(nall = c(2,2), cases.comp = c(c=1), 
-            controls.comp = c(c=1), cases.ref = c(mfc=1),
-            haplo.freq = c(0.1,0.2,0.3,0.4), RR = c(1,1,1,1))
+hapRelEff(
+  nall = c(2,2),
+  cases.comp = c(c=1), 
+  controls.comp = c(c=1),
+  cases.ref = c(mfc=1),
+  haplo.freq = c(0.1,0.2,0.3,0.4),
+  RR = c(1,1,1,1)
+)
 ```
+
 We recommend consulting our paper [@Gjerdevik2019] for a more detailed description of haplotype analysis.
 
 ## Analysis of X-linked markers
+
 Different X-chromosome models are implemented in Haplin, depending on the underlying assumptions of allele-effects in males versus females. The various models may include sex-specific baseline risks, common or distinct relative risks for males and females, as well as X-inactivation in  females.  Corresponding relative efficiency estimates are readily available in `hapRelEff`. In addition to the arguments needed to perform analyses on autosomal markers, three arguments must be specified for relative efficiency estimates on the X chromosome. First, to indicate an X-chromosome analysis, the argument `xchrom` must be set to `TRUE`. Second, the argument `sim.comb.sex` specifies how to deal with sex differences on the X-chromosome, i.e., X-inactivation or not. Finally, the argument `BR.girls` specifies the ratio of baseline risk for females relative to males. A detailed description of the parameterization models is provided elsewhere [@Jugessur2012a; @Skare2017; @Skare2018].
 
-The command
-```{r eval=FALSE}
-     hapRelEff(cases.comp = c(mfc=1), controls.comp = c(mfc=1), 
-            cases.ref = c(mfc=1),
-            haplo.freq = c(0.8,0.2), 
-            RRcm = c(1,2), RRcf = c(1,1),
-            xchrom = T, sim.comb.sex = "double",
-            BR.girls = 1)
+The command below estimates the PoO relative efficiency for the full hybrid design versus the case-parent triad design, accounting for X-inactivation in females (`sim.comb.sex = "double"`) and assuming the same baseline risk in females and males (`BR.girls = 1`).
+
+```{r}
+hapRelEff(
+  cases.comp = c(mfc=1),
+  controls.comp = c(mfc=1), 
+  cases.ref = c(mfc=1),
+  haplo.freq = c(0.8,0.2), 
+  RRcm = c(1,2),
+  RRcf = c(1,1),
+  xchrom = T, 
+  sim.comb.sex = "double",
+  BR.girls = 1
+)
 ```
-estimates the PoO relative efficiency for the full hybrid design versus the case-parent triad design, accounting for X-inactivation in females (`sim.comb.sex = "double"`) and assuming the same baseline risk in females and males (`BR.girls = 1`). We refer to our previously published paper [@Gjerdevik2019] for further details.
 
-
-
------
-
+We refer to our previously published paper [@Gjerdevik2019] for further details.
 

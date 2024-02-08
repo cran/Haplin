@@ -1,4 +1,4 @@
-summary.haplinStrat <- function(object){
+summary.haplinStrat <- function(object, ...){
 ##
 ##
 ##

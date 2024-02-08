@@ -12,7 +12,7 @@
 
 <meta name="author" content="Miriam Gjerdevik and Hakon K. Gjessing" />
 
-<meta name="date" content="2022-05-19" />
+<meta name="date" content="2024-02-08" />
 
 <title>Relative efficiency in Haplin</title>
 
@@ -122,13 +122,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -356,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Relative efficiency in Haplin</h1>
 <h4 class="author">Miriam Gjerdevik and Hakon K. Gjessing</h4>
-<h4 class="date">2022-05-19</h4>
+<h4 class="date">2024-02-08</h4>
 
 
 
@@ -404,9 +411,13 @@ frequencies, and the type of genetic effect and its magnitude.</p>
 <p>The following command calculates the efficiency of the standard
 case-control design with an equal number of case and control children
 relative to the case-parent triad design.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), </span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.9</span>), <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hapRelEff</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.9</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## $haplo.rel.eff
 ##   Haplotype RR.rel.eff
 ## 1         1        1.5
@@ -439,23 +450,41 @@ design is 1.5, compared with the case-parent triad design. This result
 is well-known from the literature <span class="citation">(H. J. Cordell
 and Clayton 2005)</span>.</p>
 <p>To compare the full hybrid design consisting of both case-parent
-triads and control-parent triads, we can use a command similar to</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>), <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+triads and control-parent triads, we can use a command similar to the
+one below:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hapRelEff</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## $haplo.rel.eff
+##   Haplotype RR.rel.eff
+## 1         1       0.75
+## 2         2        ref</code></pre>
 </div>
 <div id="parent-of-origin-poo-effects" class="section level2">
 <h2>Parent-of-origin (PoO) effects</h2>
 <p>The relative efficiency for PoO effects is computed by replacing the
 argument <code>RR</code> by the two relative risk arguments
 <code>RRcm</code> and <code>RRcf</code> denoting parental origin m
-(mother) and f (father). The command</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>), <span class="at">RRcm =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">RRcf =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
-<p>calculates the efficiency for the full hybrid design, relative to the
-case-parent triad design. We refer to our previous paper <span class="citation">(M. Gjerdevik et al. 2019)</span> for an explanation of
-the full output.</p>
+(mother) and f (father). The command below calculates the efficiency for
+the full hybrid design, relative to the case-parent triad design.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hapRelEff</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">RRcm =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">RRcf =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## $haplo.rel.eff
+##   Haplotype RRcm.rel.eff RRcf.rel.eff RRcm_cf.rel.eff
+## 1         1         0.63         0.63             0.5
+## 2         2          ref          ref             ref</code></pre>
+<p>We refer to our previous paper <span class="citation">(M. Gjerdevik
+et al. 2019)</span> for an explanation of the full output.</p>
 </div>
 <div id="maternal-effects" class="section level2">
 <h2>Maternal effects</h2>
@@ -465,19 +494,23 @@ or a PoO effect. The relative efficiency for maternal effects can be
 analyzed jointly with that of a regular autosomal effect or a PoO effect
 by adding the relative risk argument <code>RR.mat</code> to the original
 command.</p>
-<p>The command</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="at">mc=</span><span class="dv">1</span>)), </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">cases.ref=</span><span class="fu">list</span>(<span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>)), <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.9</span>), </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">RR.mat=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+<p>The command below calculates the efficiency of the case-mother dyad
+design relative to the case-mother dyad design, assessing both regular
+autosomal and maternal effects.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hapRelEff</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.comp =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="at">mc=</span><span class="dv">1</span>)), </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.ref =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>)),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.9</span>),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">RR.mat=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## $haplo.rel.eff
 ##   Haplotype RR.rel.eff RRm.rel.eff
 ## 1         1        0.6         0.6
 ## 2         2        ref         ref</code></pre>
-<p>calculates the efficiency of the case-mother dyad design relative to
-the case-mother dyad design, assessing both regular autosomal and
-maternal effects. In this example, we see that the relative efficiency
-estimates for regular autosomal and maternal effects are identical when
-adjusting for possible confounding of the effects with one another <span class="citation">(M. Gjerdevik et al. 2019)</span>.</p>
+<p>In this example, we see that the relative efficiency estimates for
+regular autosomal and maternal effects are identical when adjusting for
+possible confounding of the effects with one another <span class="citation">(M. Gjerdevik et al. 2019)</span>.</p>
 </div>
 <div id="haplotype-effects" class="section level2">
 <h2>Haplotype effects</h2>
@@ -490,9 +523,14 @@ diallelic markers are denoted by <code>nall = c(2,2)</code>. The length
 of the arguments <code>haplo.freq</code> and <code>RR</code> should
 correspond to the number of haplotypes, as shown in the example
 below.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">nall =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>), <span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>), <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hapRelEff</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">nall =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>),</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>), </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">c=</span><span class="dv">1</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="fl">0.2</span>,<span class="fl">0.3</span>,<span class="fl">0.4</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">RR =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## $haplo.rel.eff
 ##   Haplotype RR.rel.eff
 ## 1       1-1       1.31
@@ -521,20 +559,28 @@ the X-chromosome, i.e., X-inactivation or not. Finally, the argument
 relative to males. A detailed description of the parameterization models
 is provided elsewhere <span class="citation">(A. Jugessur et al. 2012;
 O. Skare et al. 2017, 2018)</span>.</p>
-<p>The command</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>     <span class="fu">hapRelEff</span>(<span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.2</span>), </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">RRcm =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">RRcf =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">xchrom =</span> T, <span class="at">sim.comb.sex =</span> <span class="st">&quot;double&quot;</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">BR.girls =</span> <span class="dv">1</span>)</span></code></pre></div>
-<p>estimates the PoO relative efficiency for the full hybrid design
-versus the case-parent triad design, accounting for X-inactivation in
-females (<code>sim.comb.sex = &quot;double&quot;</code>) and assuming the same
-baseline risk in females and males (<code>BR.girls = 1</code>). We refer
-to our previously published paper <span class="citation">(M. Gjerdevik
-et al. 2019)</span> for further details.</p>
-<hr />
+<p>The command below estimates the PoO relative efficiency for the full
+hybrid design versus the case-parent triad design, accounting for
+X-inactivation in females (<code>sim.comb.sex = &quot;double&quot;</code>) and
+assuming the same baseline risk in females and males
+(<code>BR.girls = 1</code>).</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hapRelEff</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">controls.comp =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>), </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cases.ref =</span> <span class="fu">c</span>(<span class="at">mfc=</span><span class="dv">1</span>),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">haplo.freq =</span> <span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.2</span>), </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">RRcm =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">RRcf =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">xchrom =</span> T, </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">sim.comb.sex =</span> <span class="st">&quot;double&quot;</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">BR.girls =</span> <span class="dv">1</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## $haplo.rel.eff
+##   Haplotype RRcm.rel.eff RRcf.rel.eff RRcm_cf.rel.eff
+## 1         1          ref          ref             ref
+## 2         2         0.58         0.56            0.51</code></pre>
+<p>We refer to our previously published paper <span class="citation">(M.
+Gjerdevik et al. 2019)</span> for further details.</p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Jugessur2012a" class="csl-entry">
 A. Jugessur, O. Skare, R. T. Lie, A. J. Wilcox, K. Christensen, L.

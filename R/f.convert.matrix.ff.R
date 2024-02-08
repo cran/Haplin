@@ -21,6 +21,7 @@
 #'        \link[ff]{ff} matrix
 #'   }
 #'
+#' @keywords internal
 f.convert.matrix.ff <- function( data = stop( "You must give the data to convert!", call. = FALSE ), n.vars = stop( "You must explicitly give the number of columns with covariates!", call. = FALSE ), cov.header, gen.levels ){
 	if( n.vars == 0 ){
 		gen.data <- data

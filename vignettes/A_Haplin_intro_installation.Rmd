@@ -13,7 +13,7 @@ vignette: >
 
 If you find Haplin useful, please acknowledge our work by citing:
   
->  Gjessing HK and Lie RT. ["Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes."](https://folk.uib.no/gjessing/genetics/software/haplin/docu/Gjessing_Lie_2006.pdf) __Annals of Human Genetics__ _(2006)_ 70, pp. 382-396.
+>  Gjessing HK and Lie RT. ["Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes."](https://haplin.bitbucket.io/docu/Gjessing_Lie_2006.pdf) __Annals of Human Genetics__ _(2006)_ 70, pp. 382-396.
 
 The BibTex entry for LaTeX users can be obtained by the following command in R:
 
@@ -52,7 +52,7 @@ install.packages( "Haplin", dependencies = TRUE )
 
 Haplin and the dependent packages will then be installed automatically over the internet from the [CRAN library](https://CRAN.R-project.org/package=Haplin).
 
-To start using Haplin, open a new R session (either in a terminal window or any IDE, e.g., [RStudio](https://www.rstudio.com/)). Then, use the R command:
+To start using Haplin, open a new R session (either in a terminal window or any IDE, e.g., [RStudio](https://posit.co/)). Then, use the R command:
 ```{r eval=FALSE}
 library( Haplin )
 ```

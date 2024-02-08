@@ -19,7 +19,7 @@
 	After having run \code{haplin} and saved the result (in the R workspace), the \code{output} function will extract summary results, a summary table, and a plot of the results and save them to the specified directory. The filenames will be haplin_summary.txt, haplin_table.txt and haplin_plot.jpg, respectively. \code{output} simply uses the available functions \code{summary}, \code{haptable}, and \code{plot} to produce the files, but is a quick way of saving all the relevant results.
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
+Web Site: \url{https://haplin.bitbucket.io}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

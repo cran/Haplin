@@ -72,7 +72,7 @@ Maternal effects are included by the additional arguments \code{RRmat} and \code
 If there are more than two possible haplotypes, the second element displays the overall relative efficiency for all haplotypes combined.}
 
 \references{
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}
+Web Site: \url{https://haplin.bitbucket.io}
 }
 
 \author{Miriam Gjerdevik,\cr

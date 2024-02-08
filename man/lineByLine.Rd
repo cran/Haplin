@@ -56,7 +56,7 @@ See \code{Haplin:::lineConvert} for an additional example of a line-modifying fu
 \value{\code{lineByLine} returns the number of lines read, although invisible. The main objective is the modified file.}
 
 \references{
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}
+Web Site: \url{https://haplin.bitbucket.io}
 }
 
 \author{Miriam Gjerdevik,\cr

@@ -14,6 +14,7 @@ genDataRead(
   cov.file.in,
   cov.header,
   map.file,
+  map.header = FALSE,
   allele.sep = ";",
   na.strings = "NA",
   col.sep = "",
@@ -53,6 +54,9 @@ or in the main file, if it's a "haplin"-formatted file).}
 
 \item{map.file}{Filename (with path if the file is not in current directory) of the
 .map file holding the SNP names, if available (see Details).}
+
+\item{map.header}{Logical: does the map.file contain a header in the first row?
+Default: FALSE.}
 
 \item{allele.sep}{Character: separator between two alleles (default: ";").}
 

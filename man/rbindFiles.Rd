@@ -38,7 +38,7 @@ and \code{blank.lines.skip} from "FALSE" to "TRUE" should not be done unless abs
 \value{There is no useful output; the objective of \code{rbindFiles} is to produce \code{outfile}.}
 
 \references{
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}
+Web Site: \url{https://haplin.bitbucket.io}
 }
 
 \author{Miriam Gjerdevik,\cr

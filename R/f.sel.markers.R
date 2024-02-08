@@ -1,4 +1,4 @@
-f.sel.markers <- function(n.vars, markers, family, split, ncols){
+f.sel.markers <- function(n.vars, markers, family, split, all.marker.names, ncols){
 ##
 ## COMPUTES THE COLUMN NUMBERS OF MARKERS TO BE EXTRACTED FROM A
 ## FILE IN SEPARATE (OR NOT SEPARATE) COLUMN FORMATS
@@ -6,6 +6,9 @@ f.sel.markers <- function(n.vars, markers, family, split, ncols){
 ##
 #
 ## SET NUMBER OF COLUMNS PER FAMILY (OR PER CHILD)
+if(missing(ncols)){
+	ncols <- length(all.marker.names)
+}
 if(family == "mfc"){
 	if(split) .t <- 6
 	else .t <- 3
@@ -17,9 +20,18 @@ if(family == "mfc"){
 .err <- F
 #
 if(!is.numeric(markers)){
-	if(round(.test) != .test) .err <- T
-	.markers <- 1:.test
-	.sel <- 1:ncols
+  if(length(markers) == 1 & markers == "ALL"){
+	  if(round(.test) != .test) .err <- T
+  	.markers <- 1:.test
+  	.sel <- 1:ncols
+  } else {
+    # 'markers' is a character vector with names of markers
+    .sel <- grep(
+      pattern = paste(markers, collapse="_|") |> paste0("_"),
+      x = all.marker.names,
+      value = FALSE
+    )
+  }
 }else{
 	## COMPUTE COLUMN NUMBERS OF MARKERS SPECIFIED IN markers ARGUMENT 
 	.sel <- c(seq(length.out = n.vars), n.vars + as.numeric(t(outer((markers-1)*.t, 0:(.t - 1), "+")) + 1))

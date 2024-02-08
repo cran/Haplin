@@ -1,4 +1,4 @@
-print.HWE.test <- function(x, digits){
+print.HWE.test <- function(x, ..., digits){
 ##
 ## PRINTS THE RESULT OF A HWE TEST
 #

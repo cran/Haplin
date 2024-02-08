@@ -22,7 +22,7 @@ filetype = "png", use.dd, ...)
 }
 %\details{}
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
+Web Site: \url{https://haplin.bitbucket.io}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr
@@ -30,7 +30,7 @@ Norwegian Institute of Public Health\cr
 \email{hakon.gjessing@uib.no}}
 \note{Further information is found on the web page.
 }
-\seealso{\link{haplin}}
+\seealso{\code{\link{haplin}}}
 
 \examples{
 \dontrun{

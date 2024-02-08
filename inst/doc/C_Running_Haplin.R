@@ -14,7 +14,7 @@ library( Haplin, quietly = TRUE )
 ## ----eval=FALSE---------------------------------------------------------------
 #  ?haplinSlide
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 unlink( c( "*.ffData", "*.RData" ) )
 
 ## ----haplinfig1,fig.keep='high',fig.show='hold',fig.width=6,fig.height=5,fig.pos='!hb',fig.cap="Results of trial run no.1"----

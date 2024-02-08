@@ -30,7 +30,7 @@ genDataGetPart(
 
 Any of the following can be given to narrow down the dataset:}
 
-\item{markers}{Numeric vector with numbers indicating which markers to choose.}
+\item{markers}{Vector with numbers or names indicating which markers to choose.}
 
 \item{indiv.ids}{Character vector giving IDs of individuals. \strong{CAUTION:}
 in a standard PED file, individual IDs are not unique, so this will select

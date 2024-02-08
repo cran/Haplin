@@ -11,7 +11,7 @@ haplinStrat( data, strata = NULL, ...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 	\item{data}{R-object of class "haplin.ready", which is e.g., output from \code{\link{genDataPreprocess}} or \code{\link{genDataLoad}}, and contains covariate and genetic data.}
-	\item{strata}{A single character specifying which data column contains the stratification variable.}
+	\item{strata}{A single integer specifying the number of the column in the covariate data that contains the stratification variable}
 	\item{...}{Remaining arguments to be used by \code{\link{haplin}} in each run.}
 }
 \details{
@@ -24,7 +24,7 @@ haplinStrat( data, strata = NULL, ...)
 	A list of objects of class haplin is returned. The first element contains the result of running \code{haplin} on the entire data file; the remaining elements are the results from each of the strata. The names of the list correspond to the values of the \code{strata} variable.
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
+Web Site: \url{https://haplin.bitbucket.io}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

@@ -19,7 +19,7 @@
 #'   }.
 #'
 #' Any of the following can be given to narrow down the dataset:
-#' @param markers Numeric vector with numbers indicating which markers to choose.
+#' @param markers Vector with numbers or names indicating which markers to choose.
 #' @param indiv.ids Character vector giving IDs of individuals. \strong{CAUTION:}
 #'   in a standard PED file, individual IDs are not unique, so this will select
 #'   all individuals with given IDs.
@@ -67,7 +67,19 @@
 #' (especially important when using the \code{triad} design study) and/or markers!
 #'
 
-genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), design = stop( "Design type must be given!" ), markers, indiv.ids, rows, cc, sex, file.out = "my_data_part", dir.out = ".", overwrite = NULL, ... ){
+genDataGetPart <- function(
+    data.in = stop( "No data given!", call. = FALSE ),
+    design = stop( "Design type must be given!" ),
+    markers,
+    indiv.ids,
+    rows,
+    cc,
+    sex,
+    file.out = "my_data_part",
+    dir.out = ".",
+    overwrite = NULL,
+    ...
+  ){
 	#---- checking the input params ---------------------
 	files.list <- f.make.out.filename( file.out = file.out, dir.out = dir.out, overwrite = overwrite )
 	
@@ -131,15 +143,29 @@ genDataGetPart <- function( data.in = stop( "No data given!", call. = FALSE ), d
 				print.val <- paste( paste( head( val ), collapse = ", "), "...", paste( tail( val ), collapse = ", " ) )
 			}
 			cat( " --- chosen markers:", print.val, "\n" )
-			if( any( val > all.markers ) | any( val < 0 ) ){
-				stop( "wrong markers chosen; not in range of given data: max ", all.markers, "!\n", call. = FALSE )
+			if(is.numeric(val)){
+  			if( any( val > all.markers ) | any( val < 0 ) ){
+  				stop( "wrong markers chosen; not in range of given data: max ", all.markers, "!\n", call. = FALSE )
+  			}
+  			if( identical( val, all.cols ) ){
+  				warning( "this selection is equal to choosing all markers!", call. = FALSE )
+  			}
 			}
-			if( identical( val, all.cols ) ){
-				warning( "this selection is equal to choosing all markers!", call. = FALSE )
-			} else {
-				subset.cols <- f.sel.markers( n.vars = 0, markers = val, family = family, split = TRUE, ncols = all.markers )
-				is.subset.cols <- TRUE
-			}
+			all.column.names <- lapply(
+          data.in$gen.data,
+          colnames
+        ) |>
+        do.call(
+          what = c, args = _
+        )
+			subset.cols <- f.sel.markers(
+			  n.vars = 0,
+			  markers = val,
+			  family = family,
+			  split = TRUE,
+			  all.marker.names = all.column.names
+			)
+			is.subset.cols <- TRUE
 			
 		} else if( arg == "indiv.ids" ){
 			val <- eval( all.args$indiv.ids, envir = rlang::caller_env() )

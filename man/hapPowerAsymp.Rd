@@ -61,7 +61,7 @@ Standard fetal effects are specified by the arguments \code{RR} and \code{RRstar
 If there are more than two possible haplotypes, the second element displays the overall power for all haplotypes combined.}
 
 \references{
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}
+Web Site: \url{https://haplin.bitbucket.io}
 }
 
 \author{Miriam Gjerdevik,\cr

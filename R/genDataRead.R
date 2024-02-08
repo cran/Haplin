@@ -31,6 +31,8 @@
 #'   or in the main file, if it's a "haplin"-formatted file).
 #' @param map.file Filename (with path if the file is not in current directory) of the
 #'   .map file holding the SNP names, if available (see Details).
+#' @param map.header Logical: does the map.file contain a header in the first row?
+#'   Default: FALSE.
 #' @param allele.sep Character: separator between two alleles (default: ";").
 #' @param na.strings Character or NA: how the missing data is coded (default: "NA").
 #' @param col.sep Character: separator between the columns (i.e., markers; default: any
@@ -75,7 +77,22 @@
 #'     \item \emph{aux} - a list with meta-data and important parameters.
 #'   }
 #'
-genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALSE ), file.out = NULL, dir.out = ".", format = stop( "Format parameter is required!" ), header = FALSE, n.vars, cov.file.in, cov.header, map.file, allele.sep = ";", na.strings = "NA", col.sep = "", overwrite = NULL ){
+genDataRead <- function(
+    file.in = stop( "Filename must be given!", call. = FALSE ),
+    file.out = NULL,
+    dir.out = ".",
+    format = stop( "Format parameter is required!" ),
+    header = FALSE,
+    n.vars,
+    cov.file.in,
+    cov.header,
+    map.file,
+    map.header = FALSE,
+    allele.sep = ";",
+    na.strings = "NA",
+    col.sep = "",
+    overwrite = NULL 
+){
 	## checking the input arguments
 	if( !file.exists( file.in ) ){
 		stop( "The given file (", file.in, ") doesn't exist! Check and try again.", call. = FALSE )
@@ -242,7 +259,13 @@ genDataRead <- function( file.in = stop( "Filename must be given!", call. = FALS
 		design <- "triad"
 	}
 	tot.gen.ncol <- ncol( gen.data.in.ffdf[[ 1 ]] )
-	gen.data.colnames <- f.create.snp.names( map.file, ncol = tot.gen.ncol, format = format, design = design )
+	gen.data.colnames <- f.create.snp.names(
+	  map.file,
+	  header = map.header,
+	  ncol = tot.gen.ncol,
+	  format = format,
+	  design = design
+	 )
 	marker.names <- gen.data.colnames$marker.names
 	gen.data.colnames <- gen.data.colnames$gen.data.colnames
 

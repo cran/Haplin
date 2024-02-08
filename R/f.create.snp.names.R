@@ -10,6 +10,8 @@
 #'
 #' @param map.file Filename (with path if the file is not in current directory) of the
 #'   .map file holding the SNP names, if available (see Details).
+#' @param header Logical: does the map.file contain a header in the first row?
+#'   Default: FALSE.
 #' @param ncol Number of columns IN TOTAL in the dataset containing only the genotype data
 #' @param format Format of data (will influence how data is processed) - choose from:
 #'   \itemize{
@@ -37,8 +39,9 @@
 #'       from 'map.file', or dummy names.
 #'   }
 #'
+#' @keywords internal
 
-f.create.snp.names <- function( map.file, ncol, format, design ){
+f.create.snp.names <- function( map.file, header = FALSE, ncol, format, design ){
 	cat( "Reading the marker names... \n" )
 
 	if( format == "ped" ){
@@ -51,7 +54,7 @@ f.create.snp.names <- function( map.file, ncol, format, design ){
 
 	marker.names <- c()
 	if( !is.null( map.file ) ){
-		marker.names <- read.table( map.file, header = TRUE, stringsAsFactors = FALSE )
+		marker.names <- read.table( map.file, header = header, stringsAsFactors = FALSE )
 		if( ( nrow( marker.names ) * ncol.per.locus ) != ncol ){
 			marker.names <- c()
 		}

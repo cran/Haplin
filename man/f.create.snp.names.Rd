@@ -4,11 +4,14 @@
 \alias{f.create.snp.names}
 \title{Intern function for creating column names for genotype data}
 \usage{
-f.create.snp.names(map.file, ncol, format, design)
+f.create.snp.names(map.file, header = FALSE, ncol, format, design)
 }
 \arguments{
 \item{map.file}{Filename (with path if the file is not in current directory) of the
 .map file holding the SNP names, if available (see Details).}
+
+\item{header}{Logical: does the map.file contain a header in the first row?
+Default: FALSE.}
 
 \item{ncol}{Number of columns IN TOTAL in the dataset containing only the genotype data}
 
@@ -52,3 +55,4 @@ The .map file should contain at least two columns, where the second one contains
   be ignored. The file should contain a header.
 }
 
+\keyword{internal}

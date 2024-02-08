@@ -52,9 +52,22 @@ on.exit(unlink(.tmphaplofile))
 ## PREPARE ARGUMENTS
 .args <- f.args.from.info(.info)
 # .args$filename <- NULL # REMOVE ANY FILENAME, FROM NOW ON USE ONLY .data
+all.column.names <- lapply(
+  data$gen.data,
+  colnames
+) |>
+  do.call(
+    what = c, args = _
+  )
 
 if( .info$control$sel.markers ){
-	.sel <- f.sel.markers( n.vars = 0, markers = .info$filespecs$markers, family = .info$model$fam, split = T, ncols = all.markers )
+	.sel <- f.sel.markers(
+	  n.vars = 0,
+	  markers = .info$filespecs$markers,
+	  family = .info$model$fam,
+	  split = T,
+	  all.marker.names = all.column.names
+	)
 	cur.markers <- attr( .sel, "markers" )
 	gen.data.tmp <- f.get.gen.data.cols( data$gen.data, .sel )
 	if( !is.null( data$cov.data ) ){

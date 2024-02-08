@@ -80,7 +80,7 @@ recode.snp <- function( my.no, gen.data, unique, tt ){
 		col.id <- gen.list.info$col.no[ i ]
 		el.id <- gen.list.info$chunk.no[ i ]
 		for( j in seq( along = unique[[ my.no ]] ) ){
-			tmp.subset <- gen.data.tmp[ ,i ] == .subset2( unique, my.no )[ j ]
+			tmp.subset <- which(gen.data.tmp[ ,i ] == .subset2( unique, my.no )[ j ])
 			data.ny[[ el.id ]][ tmp.subset,col.id ] <- j
 		}
 	}
@@ -96,7 +96,7 @@ if( run.para ){
 	max.ncpu <- parallel::detectCores()
 	ncpu <- min( max.ncpu, ncpu )
 	cat( "   ...using ", ncpu, " cores\n" )
-	cl <- parallel::makeCluster( ncpu, type = "SOCK" )
+	cl <- parallel::makePSOCKcluster(getOption("cl.cores", ncpu))
 	invisible( parallel::clusterEvalQ( cl, requireNamespace( "ff", quietly = TRUE ) ) )
 	invisible( parallel::clusterEvalQ( cl, loadNamespace( "ff" ) ) )
 	parallel::clusterExport( cl, c( "f.freq.table", "f.get.which.gen.el", "f.get.gen.data.cols" ), envir = environment() )

@@ -7,6 +7,8 @@
 
 \description{NOTE: This function is probably less useful now that GenABEL is no longer used by Haplin. The function is used to prepare a ped file for loading into GenABEL. However, GenABEL requires unique individual IDs in the file, not only unique within family. Furthermore, numeric allele coding 1,2,3,4 is not accepted. To fix this, \code{convertPed} can be run prior to running \code{prepPed}. This will create unique IDs and do the necessary allele recoding, and possibly also select and reorder SNPs. \code{convertPed} will also update the corresponding map file.}
 
+\keyword{internal}
+
 \usage{
 convertPed(ped.infile, map.infile, ped.outfile, map.outfile, create.unique.id = FALSE,
 convert, snp.select = NULL, choose.lines = NULL, col.sep = " ",
@@ -75,7 +77,7 @@ the ped file above should look like this:
 
 \references{
 %Purcell S. PLINK v1.07. Web Site: \url{http://pngu.mgh.harvard.edu/purcell/plink/}\cr\cr
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}
+Web Site: \url{https://haplin.bitbucket.io}
 }
 
 \author{Miriam Gjerdevik,\cr

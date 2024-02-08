@@ -13,7 +13,7 @@ printout = FALSE, verbose = FALSE, ...)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 	\item{data}{R-object of class "haplin.ready", which is e.g., output from \code{\link{genDataPreprocess}} or \code{\link{genDataLoad}}, and contains covariate and genetic data.}
-	\item{markers}{Default is "ALL", which means haplinSlide uses all available markers in the data set in the analysis. Alternatively, the relevant markers can be specified by, for instance, \code{markers = c(1, 3:10)}, which would use the 10 first markers except marker 2. \code{haplinSlide} will then run haplin on a series of windows selected from the supplied \code{markers}. The \code{winlength} argument decides the length of the windows. See details.}
+	\item{markers}{Default is "ALL", which means haplinSlide uses all available markers in the data set in the analysis. Alternatively, the relevant markers can be specified by giving a vector or numbers (e.g., \code{markers = c(1, 3:10)} will use the 10 first markers except marker 2) or characters (e.g., \code{markers = c("m1", "m3", "rs35971")}). \code{haplinSlide} will then run haplin on a series of windows selected from the supplied \code{markers}. The \code{winlength} argument decides the length of the windows. See details.}
 	\item{winlength}{Length of the sliding, overlapping windows to be run along the markers. See details.}
 	\item{strata}{A single numeric value specifying which data column contains the stratification variable.}
 	\item{table.output}{If \code{TRUE}, the \code{haptable} function will be applied to each result after estimation, greatly reducing the size of the output. If \code{FALSE}, each element of the output list is a standard \code{haplin} object. To preserve memory, default is set to TRUE.}
@@ -33,7 +33,7 @@ printout = FALSE, verbose = FALSE, ...)
 	A list of objects of class haplin is returned.
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
+Web Site: \url{https://haplin.bitbucket.io}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

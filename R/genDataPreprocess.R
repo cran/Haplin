@@ -5,6 +5,8 @@
 #' @param data.in Input data, as loaded by \link{genDataRead} or \link{genDataLoad}.
 #' @param map.file Filename (with path if the file is not in current directory) of the
 #'   .map file holding the SNP names, if available.
+#' @param map.header Logical: does the map.file contain a header in the first row?
+#'   Default: FALSE.
 #' @param design The design used in the study - choose from:
 #'   \itemize{
 #'     \item \emph{triad} - (default), data includes genotypes of mother, father and child;
@@ -63,7 +65,16 @@
 #'     }.
 #'   }
 #'
-genDataPreprocess <- function( data.in = stop( "You have to give the object to preprocess!" ), map.file, design = "triad", file.out = "data_preprocessed", dir.out = ".", ncpu = 1, overwrite = NULL ){
+genDataPreprocess <- function(
+    data.in = stop( "You have to give the object to preprocess!" ),
+    map.file,
+    map.header = FALSE,
+    design = "triad",
+    file.out = "data_preprocessed",
+    dir.out = ".",
+    ncpu = 1,
+    overwrite = NULL
+){
 	# checking input parameters:
 	if( !missing( map.file ) ){
 		if( !file.exists( map.file ) ){
@@ -103,7 +114,13 @@ genDataPreprocess <- function( data.in = stop( "You have to give the object to p
 
 	# creating SNP names (dummy names)
 	tot.gen.ncol <- sum( unlist( lapply( data.in$gen.data, ncol ) ) )
-	gen.data.colnames <- f.create.snp.names( map.file, tot.gen.ncol, format = .format, design = design )
+	gen.data.colnames <- f.create.snp.names(
+	  map.file,
+	  header = map.header,
+	  ncol = tot.gen.ncol,
+	  format = .format,
+	  design = design
+	)
 	marker.names <- gen.data.colnames$marker.names
 	gen.data.colnames <- gen.data.colnames$gen.data.colnames
 

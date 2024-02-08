@@ -12,7 +12,7 @@
 
 <meta name="author" content="Hakon K. Gjessing and Julia Romanowska" />
 
-<meta name="date" content="2022-05-19" />
+<meta name="date" content="2024-02-08" />
 
 <title>Introduction: installing and citing Haplin</title>
 
@@ -122,13 +122,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -335,7 +342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Introduction: installing and citing
 Haplin</h1>
 <h4 class="author">Hakon K. Gjessing and Julia Romanowska</h4>
-<h4 class="date">2022-05-19</h4>
+<h4 class="date">2024-02-08</h4>
 
 
 
@@ -343,7 +350,7 @@ Haplin</h1>
 <h1>Citing use of Haplin</h1>
 <p>If you find Haplin useful, please acknowledge our work by citing:</p>
 <blockquote>
-<p>Gjessing HK and Lie RT. <a href="https://folk.uib.no/gjessing/genetics/software/haplin/docu/Gjessing_Lie_2006.pdf">“Case-parent
+<p>Gjessing HK and Lie RT. <a href="https://haplin.bitbucket.io/docu/Gjessing_Lie_2006.pdf">“Case-parent
 triads: Estimating single- and double-dose effects of fetal and maternal
 disease gene haplotypes.”</a> <strong>Annals of Human Genetics</strong>
 <em>(2006)</em> 70, pp. 382-396.</p>
@@ -351,8 +358,7 @@ disease gene haplotypes.”</a> <strong>Annals of Human Genetics</strong>
 <p>The BibTex entry for LaTeX users can be obtained by the following
 command in R:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">citation</span>( <span class="st">&quot;Haplin&quot;</span> )</span></code></pre></div>
-<pre><code>## 
-## To cite package &#39;Haplin&#39; in publications use:
+<pre><code>## To cite package &#39;Haplin&#39; in publications use:
 ## 
 ##   Gjessing HK and Lie RT. Case-parent triads: Estimating single- and
 ##   double-dose effects of fetal and maternal disease gene haplotypes.
@@ -404,8 +410,8 @@ cluster”</strong>.</p>
 <p>Haplin and the dependent packages will then be installed
 automatically over the internet from the <a href="https://CRAN.R-project.org/package=Haplin">CRAN library</a>.</p>
 <p>To start using Haplin, open a new R session (either in a terminal
-window or any IDE, e.g., <a href="https://www.rstudio.com/">RStudio</a>). Then, use the R
-command:</p>
+window or any IDE, e.g., <a href="https://posit.co/">RStudio</a>). Then,
+use the R command:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>( Haplin )</span></code></pre></div>
 <p>Haplin is then loaded and ready for use.</p>
 <!-- ## GUI -->

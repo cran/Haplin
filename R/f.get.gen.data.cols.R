@@ -35,5 +35,6 @@ f.get.gen.data.cols <- function( gen.data, cols, by.colname = FALSE ){
 			colnames( gen.data[[ which.gen.chunk[ i ] ]] )[ which.cols.chunk[ i ] ] )
 	}
 	colnames( gen.data.out ) <- new.colnames
+	rownames(gen.data.out) <- rownames(gen.data[[1]])
 	return( gen.data.out )
 }

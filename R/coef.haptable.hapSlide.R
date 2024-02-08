@@ -1,4 +1,4 @@
-coef.haptable.hapSlide <- function( object, plot.signif.only = FALSE, signif.thresh = 0.05, keep.p.overall = FALSE, poo.p.val = FALSE ){
+coef.haptable.hapSlide <- function( object, ..., plot.signif.only = FALSE, signif.thresh = 0.05, keep.p.overall = FALSE, poo.p.val = FALSE ){
 
 	coef.list <- lapply( object, coef.haptable, poo.p.val )
 	infos <- lapply( coef.list, function( x ){ attr( x, "info" ) } )

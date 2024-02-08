@@ -60,3 +60,4 @@ Hill, I.D., Hill, R., and Holder, R.L. (1976). Fitting Johnson curves
 \author{
 Bob Wheeler
 }
+\keyword{internal}

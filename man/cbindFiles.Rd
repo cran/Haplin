@@ -24,7 +24,7 @@ cbindFiles(infiles, outfile, col.sep, ask = TRUE, verbose = TRUE)
 \value{
 There is no useful output; the objective of \code{cbindFiles} is to produce \code{outfile}.
 }
-\references{Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
+\references{Web Site: \url{https://haplin.bitbucket.io}}
 \author{
 Miriam Gjerdevik,\cr
 with Hakon K. Gjessing\cr

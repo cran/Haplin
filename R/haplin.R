@@ -1,10 +1,28 @@
-haplin <- function( data, markers = "ALL",
-design = "triad", use.missing = FALSE, xchrom = FALSE, maternal = FALSE, test.maternal = FALSE, poo = FALSE, scoretest = "no",
-ccvar = NULL, strata = NULL, sex = NULL, comb.sex = "double",
-reference = "reciprocal", response = "free", threshold = 0.01, max.haplos = NULL, haplo.file = NULL,
-resampling = "no", max.EM.iter = 50, data.out = "no", verbose = TRUE, printout = TRUE ){
-#
-# sep = " " is the column separator, allele.sep = ";" separates alleles within marker, na.strings = "NA" identifies missing values
+haplin <- function(
+  data,
+  markers = "ALL",
+  design = "triad",
+  use.missing = FALSE,
+  xchrom = FALSE,
+  maternal = FALSE,
+  test.maternal = FALSE,
+  poo = FALSE,
+  scoretest = "no",
+  ccvar = NULL,
+  strata = NULL,
+  sex = NULL,
+  comb.sex = "double",
+  reference = "reciprocal",
+  response = "free",
+  threshold = 0.01,
+  max.haplos = NULL,
+  haplo.file = NULL,
+  resampling = "no",
+  max.EM.iter = 50,
+  data.out = "no",
+  verbose = TRUE,
+  printout = TRUE
+){
 # ccvar is the position of the case-control variable, covar is the position of the environment covariate
 #
 # PAABEGYNT 13/1-04 KL. 22.46

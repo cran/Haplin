@@ -23,13 +23,13 @@ hapPower(hapRun.result, alpha = 0.05)
 \code{\link[Haplin]{haplinStrat}} and \code{\link[Haplin]{haplinSlide}}. \code{hapPower} simulates the power of these analyses, which enables power calculations of fetal effects, maternal effects and/or parent-of-origin effects. Various family designs, i.e., triads, case-control, the hybrid design, and all intermediate designs, are possible.
 It also allows power calculation of gene-environment interaction effects and effects on X-chromosome markers.
 
-\code{hapPower} calculates statistical power using the result of \code{\link[Haplin]{hapRun}}, and the target effects must be specified in this function, see Examples below, and details in \url{https://people.uib.no/gjessing/genetics/software/haplin/docu/Haplin_power.pdf}.
+\code{hapPower} calculates statistical power using the result of \code{\link[Haplin]{hapRun}}, and the target effects must be specified in this function, see Examples below, and details in \url{https://haplin.bitbucket.io/docu/Haplin_power.pdf}.
 }
 
 \value{\code{hapPower} returns the simulated power.}
 
 \references{
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}
+Web Site: \url{https://haplin.bitbucket.io}
 }
 
 \author{Miriam Gjerdevik,\cr

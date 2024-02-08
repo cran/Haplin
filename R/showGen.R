@@ -128,7 +128,15 @@ showGen <- function( data.in, design = "triad", n = 5, from, to, sex, markers = 
 			markers <- orig.markers[ !which.markers.higher.max ]
 		}
 
-		markers <- f.sel.markers( n.vars = 0, markers = markers, family = family, split = TRUE, ncols = all.markers )
+		all.cols.names <- lapply(gen.data, colnames) |>
+		  do.call(what = c, args = _)
+		markers <- f.sel.markers(
+		  n.vars = 0,
+		  markers = markers,
+		  family = family,
+		  split = TRUE,
+		  all.marker.names = all.cols.names
+		)
 	} else if( length( markers ) == 1 & markers == "all" ){
 		markers.by.name <- FALSE
 		if( length( gen.data ) > 1 ){

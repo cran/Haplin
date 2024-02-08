@@ -41,7 +41,7 @@
 #'    \bold{67-3} 725-728
 #'
 #' @author Bob Wheeler
-
+#' @keywords internal
 
 # THESE FUNCTIONS ARE TAKEN FROM SuppDists (https://cran.r-project.org/package=SuppDists)
 

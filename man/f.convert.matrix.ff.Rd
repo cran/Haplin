@@ -6,8 +6,8 @@
 \usage{
 f.convert.matrix.ff(
   data = stop("You must give the data to convert!", call. = FALSE),
-  n.vars = stop("You must explicitly give the number of columns with covariates!",
-    call. = FALSE),
+  n.vars = stop("You must explicitly give the number of columns with covariates!", call.
+    = FALSE),
   cov.header,
   gen.levels
 )
@@ -39,3 +39,4 @@ A list object with two elements:
 \description{
 Internal function for converting an R matrix object into the new format of data used in Haplin. The output is the same as from \link{genDataRead}.
 }
+\keyword{internal}

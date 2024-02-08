@@ -12,7 +12,7 @@
 
 <meta name="author" content="Hakon K. Gjessing and Julia Romanowska" />
 
-<meta name="date" content="2022-05-19" />
+<meta name="date" content="2024-02-08" />
 
 <title>Reading and preparing the data</title>
 
@@ -122,13 +122,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -334,7 +341,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Reading and preparing the data</h1>
 <h4 class="author">Hakon K. Gjessing and Julia Romanowska</h4>
-<h4 class="date">2022-05-19</h4>
+<h4 class="date">2024-02-08</h4>
 
 
 
@@ -603,7 +610,7 @@ argument <code>design = &quot;cc&quot;</code>.</p>
 <p>To extract and/or show genotypes for specific individuals or markers,
 use the <code>showGen</code> function:</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">showGen</span>( my.gen.data, <span class="at">markers =</span> <span class="fu">c</span>( <span class="dv">10</span>,<span class="dv">15</span>,<span class="dv">121</span> ) ) <span class="co"># by default - showing first 5 entries</span></span></code></pre></div>
-<pre><code>## opening ff C:/Users/hkgje/AppData/Local/Temp/Rtmp4ESvmE/ff/ff7ac427085377.ff</code></pre>
+<pre><code>## opening ff C:/Users/hkgje/AppData/Local/Temp/Rtmp2XN753/ff/ff7e4811a66f1.ff</code></pre>
 <pre><code>## ff (open) byte length=30 (30) dim=c(5,6) dimorder=c(1,2) levels: G &lt;NA&gt; C T A
 ##      l_m10_a l_m10_b l_m15_a l_m15_b l_m121_a l_m121_b
 ## [1,]       T       T       A       T        T        T

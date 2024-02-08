@@ -45,13 +45,23 @@ plot.haplinSlide <- function( x, filename, title, windows, plot.signif.only = FA
 		stop( "This haplinSlide object is too large - try plotting first only p-values (with 'plotPValues') and deciding which windows you want to choose for plotting with this function.", call. = FALSE )
 	}
 
-	info.hapSlide.obj <- attr( hapSlide.obj[[ 1 ]], "info" )
+	if(!is(hapSlide.obj, "haptable")){
+		hapSlide.obj <- lapply(hapSlide.obj, haptable)
+	}
+
+	info.hapSlide.obj <- attr(hapSlide.obj[[ 1 ]], "info")
+	if(is.null(info.hapSlide.obj)){
+		stop("Something is wrong! No information on haplin run was passed with haplinSlide object!", call. = FALSE)
+	}
 	calc.poo <- info.hapSlide.obj$model$poo
 	calc.maternal <- info.hapSlide.obj$model$maternal
 		
 	# Type of plotting - dependent on the number of haplotypes
 	plot.type <- "single"
-	if( any( sapply( hapSlide.obj, nrow ) > 2 ) ){
+	n_haplos <- sapply(hapSlide.obj, function(el){
+		return(length(el$haplos)) # how many haplotypes in each window
+	})
+	if( any( n_haplos > 2 ) ){
 		plot.type <- "multi"
 	}
 

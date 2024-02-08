@@ -64,7 +64,7 @@ Create a comprehensive table of haplin output
 	\item{RRcm_RRcf.upper}{Upper 95\% CI for ratio RRcm/RRcf}
 	\item{RRcm_RRcf.p.value}{P-value for parent-of-origin effect RRcm/RRcf at that marker}	   
 }
-\references{Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
+\references{Web Site: \url{https://haplin.bitbucket.io}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

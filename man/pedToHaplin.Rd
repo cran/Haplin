@@ -18,6 +18,9 @@ colnames.out = F)
 	\item{sep}{Column separator in \code{indata}. If unspecified, any white space will be used, as in \code{read.table}.} 
 	\item{colnames.out}{Provided just for the purpose of checking data. If TRUE, adds colnames to the \code{outdata} file to make it more readable. NOTE: Haplin does currently not use colnames, so this should be set to FALSE when producing the file to run on.}
 }
+
+\keyword{internal}
+
 \details{
   Important: The first 6 columns should always be family id, individual id, father's id, mother's id, sex and casetype, in that order, then followed by the genetic data columns. If the genetic data columns are separated into two individual alleles, one should use the option \code{merge = TRUE} to merge them in the output file. If they are already joined in single columns, for instance as CT or C;T, \code{merge} should be set to \code{FALSE} (default).
 
@@ -29,7 +32,7 @@ Note that the output file usually has three columns before (to the left of) the 
 	The \code{outdata} file is written to disk. \code{pedToHaplin} returns (invisibly) the converted data file.
 }
 \references{ Gjessing HK and Lie RT. Case-parent triads: Estimating single- and double-dose effects of fetal and maternal disease gene haplotypes. Annals of Human Genetics (2006) 70, pp. 382-396.\cr\cr
-Web Site: \url{https://people.uib.no/gjessing/genetics/software/haplin/}}
+Web Site: \url{https://haplin.bitbucket.io}}
 \author{Hakon K. Gjessing\cr
 Professor of Biostatistics\cr
 Division of Epidemiology\cr

@@ -45,7 +45,13 @@ if(info$model$xchrom & !is.null(info$variables$sel.sex)){
 }
 #
 if(sel.markers){
-	.sel <- f.sel.markers(n.vars = .n.vars, markers = .markers, family = info$model$fam, split = T, ncols = dim(data)[2])
+	.sel <- f.sel.markers(
+	  n.vars = .n.vars,
+	  markers = .markers,
+	  family = info$model$fam,
+	  split = T,
+	  all.marker.names = 1:(dim(data)[2])
+	 )
 	.markers <- attr(.sel, "markers")
 }else .sel <- T
 #

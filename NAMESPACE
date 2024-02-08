@@ -37,15 +37,20 @@ S3method( summary, haplin )
 S3method( coef, haplin )
 S3method( haptable, haplin )
 S3method( print, summary.haplin )
+S3method( coef, haptable.hapSlide)
 
 S3method( print, tri.glm )
 S3method( summary, tri.glm )
 S3method( print, summary.tri.glm )
 
 S3method( print, suest )
+S3method( print, HWE.test )
+S3method( print, info )
 
 S3method( plot, haplinStrat )
 S3method( haptable, haplinStrat )
+S3method( print, haplinStrat )
+S3method( summary, haplinStrat )
 
 S3method( coef, haptable )
 S3method( plot, haptable )

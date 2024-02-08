@@ -44,8 +44,22 @@ if( xchrom & !is.null( info$variables$sel.sex ) ){
 marker.names.all <- data.read$aux$marker.names
 .markers <- TRUE
 all.markers <- sum( sapply( data.read$gen.data, ncol ) )
+all.column.names <- lapply(
+  data.read$gen.data,
+  colnames
+) |>
+  do.call(
+    what = c, args = _
+  )
+
 if( sel.markers ){
-	.sel <- f.sel.markers( n.vars = 0, markers = markers, family = family, split = T, ncols = all.markers )
+	.sel <- f.sel.markers(
+	  n.vars = 0,
+	  markers = markers, 
+	  family = family, 
+	  split = T,
+	  all.marker.names = all.column.names
+	 )
 	.markers <- attr( .sel, "markers" )
 	info$filespecs$markers <- .markers
 # 	info <- c( info, list( data = list( marker.names.all = marker.names.all[ .markers ] ) ) )

@@ -7,6 +7,7 @@
 genDataPreprocess(
   data.in = stop("You have to give the object to preprocess!"),
   map.file,
+  map.header = FALSE,
   design = "triad",
   file.out = "data_preprocessed",
   dir.out = ".",
@@ -19,6 +20,9 @@ genDataPreprocess(
 
 \item{map.file}{Filename (with path if the file is not in current directory) of the
 .map file holding the SNP names, if available.}
+
+\item{map.header}{Logical: does the map.file contain a header in the first row?
+Default: FALSE.}
 
 \item{design}{The design used in the study - choose from:
 \itemize{

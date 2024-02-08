@@ -1,4 +1,4 @@
-print.info <- function(info, args.only = F){
+print.info <- function(x, ..., args.only = F){
 ##
 ## ABBREVIATED PRINTING OF info OBJECT. IF args.only = T, SHOWS ONLY
 ## THOSE VALUES THAT ARE USABLE AS ARGUMENTS TO HAPLIN
@@ -7,7 +7,7 @@ print.info <- function(info, args.only = F){
 ## TO HAPLIN ARE AT THE SECOND "LEVEL" OF LIST
 #
 ## FOR SAFETY'S SAKE
-.info <- unclass(info)
+.info <- unclass(x)
 .haplin.vers <- .info$misc$orig.call[[1]]
 #
 ## NAMES OF ARGUMENTS TO haplin
