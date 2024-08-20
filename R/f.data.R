@@ -44,13 +44,12 @@ if( xchrom & !is.null( info$variables$sel.sex ) ){
 marker.names.all <- data.read$aux$marker.names
 .markers <- TRUE
 all.markers <- sum( sapply( data.read$gen.data, ncol ) )
-all.column.names <- lapply(
-  data.read$gen.data,
-  colnames
-) |>
-  do.call(
-    what = c, args = _
+all.column.names <- unlist(
+  lapply(
+    data.read$gen.data,
+    colnames
   )
+)
 
 if( sel.markers ){
 	.sel <- f.sel.markers(
@@ -295,7 +294,7 @@ names( .data ) <- new.data.gen.names
 .data$ind.unique.line <- NULL
 
 ## COMPUTE PRELIMINARY HAPLOTYPE FREQUENCIES USING A SIMPLE EM-VERSION:
-.prelim.freq <- f.preliminary.freq.new( .data, info )
+.prelim.freq <- f.preliminary.freq( .data, info )
 .data$freq <- ff::as.ff( .prelim.freq )
 info$haplos$prelim.haplotype.freq <- attr( .prelim.freq, "prelim.haplotype.freq" )
 

@@ -24,6 +24,8 @@ f.design.make <- function(maternal, response, info, ret.characteristics = F){
 .xchrom <- info$model$xchrom
 .design <- info$model$design
 .poo <- info$model$poo
+.hwe <- info$model$hwe
+if(is.null(.hwe)) .hwe <- TRUE
 .sel.sex <- info$variables$sel.sex
 .sel.sex.yes <- !is.null(.sel.sex)
 .comb.sex <- info$model$comb.sex
@@ -126,6 +128,7 @@ if(.cond.triad){
 ## FATHER
 if(.cond.f1){
 	.f.dumsum <- .f1.dum + .f2.dum
+	dimnames(.f.dumsum)[[2]] <- paste("f", 1:.A, sep = "")
 }else{
 	.f.dumsum <- .f2.dum
 }

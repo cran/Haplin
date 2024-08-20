@@ -67,9 +67,9 @@ DISTS_API void uJohnsonR(double *xp,double *gammap,double *deltap,double *xip,
 #define solongas(A) }while(A)
 #define null()
 
-#define true 1
-#define false 0
-#define bool int
+// #define true 1
+// #define false 0
+// #define bool int
 
 #define maxm(a,b) (((a)>(b))?(a):(b))
 #define minm(a,b) (((a)<(b))?(a):(b))

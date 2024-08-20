@@ -13,6 +13,7 @@ extern "C" int snprintf(char *str, size_t size, const char *format, ...);
 #include <Rmath.h>
 
 #include <cstring> // for memset
+#include <stdexcept>
 #include "dists.h"
 
 // modified from SuppDists (https://cran.r-project.org/package=SuppDists)
@@ -26,7 +27,7 @@ bool DllMain(void)
 
 static const double LOG10=2.3025850929940456840179915;
 static const double MAXEXP=LOG10*DBL_MAX_10_EXP;	// Maximum argument for exp()
-static const double TWOPI=2*PI;
+// static const double TWOPI=2*PI;
 static const double SQRT2=1.414135623730950488;
 static const double LNGAMMAHALF=1.144729885849400174143427/2;	// log of gamma(1/2)=log(sqrt(PI))
 static const double LOG2=0.6931471805599453094172321;
@@ -169,14 +170,14 @@ DISTS_API void pJohnsonR(
 			break;
 		case SB:
 				if (u<=0.0 || u>=1.0) {
-					error("\nSb values out of range.");
+					throw runtime_error("\nSb values out of range.");
 					return 0.0;
 				}
 				u/=(1-u);
 				u=log(u);
 			break;
 		default:
-			error("\nNo type");
+			throw runtime_error("\nNo type");
 			break;
 	}
 
@@ -302,7 +303,7 @@ DISTS_API void JohnsonFitR(
 		solution=SL;
 		delta=zn/log(t);
 		if (! R_FINITE(delta)){
-			error("\nInfinite value in SL fit");
+			throw runtime_error("\nInfinite value in SL fit");
 		}
 	}
 	else
@@ -314,7 +315,7 @@ DISTS_API void JohnsonFitR(
 		delta=zn/(2.0*log(b));
 		b*=b;
  		if (t>b || t<1.0/b) {
-			error("\nBounded solution intermediate values out of range");
+			throw runtime_error("\nBounded solution intermediate values out of range");
 		}
 		double a=(t-b)/(1-t*b);
 		gamma=-delta*log(a);
@@ -327,7 +328,7 @@ DISTS_API void JohnsonFitR(
 		delta=zn/(2.0*log(b));
 		b*=b;
 		if (t>b || t<1.0/b) {
-			error("\nUnbounded solution intermediate values out of range");
+			throw runtime_error("\nUnbounded solution intermediate values out of range");
 		}
 		double a=(1-t*b)/(t-b);
 		gamma=-0.5*delta*log(a);

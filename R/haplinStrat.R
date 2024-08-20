@@ -52,13 +52,12 @@ on.exit(unlink(.tmphaplofile))
 ## PREPARE ARGUMENTS
 .args <- f.args.from.info(.info)
 # .args$filename <- NULL # REMOVE ANY FILENAME, FROM NOW ON USE ONLY .data
-all.column.names <- lapply(
-  data$gen.data,
-  colnames
-) |>
-  do.call(
-    what = c, args = _
-  )
+all.column.names <- unlist(
+		lapply(
+  	data$gen.data,
+  	colnames
+		)
+	)
 
 if( .info$control$sel.markers ){
 	.sel <- f.sel.markers(

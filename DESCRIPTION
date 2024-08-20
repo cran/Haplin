@@ -1,8 +1,8 @@
 Package: Haplin
 Title: Analyzing Case-Parent Triad and/or Case-Control Data with SNP
         Haplotypes
-Version: 7.3.1
-Date: 2024-01-08
+Version: 7.3.2
+Date: 2024-08-16
 Type: Package
 Authors@R: c( person("Hakon K.", "Gjessing", email = "hakon.gjessing@uib.no",
                   role = c("aut", "cre")),
@@ -22,7 +22,7 @@ VignetteBuilder: knitr
 RoxygenNote: 7.3.1
 BuildVignettes: yes
 NeedsCompilation: yes
-Packaged: 2024-02-08 21:23:19 UTC; hkgje
+Packaged: 2024-08-20 08:50:02 UTC; hkgje
 Author: Hakon K. Gjessing [aut, cre],
   Miriam Gjerdevik [ctb] (functions 'lineByLine', 'cbindFiles',
     'rbindFiles', 'snpPower', 'snpSampleSize', 'hapSim', 'hapRun',
@@ -31,4 +31,4 @@ Author: Hakon K. Gjessing [aut, cre],
     data format, parallelisation, new documentation),
   Oivind Skare [ctb] (TDT tests)
 Repository: CRAN
-Date/Publication: 2024-02-08 22:20:02 UTC
+Date/Publication: 2024-08-20 14:30:14 UTC

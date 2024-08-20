@@ -184,7 +184,7 @@ if(design == "cc"){
 #
 ## COMPUTE PRELIMINARY HAPLOTYPE FREQUENCIES USING A SIMPLE EM-VERSION:
 ##
-.prelim.freq <- f.preliminary.freq.new0(.data, .info)
+.prelim.freq <- f.preliminary.freq0(.data, .info)
 .data$freq <- .prelim.freq
 .info$haplos$prelim.haplotype.freq <- attr(.prelim.freq, "prelim.haplotype.freq")
 #

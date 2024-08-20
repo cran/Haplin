@@ -27,7 +27,7 @@ if(!is.numeric(markers)){
   } else {
     # 'markers' is a character vector with names of markers
     .sel <- grep(
-      pattern = paste(markers, collapse="_|") |> paste0("_"),
+      pattern = paste0(markers, "_", collapse="|"),
       x = all.marker.names,
       value = FALSE
     )

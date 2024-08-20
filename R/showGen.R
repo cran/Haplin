@@ -128,8 +128,8 @@ showGen <- function( data.in, design = "triad", n = 5, from, to, sex, markers = 
 			markers <- orig.markers[ !which.markers.higher.max ]
 		}
 
-		all.cols.names <- lapply(gen.data, colnames) |>
-		  do.call(what = c, args = _)
+		all.cols.names <- unlist(lapply(gen.data, colnames))
+		
 		markers <- f.sel.markers(
 		  n.vars = 0,
 		  markers = markers,

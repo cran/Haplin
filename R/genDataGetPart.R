@@ -151,13 +151,13 @@ genDataGetPart <- function(
   				warning( "this selection is equal to choosing all markers!", call. = FALSE )
   			}
 			}
-			all.column.names <- lapply(
+			all.column.names <- unlist(
+				lapply(
           data.in$gen.data,
           colnames
-        ) |>
-        do.call(
-          what = c, args = _
-        )
+        	)
+			)
+
 			subset.cols <- f.sel.markers(
 			  n.vars = 0,
 			  markers = val,

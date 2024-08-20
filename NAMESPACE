@@ -21,7 +21,7 @@ export( getChildren, getFathers, getMothers, getFullTriads, getDyads )
 import( ff )
 # import( GenABEL, DatABEL )
 import( parallel )
-importFrom( rlang, caller_env )
+importFrom( rlang, caller_env, .data )
 import( stats, graphics, grDevices, tools )
 
 importFrom( "utils", "capture.output", "head", "read.table", "str", "tail",

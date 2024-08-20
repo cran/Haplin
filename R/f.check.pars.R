@@ -52,8 +52,10 @@ if( .info$model$design %in% c( "triad", "cc.triad" ) ) {
 if( .info$model$design == "cc" ){
 	.info$model$fam <- "c"
 }
-#
-
+## check xchrom... but should have had similar tests for all logicals?
+if( !is.logical( .xchrom ) ){
+	stop( 'Argument "xchrom" must be a logical ( either "TRUE" or "FALSE" )', call. = F )
+}
 ## SET VALUES
 # REPLACE "ALL" IF NECESSARY
 .info$control$sel.markers <- TRUE
@@ -134,9 +136,6 @@ if( .ccdesign ){
 }
 #
 ## MAKE SURE sex COLUMN IS SPECIFIED IF ON THE xchrom
-if( !is.logical( .xchrom ) ){
-	stop( 'Argument "xchrom" must be a logical ( either "TRUE" or "FALSE" )', call. = F )
-}
 if( F & .xchrom ){
 	if( .info$filespecs$n.vars == 0 ){
 		stop( 'Argument "n.vars" must be at least 1 to allow for a sex variable when "xchrom = TRUE"', call. = F )

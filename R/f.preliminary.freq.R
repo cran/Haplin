@@ -1,4 +1,4 @@
-f.preliminary.freq.new <- function(data, info){
+f.preliminary.freq <- function(data, info){
 ##
 ## COMPUTES PRELIMINARY FREQUENCY DISTRIBUTION OF HAPLOTYPES, 
 ## BY A SIMPLE EM COMPUTATION

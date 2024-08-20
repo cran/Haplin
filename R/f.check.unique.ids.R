@@ -17,25 +17,38 @@
 #' @keywords internal
 
 f.check.unique.ids <- function( data.cov ){
-	all.id.c <- table( data.cov[ ,"id.c" ] )
-	if( any( all.id.c > 1 ) ){
+	# Basic checks. NOTE: id.c does not only refer to the child, but to all individuals in the file
+	if(!identical(colnames(data.cov)[1:4], c("id.fam", "id.c", "id.f", "id.m"))) stop("Something's wrong with the id variables", call. = F)
+	if(any(is.na(data.cov[,"id.fam"]) | is.na(data.cov[, "id.c"]))) stop("Missing individual id and/or family id", call. = F)
+	#
+	id.c <- data.cov[ ,"id.c" ]
+	if( anyDuplicated(id.c) > 0 ){ # dupl mother, father is presumably OK
 		cat( "   Creating unique IDs for individuals...\n" )
-		orig.cov.colnames <- colnames( data.cov )
-		data.cov <- t( apply( data.cov, 1, function( x ){
-			if( x[ 4 ] == 0 | x[ 3 ] == 0 ){
-				new.ids <- c( paste( x[ 1 ], x[ 2 ], sep = "_" ), x[ 3:4 ] )
-			} else {
-				new.ids <- paste( x[ 1 ], x[ 2:4 ], sep = "_" )
-			}
-			return( c( x[ 1 ], new.ids, x[ 5:length( x ) ] ) )
-		} ) )
-		colnames( data.cov ) <- orig.cov.colnames
+		tmp.data.cov <- data.cov[, 1:4]
+		# combine fam and c id's
+		tmp.data.cov[, "id.c"] <- paste(data.cov[, "id.fam"], data.cov[, "id.c"], sep = "_")
+		# combine fam and f id's, but keep missing as missing
+		tmp.data.cov[, "id.f"] <- paste(data.cov[, "id.fam"], data.cov[, "id.f"], sep = "_")
+		tmp.data.cov[, "id.f"][is.na(data.cov[, "id.f"])] <- NA
+		# combine fam and m id's, but keep missing as missing
+		tmp.data.cov[, "id.m"] <- paste(data.cov[, "id.fam"], data.cov[, "id.m"], sep = "_")
+		tmp.data.cov[, "id.m"][is.na(data.cov[, "id.m"])] <- NA
+		#
+		data.cov[, 1:4] <- tmp.data.cov
+		#
 		cat( "   ...done.\n" )
+	} # end if any duplicated
+	#
+	id.c.new <- data.cov[ ,"id.c" ]
+	if( anyDuplicated(id.c.new) > 0 ){
+		#
+		id.c.new.dupl <- id.c.new[duplicated(id.c.new)]
+		print(id.c.new.dupl[1:min(4, length(id.c.new.dupl))], "...")
+		stop("Found duplicated children's id's within same family", call. = F)
 	}
-	
-	id <- data.cov[ ,"id.c" ]
+	#
 	# sort the families and check coding
 	pedIndex <- f.prep.pedIndex( data.cov )
-
-	return( list( ids = id, pedIndex = pedIndex ) )
+	#
+	return( list( ids = id.c.new, pedIndex = pedIndex ) )
 }
